@@ -6,13 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сергей — Создание сайтов-визиток | piarbook.ru</title>
     
-    <!-- Множественные CDN для Font Awesome (если один заблокирован, работает другой) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" 
-          onerror="this.onerror=null; this.href='https://unpkg.com/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';">
-    <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" 
-          onerror="this.remove(); loadEmojiFallback();">
-    
-    <!-- Шрифты с fallback на системные эмодзи -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -37,6 +30,26 @@
                 radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
+        }
+        
+        /* БАЗОВЫЕ СТИЛИ SVG-ИКОНОК */
+        svg.i {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+        
+        svg.b {
+            fill: currentColor;
+            stroke: none;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
         }
         
         .container {
@@ -181,9 +194,10 @@
             font-size: 0.95rem;
         }
         
-        .price-features i {
+        .price-features svg.i {
+            width: 18px;
+            height: 18px;
             color: #10b981;
-            font-size: 0.9rem;
         }
         
         .price-badge {
@@ -240,19 +254,6 @@
                 rgba(139, 92, 246, 0.5) 20%, 
                 rgba(139, 92, 246, 0.5) 80%, 
                 transparent);
-            position: relative;
-        }
-        
-        .divider-line::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #a78bfa, transparent);
-            filter: blur(2px);
         }
         
         .divider-icon {
@@ -265,10 +266,14 @@
             align-items: center;
             justify-content: center;
             color: #a78bfa;
-            font-size: 1.1rem;
             flex-shrink: 0;
             box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
             animation: pulse-divider 3s ease-in-out infinite;
+        }
+        
+        .divider-icon svg.i {
+            width: 20px;
+            height: 20px;
         }
         
         @keyframes pulse-divider {
@@ -317,9 +322,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            color: white;
+            color: #fff;
             margin-bottom: 1rem;
+        }
+        
+        .card-icon svg.i {
+            width: 26px;
+            height: 26px;
         }
         
         .card-tag {
@@ -353,6 +362,11 @@
             transition: all 0.3s;
         }
         
+        .card-arrow svg.i {
+            width: 18px;
+            height: 18px;
+        }
+        
         .portfolio-card:hover .card-arrow {
             opacity: 1;
         }
@@ -373,8 +387,14 @@
         }
         
         .condition-icon {
-            font-size: 1.5rem;
             margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .condition-icon svg.i {
+            width: 28px;
+            height: 28px;
         }
         
         .condition-title {
@@ -417,9 +437,10 @@
             border-bottom: 1px solid rgba(255,255,255,0.08);
         }
         
-        .info-card-title i {
+        .info-card-title svg.i {
+            width: 20px;
+            height: 20px;
             color: #a78bfa;
-            font-size: 1.3rem;
         }
         
         .checklist {
@@ -435,10 +456,11 @@
             gap: 0.6rem;
         }
         
-        .checklist i {
+        .checklist svg.i {
+            width: 16px;
+            height: 16px;
             color: #10b981;
-            margin-top: 0.2rem;
-            font-size: 0.85rem;
+            margin-top: 2px;
         }
         
         .tags {
@@ -473,10 +495,11 @@
             align-items: flex-start;
         }
         
-        .guarantee-item i {
+        .guarantee-item svg.i {
+            width: 18px;
+            height: 18px;
             color: #fbbf24;
-            font-size: 1rem;
-            margin-top: 0.1rem;
+            margin-top: 2px;
         }
         
         .contacts-section {
@@ -509,6 +532,12 @@
             display: flex;
             align-items: center;
             gap: 0.6rem;
+        }
+        
+        .form-title svg.i {
+            width: 22px;
+            height: 22px;
+            color: #a78bfa;
         }
         
         .form-subtitle {
@@ -582,6 +611,11 @@
             margin-top: 0.5rem;
         }
         
+        .submit-btn svg.i {
+            width: 18px;
+            height: 18px;
+        }
+        
         .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
@@ -609,6 +643,12 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+        
+        .quick-title svg.i {
+            width: 18px;
+            height: 18px;
+            color: #fbbf24;
         }
         
         .quick-desc {
@@ -645,8 +685,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            color: #fff;
             flex-shrink: 0;
+        }
+        
+        .contact-btn .icon-wrapper svg.i,
+        .contact-btn .icon-wrapper svg.b {
+            width: 22px;
+            height: 22px;
         }
         
         .contact-btn .text-wrapper {
@@ -677,6 +723,11 @@
             transition: all 0.3s;
         }
         
+        .contact-btn .arrow svg.i {
+            width: 16px;
+            height: 16px;
+        }
+        
         .contact-btn:hover .arrow {
             opacity: 1;
             transform: translateX(3px);
@@ -702,8 +753,7 @@
             max-width: 350px;
         }
         
-        .copy-notification i {
-            font-size: 1.3rem;
+        .cn-icon {
             background: rgba(255,255,255,0.2);
             width: 35px;
             height: 35px;
@@ -714,30 +764,23 @@
             flex-shrink: 0;
         }
         
+        .cn-icon svg.i {
+            width: 18px;
+            height: 18px;
+        }
+        
         .copy-notification.hide {
             animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         
         @keyframes slideIn {
-            from { 
-                transform: translateX(400px) scale(0.8); 
-                opacity: 0; 
-            }
-            to { 
-                transform: translateX(0) scale(1); 
-                opacity: 1; 
-            }
+            from { transform: translateX(400px) scale(0.8); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
         }
         
         @keyframes slideOut {
-            from { 
-                transform: translateX(0) scale(1); 
-                opacity: 1; 
-            }
-            to { 
-                transform: translateX(400px) scale(0.8); 
-                opacity: 0; 
-            }
+            from { transform: translateX(0) scale(1); opacity: 1; }
+            to { transform: translateX(400px) scale(0.8); opacity: 0; }
         }
         
         footer {
@@ -773,7 +816,7 @@
                 font-size: 0.9rem;
             }
             .divider { margin: 1.5rem 0; }
-            .divider-icon { width: 40px; height: 40px; font-size: 1rem; }
+            .divider-icon { width: 40px; height: 40px; }
         }
     </style>
 </head>
@@ -815,10 +858,10 @@
                     2000₽ <span>под ключ</span>
                 </div>
                 <ul class="price-features">
-                    <li><i class="fas fa-check"></i> Хостинг бесплатный навсегда</li>
-                    <li><i class="fas fa-check"></i> Домен на год входит в стоимость</li>
-                    <li><i class="fas fa-check"></i> Оплата после сдачи сайта</li>
-                    <li><i class="fas fa-check"></i> Бесплатная поддержка 1 месяц</li>
+                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Хостинг бесплатный навсегда</li>
+                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Домен на год входит в стоимость</li>
+                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Оплата после сдачи сайта</li>
+                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Бесплатная поддержка 1 месяц</li>
                 </ul>
                 <div class="price-badge">⏰ СРОК: 1-2 дня</div>
             </div>
@@ -832,98 +875,96 @@
             
             <div class="portfolio-grid">
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><i class="fas fa-car"></i></div>
+                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
                     <div class="card-tag">Автосервис</div>
                     <div class="card-title">АВТОМАСТЕР</div>
                     <div class="card-desc">Тёмная тема, каталог услуг</div>
-                    <i class="fas fa-arrow-right card-arrow"></i>
+                    <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><i class="fas fa-spa"></i></div>
+                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>
                     <div class="card-tag">Салон красоты</div>
                     <div class="card-title">BEAUTY STUDIO</div>
                     <div class="card-desc">Галерея, прайс, запись</div>
-                    <i class="fas fa-arrow-right card-arrow"></i>
+                    <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><i class="fas fa-warehouse"></i></div>
+                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12"/><path d="M6 14h12"/><rect width="12" height="12" x="6" y="10"/></svg></div>
                     <div class="card-tag">Гараж</div>
                     <div class="card-title">ГАРАЖ</div>
                     <div class="card-desc">Оливковая тема</div>
-                    <i class="fas fa-arrow-right card-arrow"></i>
+                    <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><i class="fas fa-gavel"></i></div>
+                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
                     <div class="card-tag">Юрист</div>
                     <div class="card-title">ЮРИСТ</div>
                     <div class="card-desc">Услуги, цены, заявки</div>
-                    <i class="fas fa-arrow-right card-arrow"></i>
+                    <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><i class="fas fa-tooth"></i></div>
+                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M4 10c0 6 2 10 4 10c1.5 0 2-2 2-4c0-1.5 .5-3 2-3s2 1.5 2 3c0 2 .5 4 2 4c2 0 4-4 4-10c0-3.5-2-6-4-6c-1.5 0-2.5 1-4 1s-2.5-1-4-1c-2 0-4 2.5-4 6z"/></svg></div>
                     <div class="card-tag">Стоматология</div>
                     <div class="card-title">ЗДОРОВАЯ УЛЫБКА</div>
                     <div class="card-desc">Услуги, цены, врачи, запись</div>
-                    <i class="fas fa-arrow-right card-arrow"></i>
+                    <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><i class="fas fa-hospital"></i></div>
+                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2z"/></svg></div>
                     <div class="card-tag">Медцентр</div>
                     <div class="card-title">МЕДКЛИНИКА</div>
                     <div class="card-desc">Специалисты, услуги, цены</div>
-                    <i class="fas fa-arrow-right card-arrow"></i>
+                    <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><i class="fas fa-camera-retro"></i></div>
+                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
                     <div class="card-tag">Фото / Видео</div>
                     <div class="card-title">PHOTO STUDIO</div>
                     <div class="card-desc">Портфолио, услуги, цены</div>
-                    <i class="fas fa-arrow-right card-arrow"></i>
+                    <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><i class="fas fa-tools"></i></div>
+                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
                     <div class="card-tag">Ремонт</div>
                     <div class="card-title">МАСТЕР ДОМ</div>
                     <div class="card-desc">Услуги, прайс, отзывы</div>
-                    <i class="fas fa-arrow-right card-arrow"></i>
+                    <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
             </div>
         </section>
         
         <div class="divider">
             <div class="divider-line"></div>
-            <div class="divider-icon">
-                <i class="fas fa-hand-holding-usd"></i>
-            </div>
+            <div class="divider-icon"><svg class="i" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></div>
             <div class="divider-line"></div>
         </div>
         
         <section class="section">
             <div class="conditions-grid">
                 <div class="condition">
-                    <div class="condition-icon">💰</div>
+                    <div class="condition-icon" style="color:#10b981;"><svg class="i" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></div>
                     <div class="condition-title">Цена</div>
                     <div class="condition-value">2000₽ под ключ</div>
                 </div>
                 <div class="condition">
-                    <div class="condition-icon">💳</div>
+                    <div class="condition-icon" style="color:#3b82f6;"><svg class="i" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></div>
                     <div class="condition-title">Оплата</div>
                     <div class="condition-value">После сдачи</div>
                 </div>
                 <div class="condition">
-                    <div class="condition-icon">⏰</div>
+                    <div class="condition-icon" style="color:#fbbf24;"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                     <div class="condition-title">Срок</div>
                     <div class="condition-value">1-2 дня</div>
                 </div>
                 <div class="condition">
-                    <div class="condition-icon">🏆</div>
+                    <div class="condition-icon" style="color:#a78bfa;"><svg class="i" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
                     <div class="condition-title">Продление</div>
                     <div class="condition-value">500₽ / год</div>
                 </div>
@@ -932,9 +973,7 @@
         
         <div class="divider">
             <div class="divider-line"></div>
-            <div class="divider-icon">
-                <i class="fas fa-list-check"></i>
-            </div>
+            <div class="divider-icon"><svg class="i" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg></div>
             <div class="divider-line"></div>
         </div>
         
@@ -942,8 +981,8 @@
             <div class="three-col">
                 <div class="info-card">
                     <div class="info-card-title">
-                        <i class="fas fa-bullseye"></i>
-                        🎯 Для кого
+                        <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        Для кого
                     </div>
                     <div class="tags">
                         <span class="tag">🔧 Автосервисы</span>
@@ -963,39 +1002,39 @@
                 
                 <div class="info-card">
                     <div class="info-card-title">
-                        <i class="fas fa-box"></i>
-                        📦 Что входит
+                        <svg class="i" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                        Что входит
                     </div>
                     <ul class="checklist">
-                        <li><i class="fas fa-check-circle"></i> Уникальный дизайн (не шаблон)</li>
-                        <li><i class="fas fa-check-circle"></i> До 10 разделов</li>
-                        <li><i class="fas fa-check-circle"></i> Форма заявок на почту</li>
-                        <li><i class="fas fa-check-circle"></i> Адаптив (телефон, планшет, ПК)</li>
-                        <li><i class="fas fa-check-circle"></i> Подключение домена</li>
-                        <li><i class="fas fa-check-circle"></i> Хостинг навсегда</li>
-                        <li><i class="fas fa-check-circle"></i> Настройка Яндекс.Карт</li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Уникальный дизайн (не шаблон)</li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> До 10 разделов</li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Форма заявок на почту</li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Адаптив (телефон, планшет, ПК)</li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Подключение домена</li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Хостинг навсегда</li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Настройка Яндекс.Карт</li>
                     </ul>
                 </div>
                 
                 <div class="info-card">
                     <div class="info-card-title">
-                        <i class="fas fa-shield-alt"></i>
-                        🔒 Гарантии
+                        <svg class="i" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+                        Гарантии
                     </div>
                     <div class="guarantee-item">
-                        <i class="fas fa-medal"></i>
+                        <svg class="i" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
                         <span>Верну деньги, если не понравится — без разговоров</span>
                     </div>
                     <div class="guarantee-item">
-                        <i class="fas fa-medal"></i>
+                        <svg class="i" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
                         <span>Бесплатная поддержка 1 месяц после сдачи</span>
                     </div>
                     <div class="guarantee-item">
-                        <i class="fas fa-medal"></i>
+                        <svg class="i" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
                         <span>Оплата только после вашего одобрения</span>
                     </div>
                     <div class="guarantee-item">
-                        <i class="fas fa-medal"></i>
+                        <svg class="i" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
                         <span>Продление домена — всего 500₽/год</span>
                     </div>
                 </div>
@@ -1004,9 +1043,7 @@
         
         <div class="divider">
             <div class="divider-line"></div>
-            <div class="divider-icon">
-                <i class="fas fa-headset"></i>
-            </div>
+            <div class="divider-icon"><svg class="i" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg></div>
             <div class="divider-line"></div>
         </div>
         
@@ -1019,7 +1056,7 @@
             <div class="contacts-grid">
                 <div class="form-wrapper">
                     <div class="form-title">
-                        <i class="fas fa-paper-plane"></i>
+                        <svg class="i" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
                         Оставить заявку
                     </div>
                     <p class="form-subtitle">Заполните форму — отвечу в течение часа</p>
@@ -1057,7 +1094,7 @@
                         </div>
                         
                         <button type="submit" class="submit-btn">
-                            <i class="fas fa-paper-plane"></i>
+                            <svg class="i" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
                             Отправить заявку
                         </button>
                         
@@ -1068,65 +1105,69 @@
                 <div class="quick-contacts">
                     <div>
                         <div class="quick-title">
-                            <i class="fas fa-bolt" style="color: #fbbf24;"></i>
+                            <svg class="i" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
                             Быстрая связь
                         </div>
                         <p class="quick-desc">Или напишите напрямую — отвечаю мгновенно</p>
                     </div>
                     
-                    <a href="#" onclick="copyToClipboard(event, '+7 911 324 73 19', 'phone')" class="contact-btn">
+                    <!-- ТЕЛЕФОН: на смартфоне = звонок, на ПК = копирование -->
+                    <a href="tel:+79113247319" id="phoneBtn" class="contact-btn" onclick="return phoneClick(event)">
                         <div class="icon-wrapper">
-                            <i class="fas fa-phone"></i>
+                            <svg class="i" viewBox="0 0 24 24"><path d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z" fill="currentColor" stroke="none"/></svg>
                         </div>
                         <div class="text-wrapper">
-                            <span class="label">📞 Телефон (Сергей)</span>
-                            <span class="value">+7 911 324 73 19 (нажмите для копирования)</span>
+                            <span class="label">Телефон (Сергей)</span>
+                            <span class="value" id="phoneValue">+7 911 324 73 19 (нажмите для копирования)</span>
                         </div>
-                        <i class="fas fa-copy arrow"></i>
+                        <span class="arrow"><svg class="i" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></span>
                     </a>
                     
                     <a href="#" onclick="copyToClipboard(event, 'misslyng72@gmail.com', 'email')" class="contact-btn">
                         <div class="icon-wrapper">
-                            <i class="fas fa-envelope"></i>
+                            <svg class="i" viewBox="0 0 24 24"><path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 3.493a3 3 0 01-2.144 0L1.5 8.67z" fill="currentColor" stroke="none"/><path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 3.804a1.875 1.875 0 001.352 0L22.5 6.908z" fill="currentColor" stroke="none"/></svg>
                         </div>
                         <div class="text-wrapper">
                             <span class="label">Email</span>
                             <span class="value">misslyng72@gmail.com (нажмите для копирования)</span>
                         </div>
-                        <i class="fas fa-copy arrow"></i>
+                        <span class="arrow"><svg class="i" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></span>
                     </a>
                     
+                    <!-- TELEGRAM: официальный логотип -->
                     <a href="https://t.me/your_username" target="_blank" class="contact-btn">
                         <div class="icon-wrapper">
-                            <i class="fab fa-telegram"></i>
+                            <svg class="b" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
                         </div>
                         <div class="text-wrapper">
                             <span class="label">Telegram</span>
                             <span class="value">Мессенджер</span>
                         </div>
-                        <i class="fas fa-arrow-right arrow"></i>
+                        <span class="arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                     </a>
                     
+                    <!-- WHATSAPP: официальный логотип -->
                     <a href="https://wa.me/79113247319" target="_blank" class="contact-btn">
                         <div class="icon-wrapper">
-                            <i class="fab fa-whatsapp"></i>
+                            <svg class="b" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
                         </div>
                         <div class="text-wrapper">
                             <span class="label">WhatsApp</span>
                             <span class="value">+7 911 324 73 19</span>
                         </div>
-                        <i class="fas fa-arrow-right arrow"></i>
+                        <span class="arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                     </a>
                     
+                    <!-- VK: официальный логотип -->
                     <a href="https://vk.com/your_profile" target="_blank" class="contact-btn">
                         <div class="icon-wrapper">
-                            <i class="fab fa-vk"></i>
+                            <svg class="b" viewBox="0 0 24 24"><path d="M15.684 0H8.316C1.592 0 1.592 0 1.592 0 1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.525-2.049-1.714-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.204.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.271.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.491-.085.745-.576.745z"/></svg>
                         </div>
                         <div class="text-wrapper">
                             <span class="label">ВКонтакте</span>
                             <span class="value">Написать в ВК</span>
                         </div>
-                        <i class="fas fa-arrow-right arrow"></i>
+                        <span class="arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                     </a>
                 </div>
             </div>
@@ -1139,67 +1180,27 @@
     </div>
     
     <script>
-        // Автозамена иконок Font Awesome на эмодзи если CDN не загрузился
-        function loadEmojiFallback() {
-            const iconMap = {
-                'fa-car': '🚗',
-                'fa-spa': '💅',
-                'fa-warehouse': '🏭',
-                'fa-gavel': '⚖️',
-                'fa-tooth': '🦷',
-                'fa-hospital': '🏥',
-                'fa-camera-retro': '📷',
-                'fa-tools': '🔨',
-                'fa-hand-holding-usd': '💵',
-                'fa-list-check': '📋',
-                'fa-headset': '🎧',
-                'fa-check': '✅',
-                'fa-check-circle': '✅',
-                'fa-medal': '🏅',
-                'fa-bullseye': '🎯',
-                'fa-box': '📦',
-                'fa-shield-alt': '🔒',
-                'fa-paper-plane': '✈️',
-                'fa-bolt': '⚡',
-                'fa-phone': '📞',
-                'fa-envelope': '📧',
-                'fa-copy': '📋',
-                'fa-arrow-right': '→'
-            };
-            
-            document.querySelectorAll('i[class*="fa-"]').forEach(icon => {
-                const classes = icon.className;
-                for (const [key, emoji] of Object.entries(iconMap)) {
-                    if (classes.includes(key)) {
-                        icon.textContent = emoji;
-                        icon.style.fontStyle = 'normal';
-                        icon.style.fontFamily = "'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
-                        break;
-                    }
-                }
-            });
-            
-            // Заменяем fab иконки (бренды)
-            document.querySelectorAll('i.fab.fa-telegram').forEach(i => { i.textContent = '✈️'; i.style.fontStyle = 'normal'; });
-            document.querySelectorAll('i.fab.fa-whatsapp').forEach(i => { i.textContent = '💬'; i.style.fontStyle = 'normal'; });
-            document.querySelectorAll('i.fab.fa-vk').forEach(i => { i.textContent = '🔵'; i.style.fontStyle = 'normal'; });
+        // Определяем смартфон
+        function isMobileDevice() {
+            return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
         
-        // Проверяем через 2 секунды, загрузились ли иконки
+        // Телефон: на смартфоне — звонок, на компьютере — копирование
+        function phoneClick(event) {
+            if (isMobileDevice()) {
+                return true; // разрешаем переход по tel:
+            }
+            event.preventDefault();
+            copyToClipboard(event, '+7 911 324 73 19', 'phone');
+            return false;
+        }
+        
+        // На смартфоне меняем подсказку
         window.addEventListener('load', function() {
-            setTimeout(function() {
-                const testIcon = document.createElement('i');
-                testIcon.className = 'fas fa-font';
-                document.body.appendChild(testIcon);
-                const fontFamily = window.getComputedStyle(testIcon, ':before').getPropertyValue('font-family');
-                document.body.removeChild(testIcon);
-                
-                // Если Font Awesome не загрузился — используем эмодзи
-                if (!fontFamily || !fontFamily.toLowerCase().includes('font awesome')) {
-                    console.log('Font Awesome не загрузился, используем эмодзи');
-                    loadEmojiFallback();
-                }
-            }, 2000);
+            if (isMobileDevice()) {
+                var phoneValue = document.getElementById('phoneValue');
+                if (phoneValue) phoneValue.textContent = '+7 911 324 73 19 (нажмите для звонка)';
+            }
         });
         
         function copyToClipboard(event, text, type) {
@@ -1245,7 +1246,7 @@
             const notification = document.createElement('div');
             notification.className = 'copy-notification';
             notification.innerHTML = `
-                <i class="fas fa-check" style="font-style: normal;">✓</i>
+                <span class="cn-icon"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
                 <div>
                     <div style="font-size: 0.95rem; font-weight: 700;">${title}</div>
                     <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 2px;">${subtitle}</div>
@@ -1262,7 +1263,7 @@
         
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             const btn = this.querySelector('.submit-btn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+            btn.innerHTML = '⏳ Отправка...';
             btn.disabled = true;
         });
     </script>
