@@ -2,17 +2,26 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сергей — Создание сайтов-визиток | piarbook.ru</title>
+    
+    <!-- Множественные CDN для Font Awesome (если один заблокирован, работает другой) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" 
+          onerror="this.onerror=null; this.href='https://unpkg.com/@fortawesome/fontawesome-free@6.4.0/css/all.min.css';">
+    <link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" 
+          onerror="this.remove(); loadEmojiFallback();">
+    
+    <!-- Шрифты с fallback на системные эмодзи -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
             background: #0a0a0f;
             color: #e4e4e7;
             min-height: 100vh;
@@ -126,7 +135,7 @@
         }
         
         .price-card::before {
-            content: '??';
+            content: '💰';
             position: absolute;
             top: -20px;
             right: -20px;
@@ -190,7 +199,6 @@
             font-family: 'JetBrains Mono', monospace;
         }
         
-        /* СЖАТЫЕ ОТСТУПЫ СЕКЦИЙ */
         .section {
             margin-bottom: 0.5rem;
         }
@@ -216,7 +224,6 @@
             background: linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent);
         }
         
-        /* СЖАТЫЕ РАЗДЕЛИТЕЛИ */
         .divider {
             display: flex;
             align-items: center;
@@ -779,7 +786,7 @@
                     <span>Доступен для новых проектов</span>
                 </div>
                 
-                <h1>?? Сделаю современный сайт-визитку для вашего бизнеса</h1>
+                <h1>🚀 Сделаю современный сайт-визитку для вашего бизнеса</h1>
                 
                 <p class="subtitle">
                     Обсудим дизайн и контент — чтобы было удобно и вам, и клиентам. 
@@ -803,9 +810,9 @@
             </div>
             
             <div class="price-card">
-                <div class="price-label">?? Стоимость</div>
+                <div class="price-label">💰 Стоимость</div>
                 <div class="price-amount">
-                    2000? <span>под ключ</span>
+                    2000₽ <span>под ключ</span>
                 </div>
                 <ul class="price-features">
                     <li><i class="fas fa-check"></i> Хостинг бесплатный навсегда</li>
@@ -813,13 +820,13 @@
                     <li><i class="fas fa-check"></i> Оплата после сдачи сайта</li>
                     <li><i class="fas fa-check"></i> Бесплатная поддержка 1 месяц</li>
                 </ul>
-                <div class="price-badge">? СРОК: 1-2 дня</div>
+                <div class="price-badge">⏰ СРОК: 1-2 дня</div>
             </div>
         </section>
         
         <section class="section">
             <div class="section-header">
-                <span class="section-label">?? Примеры работ</span>
+                <span class="section-label">📸 Примеры работ</span>
                 <div class="section-line"></div>
             </div>
             
@@ -901,24 +908,24 @@
         <section class="section">
             <div class="conditions-grid">
                 <div class="condition">
-                    <div class="condition-icon">??</div>
+                    <div class="condition-icon">💰</div>
                     <div class="condition-title">Цена</div>
-                    <div class="condition-value">2000? под ключ</div>
+                    <div class="condition-value">2000₽ под ключ</div>
                 </div>
                 <div class="condition">
-                    <div class="condition-icon">??</div>
+                    <div class="condition-icon">💳</div>
                     <div class="condition-title">Оплата</div>
                     <div class="condition-value">После сдачи</div>
                 </div>
                 <div class="condition">
-                    <div class="condition-icon">?</div>
+                    <div class="condition-icon">⏰</div>
                     <div class="condition-title">Срок</div>
                     <div class="condition-value">1-2 дня</div>
                 </div>
                 <div class="condition">
-                    <div class="condition-icon">??</div>
+                    <div class="condition-icon">🏆</div>
                     <div class="condition-title">Продление</div>
-                    <div class="condition-value">500? / год</div>
+                    <div class="condition-value">500₽ / год</div>
                 </div>
             </div>
         </section>
@@ -936,28 +943,28 @@
                 <div class="info-card">
                     <div class="info-card-title">
                         <i class="fas fa-bullseye"></i>
-                        ?? Для кого
+                        🎯 Для кого
                     </div>
                     <div class="tags">
-                        <span class="tag">?? Автосервисы</span>
-                        <span class="tag">?? СТО, шиномонтаж</span>
-                        <span class="tag">?? Салоны красоты</span>
-                        <span class="tag">?? Маникюр, брови</span>
-                        <span class="tag">?? Стоматологии</span>
-                        <span class="tag">?? Медцентры</span>
-                        <span class="tag">?? Фотографы</span>
-                        <span class="tag">?? Видеографы</span>
-                        <span class="tag">?? Юристы</span>
-                        <span class="tag">?? Бухгалтеры</span>
-                        <span class="tag">?? Мастера ремонта</span>
-                        <span class="tag">?? Любой малый бизнес</span>
+                        <span class="tag">🔧 Автосервисы</span>
+                        <span class="tag">🚗 СТО, шиномонтаж</span>
+                        <span class="tag">💅 Салоны красоты</span>
+                        <span class="tag">💄 Маникюр, брови</span>
+                        <span class="tag">🦷 Стоматологии</span>
+                        <span class="tag">🏥 Медцентры</span>
+                        <span class="tag">📷 Фотографы</span>
+                        <span class="tag">🎥 Видеографы</span>
+                        <span class="tag">⚖️ Юристы</span>
+                        <span class="tag">📊 Бухгалтеры</span>
+                        <span class="tag">🔨 Мастера ремонта</span>
+                        <span class="tag">🏪 Любой малый бизнес</span>
                     </div>
                 </div>
                 
                 <div class="info-card">
                     <div class="info-card-title">
                         <i class="fas fa-box"></i>
-                        ?? Что входит
+                        📦 Что входит
                     </div>
                     <ul class="checklist">
                         <li><i class="fas fa-check-circle"></i> Уникальный дизайн (не шаблон)</li>
@@ -973,7 +980,7 @@
                 <div class="info-card">
                     <div class="info-card-title">
                         <i class="fas fa-shield-alt"></i>
-                        ?? Гарантии
+                        🔒 Гарантии
                     </div>
                     <div class="guarantee-item">
                         <i class="fas fa-medal"></i>
@@ -989,7 +996,7 @@
                     </div>
                     <div class="guarantee-item">
                         <i class="fas fa-medal"></i>
-                        <span>Продление домена — всего 500?/год</span>
+                        <span>Продление домена — всего 500₽/год</span>
                     </div>
                 </div>
             </div>
@@ -1005,7 +1012,7 @@
         
         <section class="contacts-section">
             <div class="section-header">
-                <span class="section-label">?? Связаться со мной</span>
+                <span class="section-label">📞 Связаться со мной</span>
                 <div class="section-line"></div>
             </div>
             
@@ -1034,13 +1041,13 @@
                             <label>Тип бизнеса</label>
                             <select name="business_type">
                                 <option value="">Выберите нишу</option>
-                                <option value="Автосервис">?? Автосервис / СТО</option>
-                                <option value="Салон красоты">?? Салон красоты</option>
-                                <option value="Медицина">?? Стоматология / Медцентр</option>
-                                <option value="Фото/Видео">?? Фотограф / Видеограф</option>
-                                <option value="Юридические услуги">?? Юрист / Бухгалтер</option>
-                                <option value="Ремонт">?? Мастер ремонта</option>
-                                <option value="Другое">?? Другое</option>
+                                <option value="Автосервис">🔧 Автосервис / СТО</option>
+                                <option value="Салон красоты">💅 Салон красоты</option>
+                                <option value="Медицина">🦷 Стоматология / Медцентр</option>
+                                <option value="Фото/Видео">📷 Фотограф / Видеограф</option>
+                                <option value="Юридические услуги">⚖️ Юрист / Бухгалтер</option>
+                                <option value="Ремонт">🔨 Мастер ремонта</option>
+                                <option value="Другое">🏪 Другое</option>
                             </select>
                         </div>
                         
@@ -1054,7 +1061,7 @@
                             Отправить заявку
                         </button>
                         
-                        <p class="form-note">?? Ваши данные в безопасности. Отвечу в течение часа.</p>
+                        <p class="form-note">🔒 Ваши данные в безопасности. Отвечу в течение часа.</p>
                     </form>
                 </div>
                 
@@ -1072,7 +1079,7 @@
                             <i class="fas fa-phone"></i>
                         </div>
                         <div class="text-wrapper">
-                            <span class="label">?? Телефон (Сергей)</span>
+                            <span class="label">📞 Телефон (Сергей)</span>
                             <span class="value">+7 911 324 73 19 (нажмите для копирования)</span>
                         </div>
                         <i class="fas fa-copy arrow"></i>
@@ -1132,6 +1139,69 @@
     </div>
     
     <script>
+        // Автозамена иконок Font Awesome на эмодзи если CDN не загрузился
+        function loadEmojiFallback() {
+            const iconMap = {
+                'fa-car': '🚗',
+                'fa-spa': '💅',
+                'fa-warehouse': '🏭',
+                'fa-gavel': '⚖️',
+                'fa-tooth': '🦷',
+                'fa-hospital': '🏥',
+                'fa-camera-retro': '📷',
+                'fa-tools': '🔨',
+                'fa-hand-holding-usd': '💵',
+                'fa-list-check': '📋',
+                'fa-headset': '🎧',
+                'fa-check': '✅',
+                'fa-check-circle': '✅',
+                'fa-medal': '🏅',
+                'fa-bullseye': '🎯',
+                'fa-box': '📦',
+                'fa-shield-alt': '🔒',
+                'fa-paper-plane': '✈️',
+                'fa-bolt': '⚡',
+                'fa-phone': '📞',
+                'fa-envelope': '📧',
+                'fa-copy': '📋',
+                'fa-arrow-right': '→'
+            };
+            
+            document.querySelectorAll('i[class*="fa-"]').forEach(icon => {
+                const classes = icon.className;
+                for (const [key, emoji] of Object.entries(iconMap)) {
+                    if (classes.includes(key)) {
+                        icon.textContent = emoji;
+                        icon.style.fontStyle = 'normal';
+                        icon.style.fontFamily = "'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
+                        break;
+                    }
+                }
+            });
+            
+            // Заменяем fab иконки (бренды)
+            document.querySelectorAll('i.fab.fa-telegram').forEach(i => { i.textContent = '✈️'; i.style.fontStyle = 'normal'; });
+            document.querySelectorAll('i.fab.fa-whatsapp').forEach(i => { i.textContent = '💬'; i.style.fontStyle = 'normal'; });
+            document.querySelectorAll('i.fab.fa-vk').forEach(i => { i.textContent = '🔵'; i.style.fontStyle = 'normal'; });
+        }
+        
+        // Проверяем через 2 секунды, загрузились ли иконки
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const testIcon = document.createElement('i');
+                testIcon.className = 'fas fa-font';
+                document.body.appendChild(testIcon);
+                const fontFamily = window.getComputedStyle(testIcon, ':before').getPropertyValue('font-family');
+                document.body.removeChild(testIcon);
+                
+                // Если Font Awesome не загрузился — используем эмодзи
+                if (!fontFamily || !fontFamily.toLowerCase().includes('font awesome')) {
+                    console.log('Font Awesome не загрузился, используем эмодзи');
+                    loadEmojiFallback();
+                }
+            }, 2000);
+        });
+        
         function copyToClipboard(event, text, type) {
             event.preventDefault();
             
@@ -1162,20 +1232,20 @@
             let subtitle = '';
             
             if (type === 'phone') {
-                title = '?? Телефон скопирован!';
+                title = '📞 Телефон скопирован!';
                 subtitle = 'Вставьте в приложение для звонков';
             } else if (type === 'email') {
-                title = '?? Email скопирован!';
+                title = '📧 Email скопирован!';
                 subtitle = 'Вставьте в любое почтовое приложение';
             } else {
-                title = '? Скопировано!';
+                title = '✅ Скопировано!';
                 subtitle = 'Текст в буфере обмена';
             }
             
             const notification = document.createElement('div');
             notification.className = 'copy-notification';
             notification.innerHTML = `
-                <i class="fas fa-check"></i>
+                <i class="fas fa-check" style="font-style: normal;">✓</i>
                 <div>
                     <div style="font-size: 0.95rem; font-weight: 700;">${title}</div>
                     <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 2px;">${subtitle}</div>
