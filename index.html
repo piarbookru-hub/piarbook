@@ -420,6 +420,7 @@
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px;
             padding: 1.5rem;
+            min-width: 0;
         }
         
         .info-card-title {
@@ -499,6 +500,7 @@
             margin-top: 2px;
         }
         
+        /* ========== БЛОК КОНТАКТОВ ========== */
         .contacts-section {
             margin-top: 0.5rem;
             padding: 2.5rem;
@@ -514,11 +516,16 @@
             margin-top: 1rem;
         }
         
+        .contacts-grid > * {
+            min-width: 0;
+        }
+        
         .form-wrapper {
             background: rgba(10, 10, 15, 0.5);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px;
             padding: 2rem;
+            min-width: 0;
         }
         
         .form-title {
@@ -631,6 +638,7 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            min-width: 0;
         }
         
         .quick-title {
@@ -802,7 +810,8 @@
             .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
             .three-col { grid-template-columns: 1fr; }
             .conditions-grid { grid-template-columns: repeat(2, 1fr); }
-            .contacts-grid { grid-template-columns: 1fr; }
+            .contacts-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .contacts-section { padding: 1.8rem; }
             .divider { padding: 0 1rem; }
         }
         
@@ -818,19 +827,67 @@
             .divider-icon svg.i { width: 18px; height: 18px; }
             .price-card { padding: 1.5rem; }
             .price-card::before { font-size: 5rem; }
-            .contacts-section { padding: 1.2rem; border-radius: 16px; }
-            .contacts-grid { gap: 1.5rem; }
-            .form-wrapper { padding: 1.2rem; }
-            .info-card { padding: 1.2rem; }
-            .portfolio-card { padding: 1.2rem; }
-            .condition { padding: 0.8rem 0.5rem; }
-            .condition-value { font-size: 0.85rem; }
             .subtitle { font-size: 0.95rem; }
             .badge { font-size: 0.75rem; }
             .section-header { gap: 0.6rem; }
             .section-label { font-size: 0.75rem; }
-            .contact-btn { padding: 0.9rem 1rem; gap: 0.8rem; }
+            .info-card { padding: 1.2rem; }
+            .portfolio-card { padding: 1.2rem; }
+            .condition { padding: 0.8rem 0.5rem; }
+            .condition-value { font-size: 0.85rem; }
+            
+            /* --- БЛОК КОНТАКТОВ НА СМАРТФОНЕ --- */
+            .contacts-section {
+                padding: 1rem;
+                border-radius: 16px;
+                margin-top: 0.3rem;
+            }
+            .contacts-grid {
+                gap: 1.2rem;
+                margin-top: 0.8rem;
+            }
+            .form-wrapper {
+                padding: 1rem;
+                border-radius: 12px;
+            }
+            .form-title { font-size: 1.15rem; }
+            .form-title svg.i { width: 19px; height: 19px; }
+            .form-subtitle { font-size: 0.85rem; margin-bottom: 1rem; }
+            .form-group { margin-bottom: 0.8rem; }
+            .form-group label { font-size: 0.7rem; margin-bottom: 0.3rem; }
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 0.75rem 0.9rem;
+                font-size: 16px; /* iPhone не zoom-ит при фокусе */
+                border-radius: 8px;
+            }
+            .form-group textarea { min-height: 80px; }
+            .submit-btn { min-height: 50px; font-size: 0.95rem; border-radius: 10px; }
+            .form-note { font-size: 0.7rem; }
+            .quick-title { font-size: 1rem; }
+            .quick-desc { font-size: 0.8rem; margin-bottom: 0.8rem; }
+            .quick-contacts { gap: 0.7rem; }
+            .contact-btn {
+                padding: 0.8rem;
+                gap: 0.7rem;
+                min-height: 58px;
+                border-radius: 10px;
+            }
+            .contact-btn .icon-wrapper {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+            }
+            .contact-btn .icon-wrapper svg.i,
+            .contact-btn .icon-wrapper svg.b {
+                width: 20px;
+                height: 20px;
+            }
+            .contact-btn .label { font-size: 0.9rem; }
+            .contact-btn .value { font-size: 0.7rem; }
             .contact-btn .arrow { display: none; }
+            
             .copy-notification {
                 bottom: 15px;
                 right: 15px;
@@ -846,6 +903,9 @@
         @media (max-width: 380px) {
             .conditions-grid { grid-template-columns: 1fr; }
             .hero-stats { flex-direction: column; gap: 0.8rem; }
+            .contacts-section { padding: 0.8rem; }
+            .form-wrapper { padding: 0.8rem; }
+            .contact-btn { padding: 0.7rem; gap: 0.6rem; }
         }
     </style>
 </head>
@@ -1206,22 +1266,19 @@
     </div>
     
     <script>
-        // Определяем смартфон
         function isMobileDevice() {
             return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
         
-        // ТЕЛЕФОН: на смартфоне — звонок (tel:), на компьютере — копирование
         function phoneClick(event) {
             if (isMobileDevice()) {
-                return true; // разрешаем переход по tel: → вызов
+                return true;
             }
             event.preventDefault();
             copyToClipboard(event, '+7 911 324 73 19', 'phone');
             return false;
         }
         
-        // На смартфоне меняем подсказку под звонок
         window.addEventListener('load', function() {
             if (isMobileDevice()) {
                 var phoneValue = document.getElementById('phoneValue');
