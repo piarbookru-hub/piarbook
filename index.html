@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сергей — Создание сайтов-визиток | piarbook.ru</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #e4e4e7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 0;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: #a78bfa;
+            width: fit-content;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 1.5rem;
+        }
+        
+        .badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.05rem;
+            color: #a1a1aa;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #a78bfa;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #71717a;
+            margin-top: 0.25rem;
+        }
+        
+        .price-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .price-card::before {
+            content: '??';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 8rem;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+        
+        .price-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #a78bfa;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .price-amount span {
+            font-size: 1.2rem;
+            color: #a1a1aa;
+            font-weight: 400;
+        }
+        
+        .price-features {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+        
+        .price-features li {
+            padding: 0.5rem 0;
+            color: #d4d4d8;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .price-features i {
+            color: #10b981;
+            font-size: 0.9rem;
+        }
+        
+        .price-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* СЖАТЫЕ ОТСТУПЫ СЕКЦИЙ */
+        .section {
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #a78bfa;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent);
+        }
+        
+        /* СЖАТЫЕ РАЗДЕЛИТЕЛИ */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            padding: 0 2rem;
+        }
+        
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(139, 92, 246, 0.5) 20%, 
+                rgba(139, 92, 246, 0.5) 80%, 
+                transparent);
+            position: relative;
+        }
+        
+        .divider-line::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+            filter: blur(2px);
+        }
+        
+        .divider-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a78bfa;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+            animation: pulse-divider 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-divider {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+                transform: scale(1.05);
+            }
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        
+        .portfolio-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .portfolio-card:hover {
+            transform: translateY(-5px);
+            border-color: #a78bfa;
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .card-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #a78bfa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.4rem;
+        }
+        
+        .card-desc {
+            font-size: 0.8rem;
+            color: #a1a1aa;
+            line-height: 1.4;
+        }
+        
+        .card-arrow {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            color: #a78bfa;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .portfolio-card:hover .card-arrow {
+            opacity: 1;
+        }
+        
+        .conditions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 0;
+        }
+        
+        .condition {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .condition-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .condition-title {
+            font-size: 0.75rem;
+            color: #71717a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .condition-value {
+            font-size: 0.95rem;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .three-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .info-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        
+        .info-card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .info-card-title i {
+            color: #a78bfa;
+            font-size: 1.3rem;
+        }
+        
+        .checklist {
+            list-style: none;
+        }
+        
+        .checklist li {
+            padding: 0.5rem 0;
+            color: #d4d4d8;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        
+        .checklist i {
+            color: #10b981;
+            margin-top: 0.2rem;
+            font-size: 0.85rem;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .tag {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            color: #c4b5fd;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .tag:hover {
+            background: rgba(139, 92, 246, 0.25);
+            border-color: #a78bfa;
+            transform: translateY(-2px);
+        }
+        
+        .guarantee-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            color: #d4d4d8;
+            font-size: 0.9rem;
+            align-items: flex-start;
+        }
+        
+        .guarantee-item i {
+            color: #fbbf24;
+            font-size: 1rem;
+            margin-top: 0.1rem;
+        }
+        
+        .contacts-section {
+            margin-top: 0.5rem;
+            padding: 2.5rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+        }
+        
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 2.5rem;
+            margin-top: 1rem;
+        }
+        
+        .form-wrapper {
+            background: rgba(10, 10, 15, 0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        
+        .form-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        
+        .form-subtitle {
+            color: #a1a1aa;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #a78bfa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #a78bfa;
+            background: rgba(139, 92, 246, 0.08);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+        
+        .form-group select option {
+            background: #1a1a24;
+            color: #fff;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+        
+        .form-note {
+            font-size: 0.75rem;
+            color: #71717a;
+            text-align: center;
+            margin-top: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .quick-contacts {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .quick-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quick-desc {
+            color: #a1a1aa;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #e4e4e7;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .contact-btn:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: #a78bfa;
+            transform: translateX(5px);
+        }
+        
+        .contact-btn .icon-wrapper {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .contact-btn .text-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .contact-btn .label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            display: block;
+        }
+        
+        .contact-btn .value {
+            font-size: 0.75rem;
+            color: #a1a1aa;
+            font-family: 'JetBrains Mono', monospace;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .contact-btn .arrow {
+            color: #a78bfa;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .contact-btn:hover .arrow {
+            opacity: 1;
+            transform: translateX(3px);
+        }
+        
+        .copy-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1.2rem 1.8rem;
+            border-radius: 14px;
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 350px;
+        }
+        
+        .copy-notification i {
+            font-size: 1.3rem;
+            background: rgba(255,255,255,0.2);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .copy-notification.hide {
+            animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                transform: translateX(400px) scale(0.8); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0) scale(1); 
+                opacity: 1; 
+            }
+        }
+        
+        @keyframes slideOut {
+            from { 
+                transform: translateX(0) scale(1); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(400px) scale(0.8); 
+                opacity: 0; 
+            }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1.5rem 0;
+            color: #71717a;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        @media (max-width: 1024px) {
+            .hero { grid-template-columns: 1fr; gap: 1.5rem; }
+            .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+            .three-col { grid-template-columns: 1fr; }
+            .conditions-grid { grid-template-columns: repeat(2, 1fr); }
+            .contacts-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 2.2rem; }
+            .divider { padding: 0 1rem; }
+        }
+        
+        @media (max-width: 640px) {
+            .container { padding: 1rem; }
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .hero-stats { flex-direction: column; gap: 1rem; }
+            .conditions-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+            .price-amount { font-size: 2.2rem; }
+            .copy-notification {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+            .divider { margin: 1.5rem 0; }
+            .divider-icon { width: 40px; height: 40px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <section class="hero">
+            <div>
+                <div class="badge">
+                    <span>Доступен для новых проектов</span>
+                </div>
+                
+                <h1>?? Сделаю современный сайт-визитку для вашего бизнеса</h1>
+                
+                <p class="subtitle">
+                    Обсудим дизайн и контент — чтобы было удобно и вам, и клиентам. 
+                    Подберём стиль, цвета и структуру под вашу нишу. От идеи до запуска — 1-2 дня.
+                </p>
+                
+                <div class="hero-stats">
+                    <div>
+                        <div class="stat-number">8+</div>
+                        <div class="stat-label">Ниш</div>
+                    </div>
+                    <div>
+                        <div class="stat-number">1-2</div>
+                        <div class="stat-label">Дня на сайт</div>
+                    </div>
+                    <div>
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Адаптивность</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="price-card">
+                <div class="price-label">?? Стоимость</div>
+                <div class="price-amount">
+                    2000? <span>под ключ</span>
+                </div>
+                <ul class="price-features">
+                    <li><i class="fas fa-check"></i> Хостинг бесплатный навсегда</li>
+                    <li><i class="fas fa-check"></i> Домен на год входит в стоимость</li>
+                    <li><i class="fas fa-check"></i> Оплата после сдачи сайта</li>
+                    <li><i class="fas fa-check"></i> Бесплатная поддержка 1 месяц</li>
+                </ul>
+                <div class="price-badge">? СРОК: 1-2 дня</div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-header">
+                <span class="section-label">?? Примеры работ</span>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="portfolio-grid">
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
+                    <div class="card-icon"><i class="fas fa-car"></i></div>
+                    <div class="card-tag">Автосервис</div>
+                    <div class="card-title">АВТОМАСТЕР</div>
+                    <div class="card-desc">Тёмная тема, каталог услуг</div>
+                    <i class="fas fa-arrow-right card-arrow"></i>
+                </a>
+                
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
+                    <div class="card-icon"><i class="fas fa-spa"></i></div>
+                    <div class="card-tag">Салон красоты</div>
+                    <div class="card-title">BEAUTY STUDIO</div>
+                    <div class="card-desc">Галерея, прайс, запись</div>
+                    <i class="fas fa-arrow-right card-arrow"></i>
+                </a>
+                
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
+                    <div class="card-icon"><i class="fas fa-warehouse"></i></div>
+                    <div class="card-tag">Гараж</div>
+                    <div class="card-title">ГАРАЖ</div>
+                    <div class="card-desc">Оливковая тема</div>
+                    <i class="fas fa-arrow-right card-arrow"></i>
+                </a>
+                
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
+                    <div class="card-icon"><i class="fas fa-gavel"></i></div>
+                    <div class="card-tag">Юрист</div>
+                    <div class="card-title">ЮРИСТ</div>
+                    <div class="card-desc">Услуги, цены, заявки</div>
+                    <i class="fas fa-arrow-right card-arrow"></i>
+                </a>
+                
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
+                    <div class="card-icon"><i class="fas fa-tooth"></i></div>
+                    <div class="card-tag">Стоматология</div>
+                    <div class="card-title">ЗДОРОВАЯ УЛЫБКА</div>
+                    <div class="card-desc">Услуги, цены, врачи, запись</div>
+                    <i class="fas fa-arrow-right card-arrow"></i>
+                </a>
+                
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
+                    <div class="card-icon"><i class="fas fa-hospital"></i></div>
+                    <div class="card-tag">Медцентр</div>
+                    <div class="card-title">МЕДКЛИНИКА</div>
+                    <div class="card-desc">Специалисты, услуги, цены</div>
+                    <i class="fas fa-arrow-right card-arrow"></i>
+                </a>
+                
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
+                    <div class="card-icon"><i class="fas fa-camera-retro"></i></div>
+                    <div class="card-tag">Фото / Видео</div>
+                    <div class="card-title">PHOTO STUDIO</div>
+                    <div class="card-desc">Портфолио, услуги, цены</div>
+                    <i class="fas fa-arrow-right card-arrow"></i>
+                </a>
+                
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
+                    <div class="card-icon"><i class="fas fa-tools"></i></div>
+                    <div class="card-tag">Ремонт</div>
+                    <div class="card-title">МАСТЕР ДОМ</div>
+                    <div class="card-desc">Услуги, прайс, отзывы</div>
+                    <i class="fas fa-arrow-right card-arrow"></i>
+                </a>
+            </div>
+        </section>
+        
+        <div class="divider">
+            <div class="divider-line"></div>
+            <div class="divider-icon">
+                <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <div class="divider-line"></div>
+        </div>
+        
+        <section class="section">
+            <div class="conditions-grid">
+                <div class="condition">
+                    <div class="condition-icon">??</div>
+                    <div class="condition-title">Цена</div>
+                    <div class="condition-value">2000? под ключ</div>
+                </div>
+                <div class="condition">
+                    <div class="condition-icon">??</div>
+                    <div class="condition-title">Оплата</div>
+                    <div class="condition-value">После сдачи</div>
+                </div>
+                <div class="condition">
+                    <div class="condition-icon">?</div>
+                    <div class="condition-title">Срок</div>
+                    <div class="condition-value">1-2 дня</div>
+                </div>
+                <div class="condition">
+                    <div class="condition-icon">??</div>
+                    <div class="condition-title">Продление</div>
+                    <div class="condition-value">500? / год</div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="divider">
+            <div class="divider-line"></div>
+            <div class="divider-icon">
+                <i class="fas fa-list-check"></i>
+            </div>
+            <div class="divider-line"></div>
+        </div>
+        
+        <section class="section">
+            <div class="three-col">
+                <div class="info-card">
+                    <div class="info-card-title">
+                        <i class="fas fa-bullseye"></i>
+                        ?? Для кого
+                    </div>
+                    <div class="tags">
+                        <span class="tag">?? Автосервисы</span>
+                        <span class="tag">?? СТО, шиномонтаж</span>
+                        <span class="tag">?? Салоны красоты</span>
+                        <span class="tag">?? Маникюр, брови</span>
+                        <span class="tag">?? Стоматологии</span>
+                        <span class="tag">?? Медцентры</span>
+                        <span class="tag">?? Фотографы</span>
+                        <span class="tag">?? Видеографы</span>
+                        <span class="tag">?? Юристы</span>
+                        <span class="tag">?? Бухгалтеры</span>
+                        <span class="tag">?? Мастера ремонта</span>
+                        <span class="tag">?? Любой малый бизнес</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-card-title">
+                        <i class="fas fa-box"></i>
+                        ?? Что входит
+                    </div>
+                    <ul class="checklist">
+                        <li><i class="fas fa-check-circle"></i> Уникальный дизайн (не шаблон)</li>
+                        <li><i class="fas fa-check-circle"></i> До 10 разделов</li>
+                        <li><i class="fas fa-check-circle"></i> Форма заявок на почту</li>
+                        <li><i class="fas fa-check-circle"></i> Адаптив (телефон, планшет, ПК)</li>
+                        <li><i class="fas fa-check-circle"></i> Подключение домена</li>
+                        <li><i class="fas fa-check-circle"></i> Хостинг навсегда</li>
+                        <li><i class="fas fa-check-circle"></i> Настройка Яндекс.Карт</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-card-title">
+                        <i class="fas fa-shield-alt"></i>
+                        ?? Гарантии
+                    </div>
+                    <div class="guarantee-item">
+                        <i class="fas fa-medal"></i>
+                        <span>Верну деньги, если не понравится — без разговоров</span>
+                    </div>
+                    <div class="guarantee-item">
+                        <i class="fas fa-medal"></i>
+                        <span>Бесплатная поддержка 1 месяц после сдачи</span>
+                    </div>
+                    <div class="guarantee-item">
+                        <i class="fas fa-medal"></i>
+                        <span>Оплата только после вашего одобрения</span>
+                    </div>
+                    <div class="guarantee-item">
+                        <i class="fas fa-medal"></i>
+                        <span>Продление домена — всего 500?/год</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="divider">
+            <div class="divider-line"></div>
+            <div class="divider-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <div class="divider-line"></div>
+        </div>
+        
+        <section class="contacts-section">
+            <div class="section-header">
+                <span class="section-label">?? Связаться со мной</span>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="contacts-grid">
+                <div class="form-wrapper">
+                    <div class="form-title">
+                        <i class="fas fa-paper-plane"></i>
+                        Оставить заявку
+                    </div>
+                    <p class="form-subtitle">Заполните форму — отвечу в течение часа</p>
+                    
+                    <form action="https://formspree.io/f/xyzabcde" method="POST" id="contactForm">
+                        <input type="hidden" name="_subject" value="Новая заявка с сайта piarbook.ru">
+                        
+                        <div class="form-group">
+                            <label>Ваше имя *</label>
+                            <input type="text" name="name" placeholder="Как к вам обращаться?" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Телефон или Email *</label>
+                            <input type="text" name="contact" placeholder="+7 (___) ___-__-__ или email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Тип бизнеса</label>
+                            <select name="business_type">
+                                <option value="">Выберите нишу</option>
+                                <option value="Автосервис">?? Автосервис / СТО</option>
+                                <option value="Салон красоты">?? Салон красоты</option>
+                                <option value="Медицина">?? Стоматология / Медцентр</option>
+                                <option value="Фото/Видео">?? Фотограф / Видеограф</option>
+                                <option value="Юридические услуги">?? Юрист / Бухгалтер</option>
+                                <option value="Ремонт">?? Мастер ремонта</option>
+                                <option value="Другое">?? Другое</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Расскажите о проекте</label>
+                            <textarea name="message" placeholder="Что за бизнес? Какие задачи должен решать сайт?"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Отправить заявку
+                        </button>
+                        
+                        <p class="form-note">?? Ваши данные в безопасности. Отвечу в течение часа.</p>
+                    </form>
+                </div>
+                
+                <div class="quick-contacts">
+                    <div>
+                        <div class="quick-title">
+                            <i class="fas fa-bolt" style="color: #fbbf24;"></i>
+                            Быстрая связь
+                        </div>
+                        <p class="quick-desc">Или напишите напрямую — отвечаю мгновенно</p>
+                    </div>
+                    
+                    <a href="#" onclick="copyToClipboard(event, '+7 911 324 73 19', 'phone')" class="contact-btn">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="text-wrapper">
+                            <span class="label">?? Телефон (Сергей)</span>
+                            <span class="value">+7 911 324 73 19 (нажмите для копирования)</span>
+                        </div>
+                        <i class="fas fa-copy arrow"></i>
+                    </a>
+                    
+                    <a href="#" onclick="copyToClipboard(event, 'misslyng72@gmail.com', 'email')" class="contact-btn">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="text-wrapper">
+                            <span class="label">Email</span>
+                            <span class="value">misslyng72@gmail.com (нажмите для копирования)</span>
+                        </div>
+                        <i class="fas fa-copy arrow"></i>
+                    </a>
+                    
+                    <a href="https://t.me/your_username" target="_blank" class="contact-btn">
+                        <div class="icon-wrapper">
+                            <i class="fab fa-telegram"></i>
+                        </div>
+                        <div class="text-wrapper">
+                            <span class="label">Telegram</span>
+                            <span class="value">Мессенджер</span>
+                        </div>
+                        <i class="fas fa-arrow-right arrow"></i>
+                    </a>
+                    
+                    <a href="https://wa.me/79113247319" target="_blank" class="contact-btn">
+                        <div class="icon-wrapper">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="text-wrapper">
+                            <span class="label">WhatsApp</span>
+                            <span class="value">+7 911 324 73 19</span>
+                        </div>
+                        <i class="fas fa-arrow-right arrow"></i>
+                    </a>
+                    
+                    <a href="https://vk.com/your_profile" target="_blank" class="contact-btn">
+                        <div class="icon-wrapper">
+                            <i class="fab fa-vk"></i>
+                        </div>
+                        <div class="text-wrapper">
+                            <span class="label">ВКонтакте</span>
+                            <span class="value">Написать в ВК</span>
+                        </div>
+                        <i class="fas fa-arrow-right arrow"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            &copy; 2026 piarbook.ru — Создание сайтов-визиток
+        </footer>
+        
+    </div>
+    
+    <script>
+        function copyToClipboard(event, text, type) {
+            event.preventDefault();
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showCopyNotification(type);
+            }).catch(err => {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopyNotification(type);
+                } catch (err) {
+                    console.error('Не удалось скопировать:', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+        
+        function showCopyNotification(type) {
+            const existing = document.querySelector('.copy-notification');
+            if (existing) existing.remove();
+            
+            let title = '';
+            let subtitle = '';
+            
+            if (type === 'phone') {
+                title = '?? Телефон скопирован!';
+                subtitle = 'Вставьте в приложение для звонков';
+            } else if (type === 'email') {
+                title = '?? Email скопирован!';
+                subtitle = 'Вставьте в любое почтовое приложение';
+            } else {
+                title = '? Скопировано!';
+                subtitle = 'Текст в буфере обмена';
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.innerHTML = `
+                <i class="fas fa-check"></i>
+                <div>
+                    <div style="font-size: 0.95rem; font-weight: 700;">${title}</div>
+                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 2px;">${subtitle}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('hide');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            const btn = this.querySelector('.submit-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+            btn.disabled = true;
+        });
+    </script>
+</body>
+</html>
