@@ -5,8 +5,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Сергей — Создание сайтов-визиток | piarbook.ru</title>
-
-    <link rel="icon" type="image/x-icon" href="favicon.png">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,878 +34,330 @@
             z-index: 0;
         }
         
-        svg.i {
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            display: inline-block;
-            vertical-align: middle;
-            flex-shrink: 0;
-        }
-        
-        svg.b {
-            fill: currentColor;
-            stroke: none;
-            display: inline-block;
-            vertical-align: middle;
-            flex-shrink: 0;
-        }
-        
-        .container {
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .hero {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 3rem;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem 0;
-        }
-        
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(139, 92, 246, 0.1);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            color: #a78bfa;
-            width: fit-content;
-            font-family: 'JetBrains Mono', monospace;
-            margin-bottom: 1.5rem;
-        }
-        
-        .badge::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        
-        h1 {
-            font-size: clamp(1.7rem, 5vw, 3rem);
-            font-weight: 800;
-            line-height: 1.15;
-            background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-            word-wrap: break-word;
-        }
-        
-        .subtitle {
-            font-size: 1.05rem;
-            color: #a1a1aa;
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
-        }
-        
-        .hero-stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            flex-wrap: wrap;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #a78bfa;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            color: #71717a;
-            margin-top: 0.25rem;
-        }
-        
-        .price-card {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 20px;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .price-card::before {
-            content: '💰';
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            font-size: 8rem;
-            opacity: 0.1;
-            transform: rotate(-15deg);
-        }
-        
-        .price-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: #a78bfa;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-        }
-        
-        .price-amount {
-            font-size: clamp(2.2rem, 6vw, 3rem);
-            font-weight: 800;
-            color: #fff;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-        
-        .price-amount span {
-            font-size: 1.2rem;
-            color: #a1a1aa;
-            font-weight: 400;
-        }
-        
-        .price-features {
-            list-style: none;
-            margin-top: 1.5rem;
-        }
-        
-        .price-features li {
-            padding: 0.5rem 0;
-            color: #d4d4d8;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.95rem;
-        }
-        
-        .price-features svg.i {
-            width: 18px;
-            height: 18px;
-            color: #10b981;
-        }
-        
-        .price-badge {
-            display: inline-block;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #10b981;
-            padding: 0.3rem 0.8rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-top: 1rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .section {
-            margin-bottom: 0.5rem;
-        }
-        
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .section-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: #a78bfa;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            white-space: nowrap;
-        }
-        
-        .section-line {
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent);
-        }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-            padding: 0 2rem;
-        }
-        
-        .divider-line {
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(139, 92, 246, 0.5) 20%, 
-                rgba(139, 92, 246, 0.5) 80%, 
-                transparent);
-        }
-        
-        .divider-icon {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #a78bfa;
-            flex-shrink: 0;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
-            animation: pulse-divider 3s ease-in-out infinite;
-        }
-        
-        .divider-icon svg.i {
-            width: 20px;
-            height: 20px;
-        }
-        
-        @keyframes pulse-divider {
-            0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); transform: scale(1); }
-            50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.4); transform: scale(1.05); }
-        }
-        
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-        }
-        
-        .portfolio-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.4s;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            min-width: 0;
-        }
-        
-        .portfolio-card:hover {
-            transform: translateY(-5px);
-            border-color: #a78bfa;
-            background: rgba(139, 92, 246, 0.1);
-            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
-        }
-        
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            margin-bottom: 1rem;
-        }
-        
-        .card-icon svg.i {
-            width: 26px;
-            height: 26px;
-        }
-        
-        .card-tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: #a78bfa;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.4rem;
-        }
-        
-        .card-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 0.4rem;
-        }
-        
-        .card-desc {
-            font-size: 0.8rem;
-            color: #a1a1aa;
-            line-height: 1.4;
-        }
-        
-        .card-arrow {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            color: #a78bfa;
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        
-        .card-arrow svg.i {
-            width: 18px;
-            height: 18px;
-        }
-        
-        .portfolio-card:hover .card-arrow {
-            opacity: 1;
-        }
-        
-        .conditions-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-        }
-        
-        .condition {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-            min-width: 0;
-        }
-        
-        .condition-icon {
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .condition-icon svg.i {
-            width: 28px;
-            height: 28px;
-        }
-        
-        .condition-title {
-            font-size: 0.75rem;
-            color: #71717a;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.3rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .condition-value {
-            font-size: 0.95rem;
-            color: #fff;
-            font-weight: 600;
-        }
-        
-        .three-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1.5rem;
-        }
-        
-        .info-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 1.5rem;
-            min-width: 0;
-        }
-        
-        .info-card-title {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-        
-        .info-card-title svg.i {
-            width: 20px;
-            height: 20px;
-            color: #a78bfa;
-        }
-        
-        .checklist {
-            list-style: none;
-        }
-        
-        .checklist li {
-            padding: 0.5rem 0;
-            color: #d4d4d8;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.6rem;
-        }
-        
-        .checklist svg.i {
-            width: 16px;
-            height: 16px;
-            color: #10b981;
-            margin-top: 2px;
-        }
-        
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .tag {
-            background: rgba(139, 92, 246, 0.1);
-            border: 1px solid rgba(139, 92, 246, 0.25);
-            color: #c4b5fd;
-            padding: 0.4rem 0.8rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .tag:hover {
-            background: rgba(139, 92, 246, 0.25);
-            border-color: #a78bfa;
-            transform: translateY(-2px);
-        }
-        
-        .guarantee-item {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0.75rem 0;
-            color: #d4d4d8;
-            font-size: 0.9rem;
-            align-items: flex-start;
-        }
-        
-        .guarantee-item svg.i {
-            width: 18px;
-            height: 18px;
-            color: #fbbf24;
-            margin-top: 2px;
-        }
-        
-        /* ========== БЛОК КОНТАКТОВ (БЕЗ ФОРМЫ, БЕЗ ВЫЛЕЗАНИЯ) ========== */
-        .contacts-section {
-            margin-top: 0.5rem;
-            padding: 2.5rem;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.05));
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            border-radius: 20px;
-            max-width: 100%;
-            overflow: hidden; /* НИЧЕГО не вылезает за рамки секции */
-        }
-        
-        .contacts-intro {
-            color: #a1a1aa;
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
-            max-width: 640px;
-        }
-        
-        .contacts-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            width: 100%;
-        }
-        
-        .contacts-buttons > * {
-            min-width: 0; /* разрешаем кнопкам сжиматься */
-        }
-        
-        .hours-bar {
-            margin-top: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.7rem;
-            flex-wrap: wrap;
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            color: #10b981;
-            padding: 0.9rem 1.2rem;
-            border-radius: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-align: center;
-            max-width: 100%;
-        }
-        
-        .hours-bar svg.i {
-            width: 18px;
-            height: 18px;
-        }
-        
-        .hours-bar span {
-            overflow-wrap: break-word;
-        }
-        
-        .contact-btn {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.2rem;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            color: #e4e4e7;
-            text-decoration: none;
-            transition: all 0.3s;
-            cursor: pointer;
-            min-height: 66px;
-            max-width: 100%;
-            min-width: 0;
-            -webkit-tap-highlight-color: rgba(139, 92, 246, 0.3);
-        }
-        
-        .contact-btn:hover {
-            background: rgba(139, 92, 246, 0.15);
-            border-color: #a78bfa;
-            transform: translateX(5px);
-        }
-        
-        .contact-btn:active {
-            background: rgba(139, 92, 246, 0.25);
-            transform: scale(0.98);
-        }
-        
-        .contact-btn .icon-wrapper {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            flex-shrink: 0;
-        }
-        
-        .contact-btn .icon-wrapper svg.i,
-        .contact-btn .icon-wrapper svg.b {
-            width: 22px;
-            height: 22px;
-        }
-        
-        .contact-btn .text-wrapper {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .contact-btn .label {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #fff;
-            display: block;
-        }
-        
-        .contact-btn .value {
-            font-size: 0.75rem;
-            color: #a1a1aa;
-            font-family: 'JetBrains Mono', monospace;
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 100%;
-        }
-        
-        .contact-btn .arrow {
-            color: #a78bfa;
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        
-        .contact-btn .arrow svg.i {
-            width: 16px;
-            height: 16px;
-        }
-        
-        .contact-btn:hover .arrow {
-            opacity: 1;
-            transform: translateX(3px);
-        }
-        
-        .copy-notification {
+        svg.i { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: inline-block; vertical-align: middle; flex-shrink: 0; }
+        svg.b { fill: currentColor; stroke: none; display: inline-block; vertical-align: middle; flex-shrink: 0; }
+        
+        /* ========== ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА RU / EN ========== */
+        .lang-switch {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 1.2rem 1.8rem;
-            border-radius: 14px;
-            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
-            font-weight: 600;
-            font-size: 0.95rem;
+            top: 16px;
+            right: 16px;
             z-index: 1000;
             display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255,255,255,0.2);
-            max-width: 350px;
+            background: rgba(15, 15, 25, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50px;
+            padding: 4px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
-        
-        .cn-icon {
-            background: rgba(255,255,255,0.2);
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .cn-icon svg.i {
-            width: 18px;
-            height: 18px;
-        }
-        
-        .copy-notification.hide {
-            animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(400px) scale(0.8); opacity: 0; }
-            to { transform: translateX(0) scale(1); opacity: 1; }
-        }
-        
-        @keyframes slideOut {
-            from { transform: translateX(0) scale(1); opacity: 1; }
-            to { transform: translateX(400px) scale(0.8); opacity: 0; }
-        }
-        
-        footer {
-            text-align: center;
-            padding: 1.5rem 0;
+        .lang-btn {
+            background: none;
+            border: none;
             color: #71717a;
-            font-size: 0.85rem;
             font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 7px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
         }
+        .lang-btn.active {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+        .lang-btn:not(.active):hover { color: #a78bfa; }
         
-        /* ========== ПЛАНШЕТ ========== */
+        /* скрытие ненужного языка */
+        html[lang="ru"] .en { display: none !important; }
+        html[lang="en"] .ru { display: none !important; }
+        
+        .container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 1; }
+        
+        .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: center; margin-bottom: 0.5rem; padding: 1rem 0 0.5rem; }
+        
+        .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); padding: 0.4rem 0.9rem; border-radius: 50px; font-size: 0.8rem; color: #a78bfa; width: fit-content; font-family: 'JetBrains Mono', monospace; margin-bottom: 0.9rem; }
+        .badge::before { content: ''; width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; animation: pulse 2s infinite; flex-shrink: 0; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
+        h1 { font-size: clamp(1.6rem, 4.5vw, 2.6rem); font-weight: 800; line-height: 1.15; background: linear-gradient(135deg, #fff 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.6rem; word-wrap: break-word; }
+        .subtitle { font-size: 1rem; color: #a1a1aa; line-height: 1.6; margin-bottom: 0.9rem; }
+        
+        .hero-stats { display: flex; gap: 1.5rem; margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; }
+        .stat-number { font-size: 1.7rem; font-weight: 700; color: #a78bfa; font-family: 'JetBrains Mono', monospace; }
+        .stat-label { font-size: 0.8rem; color: #71717a; margin-top: 0.15rem; }
+        
+        .price-card { background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 18px; padding: 1.5rem; position: relative; overflow: hidden; }
+        .price-card::before { content: '💰'; position: absolute; top: -20px; right: -20px; font-size: 7rem; opacity: 0.1; transform: rotate(-15deg); }
+        .price-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.4rem; }
+        .price-amount { font-size: clamp(2rem, 5vw, 2.6rem); font-weight: 800; color: #fff; line-height: 1; margin-bottom: 0.4rem; }
+        .price-amount span { font-size: 1.1rem; color: #a1a1aa; font-weight: 400; }
+        .price-features { list-style: none; margin-top: 0.9rem; }
+        .price-features li { padding: 0.3rem 0; color: #d4d4d8; display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; }
+        .price-features svg.i { width: 16px; height: 16px; color: #10b981; }
+        .price-badge { display: inline-block; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 0.25rem 0.7rem; border-radius: 50px; font-size: 0.72rem; font-weight: 600; margin-top: 0.7rem; font-family: 'JetBrains Mono', monospace; }
+        
+        .section { margin-bottom: 0; }
+        .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.7rem; }
+        .section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 2px; }
+        .section-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent); }
+        
+        .divider { display: flex; align-items: center; gap: 1.2rem; margin: 0.45rem 0; padding: 0 1rem; }
+        .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5) 20%, rgba(139, 92, 246, 0.5) 80%, transparent); }
+        .divider-icon { width: 40px; height: 40px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2)); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #a78bfa; flex-shrink: 0; box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); animation: pulse-divider 3s ease-in-out infinite; }
+        .divider-icon svg.i { width: 18px; height: 18px; }
+        @keyframes pulse-divider { 0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); transform: scale(1); } 50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.4); transform: scale(1.05); } }
+        
+        .portfolio-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
+        .portfolio-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.2rem; transition: all 0.4s; cursor: pointer; position: relative; overflow: hidden; text-decoration: none; color: inherit; display: block; min-width: 0; }
+        .portfolio-card:hover { transform: translateY(-4px); border-color: #a78bfa; background: rgba(139, 92, 246, 0.1); box-shadow: 0 15px 35px rgba(139, 92, 246, 0.15); }
+        .card-icon { width: 44px; height: 44px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; margin-bottom: 0.7rem; }
+        .card-icon svg.i { width: 22px; height: 22px; }
+        .card-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem; }
+        .card-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 0.3rem; }
+        .card-desc { font-size: 0.78rem; color: #a1a1aa; line-height: 1.4; }
+        .card-arrow { position: absolute; top: 1.2rem; right: 1.2rem; color: #a78bfa; opacity: 0; transition: all 0.3s; }
+        .card-arrow svg.i { width: 16px; height: 16px; }
+        .portfolio-card:hover .card-arrow { opacity: 1; }
+        
+        .conditions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
+        .condition { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.9rem 0.8rem; text-align: center; min-width: 0; }
+        .condition-icon { margin-bottom: 0.4rem; display: flex; justify-content: center; }
+        .condition-icon svg.i { width: 24px; height: 24px; }
+        .condition-title { font-size: 0.7rem; color: #71717a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.25rem; font-family: 'JetBrains Mono', monospace; }
+        .condition-value { font-size: 0.9rem; color: #fff; font-weight: 600; }
+        
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        .info-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.2rem; min-width: 0; }
+        .info-card-title { display: flex; align-items: center; gap: 0.6rem; font-size: 1.05rem; font-weight: 600; color: #fff; margin-bottom: 0.7rem; padding-bottom: 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .info-card-title svg.i { width: 18px; height: 18px; color: #a78bfa; }
+        .checklist { list-style: none; }
+        .checklist li { padding: 0.32rem 0; color: #d4d4d8; font-size: 0.87rem; display: flex; align-items: flex-start; gap: 0.5rem; }
+        .checklist svg.i { width: 15px; height: 15px; color: #10b981; margin-top: 2px; }
+        .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .tag { background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.25); color: #c4b5fd; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.78rem; font-weight: 500; transition: all 0.3s; }
+        .tag:hover { background: rgba(139, 92, 246, 0.25); border-color: #a78bfa; transform: translateY(-2px); }
+        .guarantee-item { display: flex; gap: 0.6rem; padding: 0.45rem 0; color: #d4d4d8; font-size: 0.87rem; align-items: flex-start; }
+        .guarantee-item svg.i { width: 16px; height: 16px; color: #fbbf24; margin-top: 2px; }
+        
+        .contacts-section { margin-top: 0.45rem; padding: 0.75rem 1.5rem 1.5rem; background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.05)); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 18px; max-width: 100%; overflow: hidden; }
+        .contacts-intro { color: #a1a1aa; font-size: 0.9rem; margin-bottom: 0.9rem; max-width: 640px; }
+        .contacts-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; width: 100%; }
+        .contacts-buttons > * { min-width: 0; }
+        .hours-bar { margin-top: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; flex-wrap: wrap; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); color: #10b981; padding: 0.7rem 1rem; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; text-align: center; max-width: 100%; }
+        .hours-bar svg.i { width: 16px; height: 16px; }
+        .hours-bar span { overflow-wrap: break-word; }
+        
+        .contact-btn { display: flex; align-items: center; gap: 0.9rem; padding: 0.8rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #e4e4e7; text-decoration: none; transition: all 0.3s; cursor: pointer; min-height: 58px; max-width: 100%; min-width: 0; -webkit-tap-highlight-color: rgba(139, 92, 246, 0.3); }
+        .contact-btn:hover { background: rgba(139, 92, 246, 0.15); border-color: #a78bfa; transform: translateX(5px); }
+        .contact-btn:active { background: rgba(139, 92, 246, 0.25); transform: scale(0.98); }
+        .contact-btn .icon-wrapper { width: 40px; height: 40px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+        .contact-btn .icon-wrapper svg.i, .contact-btn .icon-wrapper svg.b { width: 20px; height: 20px; }
+        .contact-btn .text-wrapper { flex: 1; min-width: 0; }
+        .contact-btn .label { font-size: 0.9rem; font-weight: 600; color: #fff; display: block; }
+        .contact-btn .value { font-size: 0.72rem; color: #a1a1aa; font-family: 'JetBrains Mono', monospace; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+        .contact-btn .arrow { color: #a78bfa; opacity: 0; transition: all 0.3s; }
+        .contact-btn .arrow svg.i { width: 15px; height: 15px; }
+        .contact-btn:hover .arrow { opacity: 1; transform: translateX(3px); }
+        
+        .copy-notification { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem 1.5rem; border-radius: 14px; box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4); font-weight: 600; font-size: 0.9rem; z-index: 1000; display: flex; align-items: center; gap: 0.8rem; animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.2); max-width: 350px; }
+        .cn-icon { background: rgba(255,255,255,0.2); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .cn-icon svg.i { width: 16px; height: 16px; }
+        .copy-notification.hide { animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes slideIn { from { transform: translateX(400px) scale(0.8); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0) scale(1); opacity: 1; } to { transform: translateX(400px) scale(0.8); opacity: 0; } }
+        
+        footer { text-align: center; padding: 1rem 0; color: #71717a; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
+        
         @media (max-width: 1024px) {
-            .hero { grid-template-columns: 1fr; gap: 1.5rem; }
+            .hero { grid-template-columns: 1fr; gap: 1.2rem; }
             .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
-            .three-col { grid-template-columns: 1fr; }
+            .three-col { grid-template-columns: 1fr; gap: 0.8rem; }
             .conditions-grid { grid-template-columns: repeat(2, 1fr); }
-            .contacts-section { padding: 1.8rem; }
-            .divider { padding: 0 1rem; }
+            .contacts-section { padding: 0.6rem 1.2rem 1.2rem; }
+            .divider { padding: 0 0.5rem; }
         }
         
-        /* ========== СМАРТФОН ========== */
         @media (max-width: 640px) {
-            .container { padding: 1rem; }
-            .hero { padding: 1rem 0; margin-bottom: 1.5rem; }
-            .portfolio-grid { grid-template-columns: 1fr; gap: 0.8rem; }
-            .hero-stats { gap: 1.2rem; }
-            .conditions-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-            .divider { margin: 1.2rem 0; padding: 0; gap: 1rem; }
-            .divider-icon { width: 40px; height: 40px; }
-            .divider-icon svg.i { width: 18px; height: 18px; }
-            .price-card { padding: 1.5rem; }
-            .price-card::before { font-size: 5rem; }
-            .subtitle { font-size: 0.95rem; }
-            .badge { font-size: 0.75rem; }
-            .section-header { gap: 0.6rem; }
-            .section-label { font-size: 0.75rem; white-space: normal; }
-            .info-card { padding: 1.2rem; }
-            .portfolio-card { padding: 1.2rem; }
-            .condition { padding: 0.8rem 0.5rem; }
-            .condition-value { font-size: 0.85rem; }
-            
-            /* --- КОНТАКТЫ: ГАРАНТИЯ ОТ ВЫЛЕЗАНИЯ --- */
-            .contacts-section {
-                padding: 1rem;
-                border-radius: 16px;
-                margin-top: 0.3rem;
-            }
-            .contacts-intro { font-size: 0.9rem; margin-bottom: 1rem; }
-            .contacts-buttons { grid-template-columns: 1fr; gap: 0.7rem; }
-            .hours-bar { margin-top: 1rem; font-size: 0.75rem; padding: 0.8rem 0.9rem; }
-            .contact-btn {
-                padding: 0.8rem;
-                gap: 0.7rem;
-                min-height: 58px;
-                border-radius: 10px;
-            }
-            .contact-btn .icon-wrapper {
-                width: 40px;
-                height: 40px;
-                border-radius: 8px;
-            }
-            .contact-btn .icon-wrapper svg.i,
-            .contact-btn .icon-wrapper svg.b {
-                width: 20px;
-                height: 20px;
-            }
-            .contact-btn .label { font-size: 0.9rem; }
-            /* длинные строки ПЕРЕНОСЯТСЯ, а не вылезают */
-            .contact-btn .value {
-                font-size: 0.7rem;
-                white-space: normal;
-                overflow-wrap: anywhere;
-                overflow: visible;
-                text-overflow: clip;
-            }
+            .container { padding: 0.8rem; }
+            .lang-switch { top: 10px; right: 10px; padding: 3px; }
+            .lang-btn { padding: 6px 11px; font-size: 11px; }
+            .hero { padding: 0.5rem 0 0.25rem; margin-bottom: 0.35rem; gap: 1rem; }
+            .badge { margin-bottom: 0.7rem; font-size: 0.72rem; }
+            .subtitle { font-size: 0.9rem; }
+            .hero-stats { gap: 1rem; margin-top: 0.7rem; padding-top: 0.7rem; }
+            .stat-number { font-size: 1.5rem; }
+            .price-card { padding: 1.2rem; }
+            .price-card::before { font-size: 4.5rem; }
+            .portfolio-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+            .portfolio-card { padding: 1rem; }
+            .divider { margin: 0.3rem 0; padding: 0; gap: 0.8rem; }
+            .divider-icon { width: 34px; height: 34px; }
+            .divider-icon svg.i { width: 15px; height: 15px; }
+            .conditions-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+            .condition { padding: 0.7rem 0.5rem; }
+            .condition-value { font-size: 0.82rem; }
+            .section-header { gap: 0.6rem; margin-bottom: 0.6rem; }
+            .section-label { font-size: 0.72rem; }
+            .info-card { padding: 1rem; }
+            .checklist li { font-size: 0.84rem; padding: 0.28rem 0; }
+            .guarantee-item { font-size: 0.84rem; padding: 0.4rem 0; }
+            .tag { font-size: 0.74rem; padding: 0.28rem 0.6rem; }
+            .contacts-section { padding: 0.45rem 0.9rem 0.9rem; border-radius: 14px; margin-top: 0.3rem; }
+            .contacts-intro { font-size: 0.85rem; margin-bottom: 0.7rem; }
+            .contacts-buttons { grid-template-columns: 1fr; gap: 0.6rem; }
+            .hours-bar { margin-top: 0.7rem; font-size: 0.72rem; padding: 0.6rem 0.8rem; }
+            .contact-btn { padding: 0.7rem 0.8rem; gap: 0.6rem; min-height: 52px; border-radius: 10px; }
+            .contact-btn .icon-wrapper { width: 36px; height: 36px; border-radius: 8px; }
+            .contact-btn .icon-wrapper svg.i, .contact-btn .icon-wrapper svg.b { width: 18px; height: 18px; }
+            .contact-btn .label { font-size: 0.86rem; }
+            .contact-btn .value { font-size: 0.68rem; white-space: normal; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
             .contact-btn .arrow { display: none; }
-            
-            .copy-notification {
-                bottom: 15px;
-                right: 15px;
-                left: 15px;
-                max-width: none;
-                padding: 1rem;
-                font-size: 0.9rem;
-            }
-            footer { padding: 1.2rem 0; font-size: 0.75rem; }
+            .copy-notification { bottom: 15px; right: 15px; left: 15px; max-width: none; padding: 0.9rem; font-size: 0.85rem; }
+            footer { padding: 0.8rem 0; font-size: 0.72rem; }
         }
         
-        /* ========== ОЧЕНЬ МАЛЕНЬКИЙ ЭКРАН ========== */
         @media (max-width: 380px) {
             .conditions-grid { grid-template-columns: 1fr; }
-            .hero-stats { flex-direction: column; gap: 0.8rem; }
-            .contacts-section { padding: 0.8rem; }
-            .contact-btn { padding: 0.7rem; gap: 0.6rem; }
+            .hero-stats { flex-direction: column; gap: 0.6rem; }
+            .contacts-section { padding: 0.35rem 0.7rem 0.7rem; }
+            .contact-btn { padding: 0.6rem; gap: 0.5rem; }
         }
     </style>
 </head>
 <body>
+
+    <!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА -->
+    <div class="lang-switch">
+        <button class="lang-btn active" data-lang="ru" onclick="setLang('ru')">RU</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    </div>
+
     <div class="container">
         
         <section class="hero">
             <div>
                 <div class="badge">
-                    <span>Доступен для новых проектов</span>
+                    <span class="ru">Доступен для новых проектов</span>
+                    <span class="en">Available for new projects</span>
                 </div>
                 
-                <h1>🚀 Сделаю современный сайт-визитку для вашего бизнеса</h1>
+                <h1>
+                    <span class="ru">🚀 Сделаю современный сайт-визитку для вашего бизнеса</span>
+                    <span class="en">🚀 I'll build a modern landing page for your business</span>
+                </h1>
                 
                 <p class="subtitle">
-                    Обсудим дизайн и контент — чтобы было удобно и вам, и клиентам. 
-                    Подберём стиль, цвета и структуру под вашу нишу. От идеи до запуска — 1-2 дня.
+                    <span class="ru">Обсудим дизайн и контент — чтобы было удобно и вам, и клиентам. Подберём стиль, цвета и структуру под вашу нишу. От идеи до запуска — 1-2 дня.</span>
+                    <span class="en">We'll discuss design and content together — convenient for you and your customers. Style, colors and structure tailored to your niche. From idea to launch in 1-2 days.</span>
                 </p>
                 
                 <div class="hero-stats">
                     <div>
                         <div class="stat-number">8+</div>
-                        <div class="stat-label">Ниш</div>
+                        <div class="stat-label"><span class="ru">Ниш</span><span class="en">Niches</span></div>
                     </div>
                     <div>
                         <div class="stat-number">1-2</div>
-                        <div class="stat-label">Дня на сайт</div>
+                        <div class="stat-label"><span class="ru">Дня на сайт</span><span class="en">Days per site</span></div>
                     </div>
                     <div>
                         <div class="stat-number">100%</div>
-                        <div class="stat-label">Адаптивность</div>
+                        <div class="stat-label"><span class="ru">Адаптивность</span><span class="en">Responsive</span></div>
                     </div>
                 </div>
             </div>
             
             <div class="price-card">
-                <div class="price-label">💰 Стоимость</div>
+                <div class="price-label"><span class="ru">💰 Стоимость</span><span class="en">💰 Price</span></div>
                 <div class="price-amount">
-                    2000₽ <span>под ключ</span>
+                    <span class="ru" style="font-size:inherit;color:inherit;font-weight:inherit;">2000₽</span>
+                    <span class="en" style="font-size:inherit;color:inherit;font-weight:inherit;">$25</span>
+                    <span class="ru">под ключ</span>
+                    <span class="en">all-inclusive</span>
                 </div>
                 <ul class="price-features">
-                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Хостинг бесплатный навсегда</li>
-                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Домен на год входит в стоимость</li>
-                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Оплата после сдачи сайта</li>
-                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Бесплатная поддержка 1 месяц</li>
+                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Хостинг бесплатный навсегда</span><span class="en">Free hosting forever</span></li>
+                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Домен на год входит в стоимость</span><span class="en">1-year domain included</span></li>
+                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Оплата после сдачи сайта</span><span class="en">Payment after delivery</span></li>
+                    <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Бесплатная поддержка 1 месяц</span><span class="en">1 month free support</span></li>
                 </ul>
-                <div class="price-badge">⏰ СРОК: 1-2 дня</div>
+                <div class="price-badge"><span class="ru">⏰ СРОК: 1-2 дня</span><span class="en">⏰ TIMELINE: 1-2 days</span></div>
             </div>
         </section>
         
         <section class="section">
             <div class="section-header">
-                <span class="section-label">📸 Примеры работ</span>
+                <span class="section-label"><span class="ru">📸 Примеры работ</span><span class="en">📸 Portfolio</span></span>
                 <div class="section-line"></div>
             </div>
             
             <div class="portfolio-grid">
-                <a href="https://avtomaster.piarbook.ru/" target="_blank" class="portfolio-card">
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
                     <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
-                    <div class="card-tag">Автосервис</div>
-                    <div class="card-title">АВТОМАСТЕР</div>
-                    <div class="card-desc">Тёмная тема, каталог услуг</div>
+                    <div class="card-tag"><span class="ru">Автосервис</span><span class="en">Auto service</span></div>
+                    <div class="card-title"><span class="ru">АВТОМАСТЕР</span><span class="en">AVTOMASTER</span></div>
+                    <div class="card-desc"><span class="ru">Тёмная тема, каталог услуг</span><span class="en">Dark theme, service catalog</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
                     <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>
-                    <div class="card-tag">Салон красоты</div>
+                    <div class="card-tag"><span class="ru">Салон красоты</span><span class="en">Beauty salon</span></div>
                     <div class="card-title">BEAUTY STUDIO</div>
-                    <div class="card-desc">Галерея, прайс, запись</div>
+                    <div class="card-desc"><span class="ru">Галерея, прайс, запись</span><span class="en">Gallery, prices, booking</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
                     <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12"/><path d="M6 14h12"/><rect width="12" height="12" x="6" y="10"/></svg></div>
-                    <div class="card-tag">Гараж</div>
-                    <div class="card-title">ГАРАЖ</div>
-                    <div class="card-desc">Оливковая тема</div>
+                    <div class="card-tag"><span class="ru">Гараж</span><span class="en">Garage</span></div>
+                    <div class="card-title"><span class="ru">ГАРАЖ</span><span class="en">GARAGE</span></div>
+                    <div class="card-desc"><span class="ru">Оливковая тема</span><span class="en">Olive theme</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
                     <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
-                    <div class="card-tag">Юрист</div>
-                    <div class="card-title">ЮРИСТ</div>
-                    <div class="card-desc">Услуги, цены, заявки</div>
+                    <div class="card-tag"><span class="ru">Юрист</span><span class="en">Lawyer</span></div>
+                    <div class="card-title"><span class="ru">ЮРИСТ</span><span class="en">LAWYER</span></div>
+                    <div class="card-desc"><span class="ru">Услуги, цены, заявки</span><span class="en">Services, prices, requests</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
                     <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M4 10c0 6 2 10 4 10c1.5 0 2-2 2-4c0-1.5 .5-3 2-3s2 1.5 2 3c0 2 .5 4 2 4c2 0 4-4 4-10c0-3.5-2-6-4-6c-1.5 0-2.5 1-4 1s-2.5-1-4-1c-2 0-4 2.5-4 6z"/></svg></div>
-                    <div class="card-tag">Стоматология</div>
-                    <div class="card-title">ЗДОРОВАЯ УЛЫБКА</div>
-                    <div class="card-desc">Услуги, цены, врачи, запись</div>
+                    <div class="card-tag"><span class="ru">Стоматология</span><span class="en">Dentistry</span></div>
+                    <div class="card-title"><span class="ru">ЗДОРОВАЯ УЛЫБКА</span><span class="en">HEALTHY SMILE</span></div>
+                    <div class="card-desc"><span class="ru">Услуги, цены, врачи, запись</span><span class="en">Services, prices, doctors, booking</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
                     <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2z"/></svg></div>
-                    <div class="card-tag">Медцентр</div>
-                    <div class="card-title">МЕДКЛИНИКА</div>
-                    <div class="card-desc">Специалисты, услуги, цены</div>
+                    <div class="card-tag"><span class="ru">Медцентр</span><span class="en">Medical center</span></div>
+                    <div class="card-title"><span class="ru">МЕДКЛИНИКА</span><span class="en">MEDCLINIC</span></div>
+                    <div class="card-desc"><span class="ru">Специалисты, услуги, цены</span><span class="en">Specialists, services, prices</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
                     <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
-                    <div class="card-tag">Фото / Видео</div>
+                    <div class="card-tag"><span class="ru">Фото / Видео</span><span class="en">Photo / Video</span></div>
                     <div class="card-title">PHOTO STUDIO</div>
-                    <div class="card-desc">Портфолио, услуги, цены</div>
+                    <div class="card-desc"><span class="ru">Портфолио, услуги, цены</span><span class="en">Portfolio, services, prices</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
                 <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
                     <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
-                    <div class="card-tag">Ремонт</div>
-                    <div class="card-title">МАСТЕР ДОМ</div>
-                    <div class="card-desc">Услуги, прайс, отзывы</div>
+                    <div class="card-tag"><span class="ru">Ремонт</span><span class="en">Home repair</span></div>
+                    <div class="card-title"><span class="ru">МАСТЕР ДОМ</span><span class="en">HOME MASTER</span></div>
+                    <div class="card-desc"><span class="ru">Услуги, прайс, отзывы</span><span class="en">Services, prices, reviews</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
             </div>
@@ -923,23 +373,23 @@
             <div class="conditions-grid">
                 <div class="condition">
                     <div class="condition-icon" style="color:#10b981;"><svg class="i" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></div>
-                    <div class="condition-title">Цена</div>
-                    <div class="condition-value">2000₽ под ключ</div>
+                    <div class="condition-title"><span class="ru">Цена</span><span class="en">Price</span></div>
+                    <div class="condition-value"><span class="ru">2000₽ под ключ</span><span class="en">$25 all-inclusive</span></div>
                 </div>
                 <div class="condition">
                     <div class="condition-icon" style="color:#3b82f6;"><svg class="i" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></div>
-                    <div class="condition-title">Оплата</div>
-                    <div class="condition-value">После сдачи</div>
+                    <div class="condition-title"><span class="ru">Оплата</span><span class="en">Payment</span></div>
+                    <div class="condition-value"><span class="ru">После сдачи</span><span class="en">After delivery</span></div>
                 </div>
                 <div class="condition">
                     <div class="condition-icon" style="color:#fbbf24;"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                    <div class="condition-title">Срок</div>
-                    <div class="condition-value">1-2 дня</div>
+                    <div class="condition-title"><span class="ru">Срок</span><span class="en">Timeline</span></div>
+                    <div class="condition-value"><span class="ru">1-2 дня</span><span class="en">1-2 days</span></div>
                 </div>
                 <div class="condition">
                     <div class="condition-icon" style="color:#a78bfa;"><svg class="i" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
-                    <div class="condition-title">Продление</div>
-                    <div class="condition-value">500₽ / год</div>
+                    <div class="condition-title"><span class="ru">Продление</span><span class="en">Renewal</span></div>
+                    <div class="condition-value"><span class="ru">500₽ / год</span><span class="en">≈ $6 / year</span></div>
                 </div>
             </div>
         </section>
@@ -955,60 +405,64 @@
                 <div class="info-card">
                     <div class="info-card-title">
                         <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                        Для кого
+                        <span class="ru">Для кого</span><span class="en">Who it's for</span>
                     </div>
                     <div class="tags">
-                        <span class="tag">🔧 Автосервисы</span>
-                        <span class="tag">🚗 СТО, шиномонтаж</span>
-                        <span class="tag">💅 Салоны красоты</span>
-                        <span class="tag">💄 Маникюр, брови</span>
-                        <span class="tag">🦷 Стоматологии</span>
-                        <span class="tag">🏥 Медцентры</span>
-                        <span class="tag">📷 Фотографы</span>
-                        <span class="tag">🎥 Видеографы</span>
-                        <span class="tag">⚖️ Юристы</span>
-                        <span class="tag">📊 Бухгалтеры</span>
-                        <span class="tag">🔨 Мастера ремонта</span>
-                        <span class="tag">🏪 Любой малый бизнес</span>
+                        <span class="tag"><span class="ru">🔧 Автосервисы</span><span class="en">🔧 Auto services</span></span>
+                        <span class="tag"><span class="ru">🚗 СТО, шиномонтаж</span><span class="en">🚗 Garages, tire shops</span></span>
+                        <span class="tag"><span class="ru">💅 Салоны красоты</span><span class="en">💅 Beauty salons</span></span>
+                        <span class="tag"><span class="ru">💄 Маникюр, брови</span><span class="en">💄 Nails, brows</span></span>
+                        <span class="tag"><span class="ru">🦷 Стоматологии</span><span class="en">🦷 Dental clinics</span></span>
+                        <span class="tag"><span class="ru">🏥 Медцентры</span><span class="en">🏥 Medical centers</span></span>
+                        <span class="tag"><span class="ru">📷 Фотографы</span><span class="en">📷 Photographers</span></span>
+                        <span class="tag"><span class="ru">🎥 Видеографы</span><span class="en">🎥 Videographers</span></span>
+                        <span class="tag"><span class="ru">⚖️ Юристы</span><span class="en">⚖️ Lawyers</span></span>
+                        <span class="tag"><span class="ru">📊 Бухгалтеры</span><span class="en">📊 Accountants</span></span>
+                        <span class="tag"><span class="ru">🔨 Мастера ремонта</span><span class="en">🔨 Handymen</span></span>
+                        <span class="tag"><span class="ru">🏪 Любой малый бизнес</span><span class="en">🏪 Any small business</span></span>
                     </div>
                 </div>
                 
                 <div class="info-card">
                     <div class="info-card-title">
                         <svg class="i" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-                        Что входит
+                        <span class="ru">Что входит</span><span class="en">What's included</span>
                     </div>
                     <ul class="checklist">
-                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Уникальный дизайн (не шаблон)</li>
-                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> До 10 разделов</li>
-                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Форма заявок на почту</li>
-                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Адаптив (телефон, планшет, ПК)</li>
-                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Подключение домена</li>
-                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Хостинг навсегда</li>
-                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Настройка Яндекс.Карт</li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Уникальный дизайн (не шаблон)</span><span class="en">Unique design (not a template)</span></li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">До 10 разделов</span><span class="en">Up to 10 sections</span></li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Форма заявок на почту</span><span class="en">Contact form to your email</span></li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Адаптив (телефон, планшет, ПК)</span><span class="en">Responsive (phone, tablet, desktop)</span></li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Подключение домена</span><span class="en">Domain setup</span></li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Хостинг навсегда</span><span class="en">Hosting forever</span></li>
+                        <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span class="ru">Настройка Яндекс.Карт</span><span class="en">Google / Yandex Maps setup</span></li>
                     </ul>
                 </div>
                 
                 <div class="info-card">
                     <div class="info-card-title">
                         <svg class="i" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
-                        Гарантии
+                        <span class="ru">Гарантии</span><span class="en">Guarantees</span>
                     </div>
                     <div class="guarantee-item">
                         <svg class="i" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
-                        <span>Верну деньги, если не понравится — без разговоров</span>
+                        <span class="ru">Верну деньги, если не понравится — без разговоров</span>
+                        <span class="en">Money back if you don't like it — no questions asked</span>
                     </div>
                     <div class="guarantee-item">
                         <svg class="i" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
-                        <span>Бесплатная поддержка 1 месяц после сдачи</span>
+                        <span class="ru">Бесплатная поддержка 1 месяц после сдачи</span>
+                        <span class="en">1 month of free support after delivery</span>
                     </div>
                     <div class="guarantee-item">
                         <svg class="i" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
-                        <span>Оплата только после вашего одобрения</span>
+                        <span class="ru">Оплата только после вашего одобрения</span>
+                        <span class="en">Payment only after your approval</span>
                     </div>
                     <div class="guarantee-item">
                         <svg class="i" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>
-                        <span>Продление домена — всего 500₽/год</span>
+                        <span class="ru">Продление домена — всего 500₽/год</span>
+                        <span class="en">Domain renewal — only 500₽/year (≈$6)</span>
                     </div>
                 </div>
             </div>
@@ -1020,16 +474,15 @@
             <div class="divider-line"></div>
         </div>
         
-        <!-- КОНТАКТЫ: БЕЗ ФОРМЫ, БЕЗ ВЫЛЕЗАНИЯ -->
         <section class="contacts-section">
             <div class="section-header">
-                <span class="section-label">📞 Связаться со мной</span>
+                <span class="section-label"><span class="ru">📞 Связаться со мной</span><span class="en">📞 Contact me</span></span>
                 <div class="section-line"></div>
             </div>
             
             <p class="contacts-intro">
-                Выберите удобный способ связи — отвечаю в течение часа.
-                А лучше просто позвоните: обсудим ваш проект за 5 минут!
+                <span class="ru">Выберите удобный способ связи — отвечаю в течение часа. А лучше просто позвоните: обсудим ваш проект за 5 минут!</span>
+                <span class="en">Choose any convenient way to reach me — I reply within an hour. Or better just call: we'll discuss your project in 5 minutes!</span>
             </p>
             
             <div class="contacts-buttons">
@@ -1038,8 +491,8 @@
                         <svg class="i" viewBox="0 0 24 24"><path d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z" fill="currentColor" stroke="none"/></svg>
                     </div>
                     <div class="text-wrapper">
-                        <span class="label">Позвонить (Сергей)</span>
-                        <span class="value" id="phoneValue">+7 911 324 73 19 (нажмите для копирования)</span>
+                        <span class="label"><span class="ru">Позвонить (Сергей)</span><span class="en">Call (Sergey)</span></span>
+                        <span class="value" id="phoneValue">+7 911 324 73 19</span>
                     </div>
                     <span class="arrow"><svg class="i" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></span>
                 </a>
@@ -1050,7 +503,7 @@
                     </div>
                     <div class="text-wrapper">
                         <span class="label">Email</span>
-                        <span class="value">misslyng72@gmail.com (нажмите для копирования)</span>
+                        <span class="value" id="emailValue">misslyng72@gmail.com</span>
                     </div>
                     <span class="arrow"><svg class="i" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></span>
                 </a>
@@ -1066,13 +519,13 @@
                     <span class="arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
-                <a href="https://t.me/piarbook" target="_blank" class="contact-btn">
+                <a href="https://t.me/your_username" target="_blank" class="contact-btn">
                     <div class="icon-wrapper">
                         <svg class="b" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
                     </div>
                     <div class="text-wrapper">
                         <span class="label">Telegram</span>
-                        <span class="value">Мессенджер</span>
+                        <span class="value"><span class="ru">Мессенджер</span><span class="en">Messenger</span></span>
                     </div>
                     <span class="arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
@@ -1082,8 +535,8 @@
                         <svg class="b" viewBox="0 0 24 24"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.525-2.049-1.714-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.204.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.271.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.491-.085.745-.576.745z"/></svg>
                     </div>
                     <div class="text-wrapper">
-                        <span class="label">ВКонтакте</span>
-                        <span class="value">Написать в ВК</span>
+                        <span class="label"><span class="ru">ВКонтакте</span><span class="en">VKontakte</span></span>
+                        <span class="value"><span class="ru">Написать в ВК</span><span class="en">Message on VK</span></span>
                     </div>
                     <span class="arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
@@ -1091,21 +544,63 @@
             
             <div class="hours-bar">
                 <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span>Часы работы: ежедневно с 9:00 до 21:00 (МСК), без выходных</span>
+                <span class="ru">Часы работы: ежедневно с 9:00 до 21:00 (МСК), без выходных</span>
+                <span class="en">Working hours: daily 9:00 AM – 9:00 PM (MSK), no days off</span>
             </div>
         </section>
         
         <footer>
-            &copy; 2026 piarbook.ru — Создание сайтов-визиток
+            <span class="ru">© 2026 piarbook.ru — Создание сайтов-визиток</span>
+            <span class="en">© 2026 piarbook.ru — Landing pages & business card websites</span>
         </footer>
         
     </div>
     
     <script>
+        // ========== ЯЗЫКИ ==========
+        function currentLang() {
+            return document.documentElement.lang || 'ru';
+        }
+        
+        function setLang(lang) {
+            document.documentElement.lang = lang;
+            document.querySelectorAll('.lang-btn').forEach(function(b) {
+                b.classList.toggle('active', b.dataset.lang === lang);
+            });
+            document.title = (lang === 'ru')
+                ? 'Сергей — Создание сайтов-визиток | piarbook.ru'
+                : 'Sergey — Landing Pages & Business Card Websites | piarbook.ru';
+            try { localStorage.setItem('piarbook_lang', lang); } catch (e) {}
+            updateHints();
+        }
+        
         function isMobileDevice() {
             return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
         
+        function updateHints() {
+            var lang = currentLang();
+            var mob = isMobileDevice();
+            var pv = document.getElementById('phoneValue');
+            var ev = document.getElementById('emailValue');
+            if (pv) {
+                if (mob) pv.textContent = (lang === 'ru') ? '+7 911 324 73 19 (нажмите для звонка)' : '+7 911 324 73 19 (tap to call)';
+                else pv.textContent = (lang === 'ru') ? '+7 911 324 73 19 (нажмите для копирования)' : '+7 911 324 73 19 (tap to copy)';
+            }
+            if (ev) {
+                ev.textContent = (lang === 'ru') ? 'misslyng72@gmail.com (нажмите для копирования)' : 'misslyng72@gmail.com (tap to copy)';
+            }
+        }
+        
+        // старт: сохранённый язык или автоопределение браузера
+        (function () {
+            var saved = null;
+            try { saved = localStorage.getItem('piarbook_lang'); } catch (e) {}
+            var auto = (navigator.language || '').toLowerCase().indexOf('en') === 0 ? 'en' : 'ru';
+            setLang(saved || auto);
+        })();
+        
+        // ========== ТЕЛЕФОН / КОПИРОВАНИЕ ==========
         function phoneClick(event) {
             if (isMobileDevice()) {
                 return true;
@@ -1115,20 +610,12 @@
             return false;
         }
         
-        window.addEventListener('load', function() {
-            if (isMobileDevice()) {
-                var phoneValue = document.getElementById('phoneValue');
-                if (phoneValue) phoneValue.textContent = '+7 911 324 73 19 (нажмите для звонка)';
-            }
-        });
-        
         function copyToClipboard(event, text, type) {
             event.preventDefault();
-            
-            navigator.clipboard.writeText(text).then(() => {
+            navigator.clipboard.writeText(text).then(function () {
                 showCopyNotification(type);
-            }).catch(err => {
-                const textArea = document.createElement('textarea');
+            }).catch(function () {
+                var textArea = document.createElement('textarea');
                 textArea.value = text;
                 textArea.style.position = 'fixed';
                 textArea.style.opacity = '0';
@@ -1137,46 +624,36 @@
                 try {
                     document.execCommand('copy');
                     showCopyNotification(type);
-                } catch (err) {
-                    console.error('Не удалось скопировать:', err);
-                }
+                } catch (e) {}
                 document.body.removeChild(textArea);
             });
         }
         
         function showCopyNotification(type) {
-            const existing = document.querySelector('.copy-notification');
+            var existing = document.querySelector('.copy-notification');
             if (existing) existing.remove();
-            
-            let title = '';
-            let subtitle = '';
-            
+            var lang = currentLang();
+            var title, subtitle;
             if (type === 'phone') {
-                title = '📞 Телефон скопирован!';
-                subtitle = 'Вставьте в приложение для звонков';
+                title = (lang === 'ru') ? '📞 Телефон скопирован!' : '📞 Phone number copied!';
+                subtitle = (lang === 'ru') ? 'Вставьте в приложение для звонков' : 'Paste it into your dialer app';
             } else if (type === 'email') {
-                title = '📧 Email скопирован!';
-                subtitle = 'Вставьте в любое почтовое приложение';
+                title = (lang === 'ru') ? '📧 Email скопирован!' : '📧 Email copied!';
+                subtitle = (lang === 'ru') ? 'Вставьте в любое почтовое приложение' : 'Paste it into any mail app';
             } else {
-                title = '✅ Скопировано!';
-                subtitle = 'Текст в буфере обмена';
+                title = (lang === 'ru') ? '✅ Скопировано!' : '✅ Copied!';
+                subtitle = (lang === 'ru') ? 'Текст в буфере обмена' : 'Text is in the clipboard';
             }
-            
-            const notification = document.createElement('div');
+            var notification = document.createElement('div');
             notification.className = 'copy-notification';
-            notification.innerHTML = `
-                <span class="cn-icon"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
-                <div>
-                    <div style="font-size: 0.95rem; font-weight: 700;">${title}</div>
-                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 2px;">${subtitle}</div>
-                </div>
-            `;
-            
+            notification.innerHTML =
+                '<span class="cn-icon"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>' +
+                '<div><div style="font-size:0.95rem;font-weight:700;">' + title + '</div>' +
+                '<div style="font-size:0.8rem;opacity:0.9;margin-top:2px;">' + subtitle + '</div></div>';
             document.body.appendChild(notification);
-            
-            setTimeout(() => {
+            setTimeout(function () {
                 notification.classList.add('hide');
-                setTimeout(() => notification.remove(), 300);
+                setTimeout(function () { notification.remove(); }, 300);
             }, 3000);
         }
     </script>
