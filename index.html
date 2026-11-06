@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="google" content="notranslate">
+    <meta http-equiv="Content-Language" content="ru">
     <title>Создание сайтов-визиток | piarbook.ru</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,7 +39,6 @@
         svg.i { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: inline-block; vertical-align: middle; flex-shrink: 0; }
         svg.b { fill: currentColor; stroke: none; display: inline-block; vertical-align: middle; flex-shrink: 0; }
         
-        /* ========== ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА RU / EN ========== */
         .lang-switch {
             position: fixed;
             top: 16px;
@@ -72,7 +73,6 @@
         }
         .lang-btn:not(.active):hover { color: #a78bfa; }
         
-        /* скрытие ненужного языка */
         html[lang="ru"] .en { display: none !important; }
         html[lang="en"] .ru { display: none !important; }
         
@@ -115,12 +115,65 @@
         .portfolio-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
         .portfolio-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.2rem; transition: all 0.4s; cursor: pointer; position: relative; overflow: hidden; text-decoration: none; color: inherit; display: block; min-width: 0; }
         .portfolio-card:hover { transform: translateY(-4px); border-color: #a78bfa; background: rgba(139, 92, 246, 0.1); box-shadow: 0 15px 35px rgba(139, 92, 246, 0.15); }
+        
+        .portfolio-preview {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.9rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        .portfolio-preview-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 2;
+            transition: transform 0.4s;
+        }
+        .portfolio-card:hover .portfolio-preview-img {
+            transform: scale(1.05);
+        }
+        .portfolio-preview-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            z-index: 1;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.15));
+        }
+        .portfolio-preview-placeholder svg {
+            width: 40px;
+            height: 40px;
+            color: #a78bfa;
+            opacity: 0.8;
+        }
+        .portfolio-preview-placeholder .preview-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #a78bfa;
+            text-align: center;
+            padding: 0 10px;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+        .portfolio-card.has-preview .card-icon {
+            display: none;
+        }
+        
         .card-icon { width: 44px; height: 44px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; margin-bottom: 0.7rem; }
         .card-icon svg.i { width: 22px; height: 22px; }
         .card-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem; }
         .card-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 0.3rem; }
         .card-desc { font-size: 0.78rem; color: #a1a1aa; line-height: 1.4; }
-        .card-arrow { position: absolute; top: 1.2rem; right: 1.2rem; color: #a78bfa; opacity: 0; transition: all 0.3s; }
+        .card-arrow { position: absolute; top: 1.2rem; right: 1.2rem; color: #a78bfa; opacity: 0; transition: all 0.3s; z-index: 3; }
         .card-arrow svg.i { width: 16px; height: 16px; }
         .portfolio-card:hover .card-arrow { opacity: 1; }
         
@@ -195,6 +248,9 @@
             .price-card::before { font-size: 4.5rem; }
             .portfolio-grid { grid-template-columns: 1fr; gap: 0.6rem; }
             .portfolio-card { padding: 1rem; }
+            .portfolio-preview { aspect-ratio: 16/9; }
+            .portfolio-preview-placeholder svg { width: 32px; height: 32px; }
+            .portfolio-preview-placeholder .preview-label { font-size: 9px; }
             .divider { margin: 0.3rem 0; padding: 0; gap: 0.8rem; }
             .divider-icon { width: 34px; height: 34px; }
             .divider-icon svg.i { width: 15px; height: 15px; }
@@ -229,9 +285,8 @@
         }
     </style>
 </head>
-<body>
+<body translate="no">
 
-    <!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА -->
     <div class="lang-switch">
         <button class="lang-btn active" data-lang="ru" onclick="setLang('ru')">RU</button>
         <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
@@ -297,69 +352,143 @@
             </div>
             
             <div class="portfolio-grid">
-                <a href="https://avtomaster.piarbook.ru/" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
+                
+                <!-- 1. АВТОСЕРВИС -->
+                <a href="https://avtomaster.piarbook.ru/" target="_blank" class="portfolio-card has-preview">
+                    <div class="portfolio-preview">
+                        <img src="images/preview-avtomaster.jpg" alt="Скриншот сайта АВТОМАСТЕР" class="portfolio-preview-img" 
+                             onload="this.parentElement.querySelector('.portfolio-preview-placeholder').style.display='none'" 
+                             onerror="this.style.display='none'">
+                        <div class="portfolio-preview-placeholder">
+                            <svg class="i" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                            <div class="preview-label"><span class="ru">preview-avtomaster.jpg<br>Скриншот сайта</span><span class="en">preview-avtomaster.jpg<br>Website screenshot</span></div>
+                        </div>
+                    </div>
                     <div class="card-tag"><span class="ru">Автосервис</span><span class="en">Auto service</span></div>
                     <div class="card-title"><span class="ru">АВТОМАСТЕР</span><span class="en">AVTOMASTER</span></div>
                     <div class="card-desc"><span class="ru">Тёмная тема, каталог услуг</span><span class="en">Dark theme, service catalog</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
-                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>
+                <!-- 2. САЛОН КРАСОТЫ -->
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card has-preview">
+                    <div class="portfolio-preview">
+                        <img src="images/preview-salon.jpg" alt="Скриншот сайта BEAUTY STUDIO" class="portfolio-preview-img" 
+                             onload="this.parentElement.querySelector('.portfolio-preview-placeholder').style.display='none'" 
+                             onerror="this.style.display='none'">
+                        <div class="portfolio-preview-placeholder">
+                            <svg class="i" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                            <div class="preview-label"><span class="ru">preview-salon.jpg<br>Скриншот сайта</span><span class="en">preview-salon.jpg<br>Website screenshot</span></div>
+                        </div>
+                    </div>
                     <div class="card-tag"><span class="ru">Салон красоты</span><span class="en">Beauty salon</span></div>
                     <div class="card-title">BEAUTY STUDIO</div>
                     <div class="card-desc"><span class="ru">Галерея, прайс, запись</span><span class="en">Gallery, prices, booking</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
-                <a href="https://garag.piarbook.ru/" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12"/><path d="M6 14h12"/><rect width="12" height="12" x="6" y="10"/></svg></div>
+                <!-- 3. ГАРАЖ -->
+                <a href="https://garag.piarbook.ru/" target="_blank" class="portfolio-card has-preview">
+                    <div class="portfolio-preview">
+                        <img src="images/preview-garage.jpg" alt="Скриншот сайта ГАРАЖ" class="portfolio-preview-img" 
+                             onload="this.parentElement.querySelector('.portfolio-preview-placeholder').style.display='none'" 
+                             onerror="this.style.display='none'">
+                        <div class="portfolio-preview-placeholder">
+                            <svg class="i" viewBox="0 0 24 24"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12"/><path d="M6 14h12"/><rect width="12" height="12" x="6" y="10"/></svg>
+                            <div class="preview-label"><span class="ru">preview-garage.jpg<br>Скриншот сайта</span><span class="en">preview-garage.jpg<br>Website screenshot</span></div>
+                        </div>
+                    </div>
                     <div class="card-tag"><span class="ru">Гараж</span><span class="en">Garage</span></div>
                     <div class="card-title"><span class="ru">ГАРАЖ</span><span class="en">GARAGE</span></div>
                     <div class="card-desc"><span class="ru">Оливковая тема</span><span class="en">Olive theme</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
-                <a href="https://law.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
+                <!-- 4. ЮРИСТ -->
+                <a href="https://law.piarbook.ru" target="_blank" class="portfolio-card has-preview">
+                    <div class="portfolio-preview">
+                        <img src="images/preview-law.jpg" alt="Скриншот сайта ЮРИСТ" class="portfolio-preview-img" 
+                             onload="this.parentElement.querySelector('.portfolio-preview-placeholder').style.display='none'" 
+                             onerror="this.style.display='none'">
+                        <div class="portfolio-preview-placeholder">
+                            <svg class="i" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+                            <div class="preview-label"><span class="ru">preview-law.jpg<br>Скриншот сайта</span><span class="en">preview-law.jpg<br>Website screenshot</span></div>
+                        </div>
+                    </div>
                     <div class="card-tag"><span class="ru">Юрист</span><span class="en">Lawyer</span></div>
                     <div class="card-title"><span class="ru">ЮРИСТ</span><span class="en">LAWYER</span></div>
                     <div class="card-desc"><span class="ru">Услуги, цены, заявки</span><span class="en">Services, prices, requests</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
-                <a href="https://den.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M4 10c0 6 2 10 4 10c1.5 0 2-2 2-4c0-1.5 .5-3 2-3s2 1.5 2 3c0 2 .5 4 2 4c2 0 4-4 4-10c0-3.5-2-6-4-6c-1.5 0-2.5 1-4 1s-2.5-1-4-1c-2 0-4 2.5-4 6z"/></svg></div>
+                <!-- 5. СТОМАТОЛОГИЯ -->
+                <a href="https://den.piarbook.ru" target="_blank" class="portfolio-card has-preview">
+                    <div class="portfolio-preview">
+                        <img src="images/preview-dental.jpg" alt="Скриншот сайта ЗДОРОВАЯ УЛЫБКА" class="portfolio-preview-img" 
+                             onload="this.parentElement.querySelector('.portfolio-preview-placeholder').style.display='none'" 
+                             onerror="this.style.display='none'">
+                        <div class="portfolio-preview-placeholder">
+                            <svg class="i" viewBox="0 0 24 24"><path d="M4 10c0 6 2 10 4 10c1.5 0 2-2 2-4c0-1.5 .5-3 2-3s2 1.5 2 3c0 2 .5 4 2 4c2 0 4-4 4-10c0-3.5-2-6-4-6c-1.5 0-2.5 1-4 1s-2.5-1-4-1c-2 0-4 2.5-4 6z"/></svg>
+                            <div class="preview-label"><span class="ru">preview-dental.jpg<br>Скриншот сайта</span><span class="en">preview-dental.jpg<br>Website screenshot</span></div>
+                        </div>
+                    </div>
                     <div class="card-tag"><span class="ru">Стоматология</span><span class="en">Dentistry</span></div>
                     <div class="card-title"><span class="ru">ЗДОРОВАЯ УЛЫБКА</span><span class="en">HEALTHY SMILE</span></div>
                     <div class="card-desc"><span class="ru">Услуги, цены, врачи, запись</span><span class="en">Services, prices, doctors, booking</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
-                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2z"/></svg></div>
+                <!-- 6. МЕДЦЕНТР -->
+                <a href="https://salon.piarbook.ru" target="_blank" class="portfolio-card has-preview">
+                    <div class="portfolio-preview">
+                        <img src="images/preview-med.jpg" alt="Скриншот сайта МЕДКЛИНИКА" class="portfolio-preview-img" 
+                             onload="this.parentElement.querySelector('.portfolio-preview-placeholder').style.display='none'" 
+                             onerror="this.style.display='none'">
+                        <div class="portfolio-preview-placeholder">
+                            <svg class="i" viewBox="0 0 24 24"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2z"/></svg>
+                            <div class="preview-label"><span class="ru">preview-med.jpg<br>Скриншот сайта</span><span class="en">preview-med.jpg<br>Website screenshot</span></div>
+                        </div>
+                    </div>
                     <div class="card-tag"><span class="ru">Медцентр</span><span class="en">Medical center</span></div>
                     <div class="card-title"><span class="ru">МЕДКЛИНИКА</span><span class="en">MEDCLINIC</span></div>
                     <div class="card-desc"><span class="ru">Специалисты, услуги, цены</span><span class="en">Specialists, services, prices</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
-                <a href="https://foto.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
+                <!-- 7. ФОТО / ВИДЕО -->
+                <a href="https://foto.piarbook.ru" target="_blank" class="portfolio-card has-preview">
+                    <div class="portfolio-preview">
+                        <img src="images/preview-foto.jpg" alt="Скриншот сайта PHOTO STUDIO" class="portfolio-preview-img" 
+                             onload="this.parentElement.querySelector('.portfolio-preview-placeholder').style.display='none'" 
+                             onerror="this.style.display='none'">
+                        <div class="portfolio-preview-placeholder">
+                            <svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                            <div class="preview-label"><span class="ru">preview-foto.jpg<br>Скриншот сайта</span><span class="en">preview-foto.jpg<br>Website screenshot</span></div>
+                        </div>
+                    </div>
                     <div class="card-tag"><span class="ru">Фото / Видео</span><span class="en">Photo / Video</span></div>
                     <div class="card-title">PHOTO STUDIO</div>
                     <div class="card-desc"><span class="ru">Портфолио, услуги, цены</span><span class="en">Portfolio, services, prices</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
                 
-                <a href="https://demo-komp.piarbook.ru" target="_blank" class="portfolio-card">
-                    <div class="card-icon"><svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+                <!-- 8. РЕМОНТ КОМПЬЮТЕРОВ -->
+                <a href="https://demo-komp.piarbook.ru" target="_blank" class="portfolio-card has-preview">
+                    <div class="portfolio-preview">
+                        <img src="images/preview-komp.jpg" alt="Скриншот сайта РЕМОНТ КОМПЬЮТЕРОВ" class="portfolio-preview-img" 
+                             onload="this.parentElement.querySelector('.portfolio-preview-placeholder').style.display='none'" 
+                             onerror="this.style.display='none'">
+                        <div class="portfolio-preview-placeholder">
+                            <svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                            <div class="preview-label"><span class="ru">preview-komp.jpg<br>Скриншот сайта</span><span class="en">preview-komp.jpg<br>Website screenshot</span></div>
+                        </div>
+                    </div>
                     <div class="card-tag"><span class="ru">Ремонт</span><span class="en">Home repair</span></div>
                     <div class="card-title"><span class="ru">РЕМОНТ КОМПЬЮТЕРОВ</span><span class="en">COMPUTER REPAIR</span></div>
                     <div class="card-desc"><span class="ru">Услуги, прайс, отзывы</span><span class="en">Services, prices, reviews</span></div>
                     <span class="card-arrow"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
                 </a>
+                
             </div>
         </section>
         
@@ -557,7 +686,6 @@
     </div>
     
     <script>
-        // ========== ЯЗЫКИ ==========
         function currentLang() {
             return document.documentElement.lang || 'ru';
         }
@@ -592,7 +720,6 @@
             }
         }
         
-        // старт: сохранённый язык или автоопределение браузера
         (function () {
             var saved = null;
             try { saved = localStorage.getItem('piarbook_lang'); } catch (e) {}
@@ -600,7 +727,6 @@
             setLang(saved || auto);
         })();
         
-        // ========== ТЕЛЕФОН / КОПИРОВАНИЕ ==========
         function phoneClick(event) {
             if (isMobileDevice()) {
                 return true;
