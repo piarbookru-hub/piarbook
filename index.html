@@ -56,72 +56,6 @@
             z-index: 1;
         }
 
-        .page-title {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            position: relative;
-        }
-        .page-title::before {
-            content: '"';
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 10rem;
-            color: rgba(201, 169, 97, 0.08);
-            line-height: 1;
-            pointer-events: none;
-        }
-        .title-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.8rem;
-            font-size: 0.8rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: #c9a961;
-            margin-bottom: 1.2rem;
-            font-weight: 500;
-            position: relative;
-            z-index: 1;
-        }
-        .title-label::before,
-        .title-label::after {
-            content: '';
-            width: 40px;
-            height: 1px;
-            background: #c9a961;
-        }
-        
-        .page-title h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2.5rem, 7vw, 5rem);
-            font-weight: 500;
-            line-height: 0.95;
-            letter-spacing: -0.02em;
-            color: #f5efe6;
-            margin-bottom: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-        .page-title h1 em {
-            font-style: italic;
-            color: #c9a961;
-            font-weight: 400;
-        }
-        
-        .page-title .subtitle {
-            max-width: 680px;
-            margin: 0 auto;
-            font-size: 1rem;
-            color: #b8b0a4;
-            line-height: 1.7;
-            font-weight: 300;
-            position: relative;
-            z-index: 1;
-        }
-
         .divider {
             display: flex;
             align-items: center;
@@ -158,50 +92,6 @@
 
         .portfolio-section {
             margin-bottom: 1.5rem;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 3rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-        .section-label {
-            font-size: 0.8rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: #c9a961;
-            margin-bottom: 0.8rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .section-label::before {
-            content: '';
-            width: 30px;
-            height: 1px;
-            background: #c9a961;
-        }
-        .section-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(2rem, 4.5vw, 3rem);
-            font-weight: 500;
-            line-height: 1.05;
-            letter-spacing: -0.01em;
-            color: #f5efe6;
-        }
-        .section-title em {
-            font-style: italic;
-            color: #c9a961;
-        }
-        .section-desc {
-            max-width: 420px;
-            color: #b8b0a4;
-            font-size: 0.95rem;
-            line-height: 1.7;
-            font-weight: 300;
         }
 
         .portfolio-grid {
@@ -453,23 +343,11 @@
                 grid-template-columns: 1fr;
                 gap: 1.2rem;
             }
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
         }
 
         @media (max-width: 640px) {
             .container {
                 padding: 1.2rem 1rem 2rem;
-            }
-            .page-title {
-                margin-bottom: 1.8rem;
-            }
-            .page-title::before {
-                font-size: 6rem;
-                top: -15px;
             }
             .portfolio-grid {
                 grid-template-columns: 1fr;
@@ -515,27 +393,8 @@
 
 <div class="container">
 
-    <!-- ЗАГОЛОВОК -->
-    <section class="page-title">
-        <div class="title-label">Портфолио</div>
-        <h1>Кадры, <em>которые работают</em><br>на ваш бизнес</h1>
-        <p class="subtitle">
-            Сайты-визитки для малого бизнеса. Каждый проект — уникальный дизайн, продуманная типографика и запуск за 1-2 дня. Без шаблонов.
-        </p>
-    </section>
-
     <!-- ПОРТФОЛИО -->
     <section class="portfolio-section">
-        <div class="section-header">
-            <div>
-                <div class="section-label">Избранные работы</div>
-                <h2 class="section-title">Восемь ниш — <em>восемь характеров</em></h2>
-            </div>
-            <p class="section-desc">
-                Каждая работа продумана до мелочей: от типографики и цвета до структуры и адаптивности. Выберите нишу — увидите подход.
-            </p>
-        </div>
-
         <div class="portfolio-grid">
 
             <a href="https://avtomaster.piarbook.ru/" target="_blank" rel="noopener" class="portfolio-card">
@@ -720,16 +579,6 @@
 
     <!-- ИНФО-БЛОК -->
     <section class="info-section">
-        <div class="section-header">
-            <div>
-                <div class="section-label">Условия работы</div>
-                <h2 class="section-title">Почему <em>выбирают нас</em></h2>
-            </div>
-            <p class="section-desc">
-                Прозрачные условия, понятные сроки и гарантия результата. Без скрытых платежей.
-            </p>
-        </div>
-
         <div class="info-grid">
 
             <div class="info-card">
