@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Примеры работ | piarbook.ru</title>
+    <title>Портфолио | piarbook.ru</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,6 +56,64 @@
             z-index: 1;
         }
 
+        /* ===== ЗАГОЛОВОК ПОРТФОЛИО ===== */
+        .portfolio-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0 1rem;
+        }
+        .portfolio-hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 12vw, 8rem);
+            font-weight: 500;
+            line-height: 1;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #c9a961;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        .portfolio-hero h1::before,
+        .portfolio-hero h1::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: clamp(30px, 8vw, 80px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c9a961);
+        }
+        .portfolio-hero h1::before {
+            right: 100%;
+            margin-right: 1.5rem;
+            background: linear-gradient(90deg, transparent, #c9a961);
+        }
+        .portfolio-hero h1::after {
+            left: 100%;
+            margin-left: 1.5rem;
+            background: linear-gradient(90deg, #c9a961, transparent);
+        }
+        .hero-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        .hero-divider-line {
+            width: clamp(60px, 15vw, 160px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 97, 0.5), transparent);
+        }
+        .hero-divider-diamond {
+            width: 8px;
+            height: 8px;
+            background: #c9a961;
+            transform: rotate(45deg);
+            box-shadow: 0 0 12px rgba(201, 169, 97, 0.4);
+        }
+
+        /* ===== РАЗДЕЛИТЕЛЬ ===== */
         .divider {
             display: flex;
             align-items: center;
@@ -335,6 +393,9 @@
             .container {
                 padding: 1.5rem 1.5rem 2.5rem;
             }
+            .portfolio-hero {
+                margin-bottom: 2.5rem;
+            }
             .portfolio-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
@@ -348,6 +409,17 @@
         @media (max-width: 640px) {
             .container {
                 padding: 1.2rem 1rem 2rem;
+            }
+            .portfolio-hero {
+                margin-bottom: 2rem;
+                padding: 1rem 0 0.5rem;
+            }
+            .portfolio-hero h1 {
+                letter-spacing: 0.15em;
+            }
+            .portfolio-hero h1::before,
+            .portfolio-hero h1::after {
+                display: none;
             }
             .portfolio-grid {
                 grid-template-columns: 1fr;
@@ -392,6 +464,16 @@
 <div class="bg-fixed"></div>
 
 <div class="container">
+
+    <!-- ЗАГОЛОВОК -->
+    <section class="portfolio-hero">
+        <h1>Портфолио</h1>
+        <div class="hero-divider">
+            <div class="hero-divider-line"></div>
+            <div class="hero-divider-diamond"></div>
+            <div class="hero-divider-line"></div>
+        </div>
+    </section>
 
     <!-- ПОРТФОЛИО -->
     <section class="portfolio-section">
