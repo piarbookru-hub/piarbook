@@ -165,7 +165,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     </div>
 
     <div class="hint-banner" id="hintBanner">
-        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по внутренней ссылке — перейти на страницу для редактирования (автоподготовка). <strong>Ctrl+клик</strong> — открыть в новой вкладке. <strong>Esc</strong> — закрыть панель.
+        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по внутренней ссылке — перейти на страницу для редактирования (мгновенно, без кэша). <strong>Ctrl+клик</strong> — открыть в новой вкладке. <strong>Esc</strong> — закрыть панель.
     </div>
 
     <div class="setup-screen" id="setupScreen">
@@ -222,10 +222,28 @@ let pending = {};
 let editKind = null, editKey = null, editImagePath = null, pendingImg = null, statusTimer = null;
 let currentFile = 'index.html';
 let viewModeUrl = null;
+// Базовый URL сайта (родитель админки) — для корректной работы относительных путей в srcdoc
+let siteBaseUrl = '';
 const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
 $('repoNameHeader').textContent = `· ${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
+
+// Вычисляем базовый URL сайта (родительская папка админки)
+try {
+    const loc = window.location;
+    const pathParts = loc.pathname.split('/').filter(Boolean);
+    // Если админка в /admin/index.html — базовый это /
+    // Если в /some/path/admin/index.html — базовый это /some/path/
+    if (pathParts.length > 1) {
+        pathParts.pop(); // убираем 'admin'
+        siteBaseUrl = loc.origin + '/' + pathParts.join('/') + '/';
+    } else {
+        siteBaseUrl = loc.origin + '/';
+    }
+} catch {
+    siteBaseUrl = window.location.origin + '/';
+}
 
 function updatePageIndicator() {
     const el = $('currentPageIndicator');
@@ -421,20 +439,69 @@ function showEditor() {
     loadSite();
 }
 
-function loadSite() {
+// ═══════════════════════════════════════════════════════
+// ЗАГРУЗКА СТРАНИЦЫ ЧЕРЕЗ GITHUB API + SRCDOC
+// Полностью обходит кэш GitHub Pages — всегда свежая версия
+// ═══════════════════════════════════════════════════════
+async function loadSite() {
     viewModeUrl = null;
     updatePageIndicator();
     const ifr = $('siteIframe');
-    $('iframeLoader').classList.remove('hidden');
-    $('loaderStatus').textContent = 'Загрузка ' + currentFile + '...';
-    ifr.onload = () => { hookIframe(); $('iframeLoader').classList.add('hidden'); };
-    ifr.src = `../${currentFile}?edit=1&t=${Date.now()}`;
+    const loader = $('iframeLoader');
+    const status = $('loaderStatus');
+    
+    loader.classList.remove('hidden');
+    status.textContent = 'Загрузка ' + currentFile + ' из GitHub...';
+    
+    try {
+        const f = await getFile(currentFile);
+        status.textContent = 'Подготовка превью...';
+        
+        let html = f.text;
+        
+        // Добавляем <base href="..."> если его нет — чтобы относительные пути
+        // (images/hero.jpg, style.css) работали корректно внутри srcdoc
+        if (!/<base\s/i.test(html)) {
+            html = html.replace(/<head(\s[^>]*)?>|<head>/i, (match) => {
+                return match + '\n<base href="' + esc(siteBaseUrl) + '">';
+            });
+        }
+        
+        // Inject marker чтобы hookIframe знал что страница загружена через API
+        const marker = '<meta name="cms-loaded-via-api" content="1">';
+        if (!html.includes('cms-loaded-via-api')) {
+            html = html.replace(/<head(\s[^>]*)?>|<head>/i, (match) => match + '\n' + marker);
+        }
+        
+        ifr.srcdoc = html;
+        ifr.onload = () => {
+            hookIframe();
+            loader.classList.add('hidden');
+            
+            // Проверяем что метки есть — если нет, страница возможно ещё не подготовлена
+            try {
+                const doc = ifr.contentDocument;
+                if (doc && !doc.querySelector('[data-edit]') && !doc.querySelector('[data-img]')) {
+                    showStatus('⚠ Страница загружена, но меток редактирования нет. Нажмите «Переподготовить».', 'info');
+                }
+            } catch {}
+        };
+    } catch (e) {
+        status.textContent = 'Ошибка: ' + e.message;
+        const i = interpretError(e.status, e.body);
+        showStatus(`✗ Не удалось загрузить ${currentFile}: ${i.title}`, 'error');
+        // Fallback: пробуем загрузить через обычный src
+        setTimeout(() => {
+            ifr.src = `../${currentFile}?t=${Date.now()}`;
+            ifr.onload = () => { hookIframe(); loader.classList.add('hidden'); };
+        }, 1000);
+    }
 }
 
 function reloadPreview() {
     if (Object.keys(pending).length && !confirm('Несохранённые правки в превью пропадут. Обновить?')) return;
     loadSite();
-    showStatus('Обновляем превью...', 'info');
+    showStatus('Обновляем превью (через GitHub API)...', 'info');
 }
 
 function isInternalPage(href) {
@@ -502,10 +569,13 @@ async function prepareSite() {
     $('errorDetails').innerHTML = '';
     const ok = await prepareCurrentFile(log);
     if (ok) {
-        setTimeout(() => { showStatus('Страница подготовлена! Открываем редактор...'); setTimeout(showEditor, 1000); }, 500);
+        setTimeout(() => { showStatus('Страница подготовлена! Открываем редактор...'); setTimeout(showEditor, 500); }, 300);
     }
 }
 
+// ═══════════════════════════════════════════════════════
+// ПЕРЕХОД НА ДРУГУЮ СТРАНИЦУ: подготовка + мгновенная загрузка
+// ═══════════════════════════════════════════════════════
 async function navigateTo(href) {
     const cleanPath = normalizePagePath(href);
     if (!cleanPath) return;
@@ -530,10 +600,9 @@ async function navigateTo(href) {
     const ok = await prepareCurrentFile(log);
     
     if (ok) {
-        setTimeout(() => {
-            showEditor();
-            showStatus('Страница ' + cleanPath + ' готова к редактированию!', 'success');
-        }, 800);
+        // Без задержки — srcdoc загружается мгновенно из памяти
+        showEditor();
+        showStatus('✓ Страница ' + cleanPath + ' готова к редактированию!', 'success');
     }
 }
 
@@ -543,6 +612,8 @@ function openExternalInIframe(url) {
     const ifr = $('siteIframe');
     $('iframeLoader').classList.remove('hidden');
     $('loaderStatus').textContent = 'Открываю ссылку в режиме просмотра...';
+    // Для внешних URL используем обычный src (не srcdoc)
+    ifr.removeAttribute('srcdoc');
     ifr.onload = () => { $('iframeLoader').classList.add('hidden'); };
     ifr.src = url;
     showStatus('Режим просмотра: редактирование недоступно. «Домой» или «Обновить» — возврат к редактированию.', 'info');
@@ -555,7 +626,7 @@ function goHome() {
 }
 
 function openLiveSite() {
-    window.open(viewModeUrl ? viewModeUrl : `../${currentFile}`, '_blank');
+    window.open(viewModeUrl ? viewModeUrl : (siteBaseUrl + currentFile), '_blank');
 }
 
 function hookIframe() {
@@ -584,11 +655,12 @@ function hookIframe() {
                     return;
                 }
                 if (isInternalPage(href)) { navigateTo(href); return; }
+                // Внешняя ссылка — открываем в режиме просмотра
                 let abs = href;
                 if (/^https?:\/\//i.test(href)) abs = href;
                 else if (href.startsWith('//')) abs = 'https:' + href;
                 else {
-                    try { abs = new URL(href, d.location.href).href; } catch { abs = href; }
+                    try { abs = new URL(href, siteBaseUrl).href; } catch { abs = href; }
                 }
                 openExternalInIframe(abs);
                 return;
@@ -776,6 +848,8 @@ function cleanHtmlMarks(html) {
         el.removeAttribute('data-img');
         el.removeAttribute('data-img-id');
     });
+    // Удаляем внедрённый <base> тег, чтобы он не копился
+    doc.querySelectorAll('base[href]').forEach(el => el.parentNode.removeChild(el));
     doc.body.normalize();
     const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
     const emptyNodes = [];
@@ -1160,7 +1234,11 @@ async function saveAll() {
         done.forEach(k => delete pending[k]);
         markUnsaved();
         if (failed.length) showStatus(`Сохранено: ${done.length}. Не сохранено: ${failed.length}.`, 'error');
-        else showStatus('Сохранено! Сайт обновится через 1-2 минуты.');
+        else {
+            showStatus('Сохранено! Перезагружаю превью...', 'success');
+            // Мгновенно перезагружаем превью через API — новая версия сразу видна
+            setTimeout(loadSite, 500);
+        }
     } catch (e) {
         const i = interpretError(e.status, e.body);
         showStatus(`✗ ${i.title}. ${i.fix}`, 'error');
