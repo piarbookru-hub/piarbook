@@ -47,7 +47,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .unsaved-badge { background: #F40009; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 11px; margin-left: 6px; display: none; }
 .unsaved-badge.show { display: inline-block; }
 
-/* Индикатор текущей страницы */
 .page-indicator { display: inline-flex; align-items: center; gap: 6px; background: #0f0f0f; border: 1px solid #333; padding: 7px 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; color: #c9a961; margin-left: 4px; }
 .page-indicator i { color: #F40009; font-size: 11px; }
 
@@ -172,7 +171,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
         <div class="setup-card">
             <div class="setup-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
             <h2 id="setupTitle">Подготовка сайта</h2>
-            <p>Админка автоматически:<br>• Загрузит текущую страницу<br>• Пометит <strong>весь видимый текст</strong> (любой язык, цифры)<br>• Расставит метки на <strong>фотографии</strong><br>• Сохранит обратно в репозиторий</p>
+            <p>Админка автоматически:<br>• Загрузит текущую страницу<br>• Пометит <strong>весь видимый текст</strong> (любой язык, цифры)<br>• Расставит метки на <strong>фотографии</strong> (с уникальными ID)<br>• Сохранит обратно в репозиторий</p>
             <div class="token-check-box"><h3><i class="fas fa-key"></i> Информация о токене</h3><div id="tokenInfo">Проверяю...</div></div>
             <button class="btn" id="prepareBtn"><i class="fas fa-download"></i> Подготовить страницу</button>
             <div class="btn-group">
@@ -219,10 +218,7 @@ if (typeof CMS_CONFIG === 'undefined') {
 const $ = id => document.getElementById(id);
 let token = localStorage.getItem('gh_token');
 let pending = {};
-let editKind = null, editKey = null, pendingImg = null, statusTimer = null;
-// ═══════════════════════════════════════════════════════
-// МНОГОСТРАНИЧНОСТЬ: текущая страница (по умолчанию index.html)
-// ═══════════════════════════════════════════════════════
+let editKind = null, editKey = null, editImagePath = null, pendingImg = null, statusTimer = null;
 let currentFile = 'index.html';
 const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
@@ -429,9 +425,6 @@ function reloadPreview() {
     showStatus('Обновляем превью...', 'info');
 }
 
-// ═══════════════════════════════════════════════════════
-// ПРОВЕРКА: является ли ссылка внутренней страницей сайта
-// ═══════════════════════════════════════════════════════
 function isInternalPage(href) {
     if (!href) return false;
     const clean = href.split(/[?#]/)[0];
@@ -440,7 +433,6 @@ function isInternalPage(href) {
     return /\.html?$/i.test(clean);
 }
 
-// Нормализовать путь к странице
 function normalizePagePath(href) {
     let p = href.split(/[?#]/)[0];
     try { p = decodeURIComponent(p); } catch {}
@@ -448,30 +440,23 @@ function normalizePagePath(href) {
     return p;
 }
 
-// ═══════════════════════════════════════════════════════
-// ПЕРЕХОД НА ДРУГУЮ СТРАНИЦУ ВНУТРИ АДМИНКИ
-// ═══════════════════════════════════════════════════════
 async function navigateTo(href) {
     const cleanPath = normalizePagePath(href);
     if (!cleanPath) return;
-
     if (Object.keys(pending).length) {
         if (!confirm('Есть несохранённые правки. При переходе они будут потеряны. Продолжить?')) return;
         pending = {};
         markUnsaved();
     }
-
     showStatus('Переход на ' + cleanPath + '...', 'info');
     currentFile = cleanPath;
     updatePageIndicator();
-
     try {
         const f = await getFile(currentFile);
+        showEditor();
         if (f.text.includes('data-edit="')) {
-            showEditor();
             showStatus('Страница ' + cleanPath + ' загружена и готова к редактированию.', 'success');
         } else {
-            showEditor();
             showStatus('Страница ' + cleanPath + ' НЕ подготовлена. Нажмите «Переподготовить», чтобы расставить метки.', 'info');
         }
     } catch (e) {
@@ -482,13 +467,11 @@ async function navigateTo(href) {
     }
 }
 
-// Вернуться к главной (index.html)
 function goHome() {
     if (currentFile === 'index.html') { reloadPreview(); return; }
     navigateTo('index.html');
 }
 
-// Открыть текущую страницу живого сайта в новой вкладке
 function openLiveSite() {
     window.open(`../${currentFile}`, '_blank');
 }
@@ -503,7 +486,6 @@ function hookIframe() {
     d.addEventListener('click', ev => {
         const modifier = ev.ctrlKey || ev.metaKey || ev.button === 1;
 
-        // 1. Редактируемые элементы (только без модификатора)
         if (!modifier) {
             const textEl = ev.target.closest && ev.target.closest('[data-edit]');
             if (textEl) { ev.preventDefault(); ev.stopPropagation(); openText(textEl.getAttribute('data-edit'), textEl.textContent); return; }
@@ -511,31 +493,28 @@ function hookIframe() {
             if (imgEl) {
                 ev.preventDefault(); ev.stopPropagation();
                 const path = imgEl.getAttribute('data-img');
+                const imgId = imgEl.getAttribute('data-img-id') || '';
                 const actualImg = imgEl.tagName === 'IMG' ? imgEl : imgEl.querySelector('img');
-                openImage(path, actualImg ? (actualImg.currentSrc || actualImg.src) : '');
+                openImage(path, actualImg ? (actualImg.currentSrc || actualImg.src) : '', imgId);
                 return;
             }
         }
 
-        // 2. Ссылки
         const linkEl = ev.target.closest && ev.target.closest('a[href]');
         if (linkEl) {
             const href = linkEl.getAttribute('href');
-            // Внутренняя страница сайта — открываем в админке
             if (isInternalPage(href)) {
                 ev.preventDefault();
                 ev.stopPropagation();
                 navigateTo(href);
                 return;
             }
-            // Внешняя ссылка с модификатором — открыть в новой вкладке
             if (modifier) {
                 ev.preventDefault();
                 ev.stopPropagation();
                 window.open(href, '_blank', 'noopener');
                 return;
             }
-            // Обычный клик по внешней ссылке — блокируем (режим редактирования)
             ev.preventDefault();
         }
     }, true);
@@ -571,8 +550,20 @@ function syncHref(el, newValue) {
 }
 
 // ═══════════════════════════════════════════════════════
-// РАБОТА СО ССЫЛКАМИ НА ТЕКСТЕ И ФОТО
+// ПОИСК ЭЛЕМЕНТОВ ФОТО: по уникальному ID или по пути (все совпадения)
+// ИСПРАВЛЕНИЕ БАГА: раньше брался только ПЕРВЫЙ элемент с одинаковым data-img
 // ═══════════════════════════════════════════════════════
+function findImgTargets(doc, key, path) {
+    if (!doc) return [];
+    if (key && /^img_\d+$/.test(key)) {
+        const el = doc.querySelector(`[data-img-id="${key}"]`);
+        return el ? [el] : [];
+    }
+    const lookupPath = path || key;
+    if (!lookupPath) return [];
+    return Array.from(doc.querySelectorAll(`[data-img="${lookupPath}"]`));
+}
+
 function readTextLink(key) {
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
@@ -587,12 +578,13 @@ function readTextLink(key) {
     };
 }
 
-function readImageLink(key) {
+function readImageLink(key, path) {
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
     if (!d) return '';
-    const target = d.querySelector(`[data-img="${CSS.escape(key)}"]`);
-    if (!target) return '';
+    const targets = findImgTargets(d, key, path);
+    if (!targets.length) return '';
+    const target = targets[0];
     let linkEl = null;
     if (target.tagName === 'A') linkEl = target;
     else if (target.closest) linkEl = target.closest('a');
@@ -678,7 +670,10 @@ function cleanHtmlMarks(html) {
         });
         pass++;
     }
-    doc.querySelectorAll('[data-img]').forEach(el => el.removeAttribute('data-img'));
+    doc.querySelectorAll('[data-img]').forEach(el => {
+        el.removeAttribute('data-img');
+        el.removeAttribute('data-img-id');
+    });
     doc.body.normalize();
     const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
     const emptyNodes = [];
@@ -831,6 +826,7 @@ function processHtml(html) {
     const userWrappers = (CMS_CONFIG.imageWrappers || []);
     const wrapperSelector = [...CORE_IMAGE_WRAPPERS, ...userWrappers].join(', ');
     let imgCount = 0;
+    let imgIdCounter = 0;
     doc.querySelectorAll('img').forEach(img => {
         if (img.hasAttribute('data-img')) return;
         const src = img.getAttribute('src');
@@ -841,8 +837,15 @@ function processHtml(html) {
         if (!path || path.startsWith('../')) return;
         let wrapper = wrapperSelector ? img.closest(wrapperSelector) : null;
         if (wrapper && wrapper.hasAttribute('data-img')) return;
-        if (wrapper) wrapper.setAttribute('data-img', path);
-        else img.setAttribute('data-img', path);
+        // Уникальный ID для каждого фото — чтобы дубликаты не конфликтовали
+        const imgId = 'img_' + (++imgIdCounter);
+        if (wrapper) {
+            wrapper.setAttribute('data-img', path);
+            wrapper.setAttribute('data-img-id', imgId);
+        } else {
+            img.setAttribute('data-img', path);
+            img.setAttribute('data-img-id', imgId);
+        }
         imgCount++;
     });
     const rawHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
@@ -896,7 +899,7 @@ async function cleanMarks() {
         if (!confirm('У вас есть несохранённые правки. Они будут потеряны при очистке. Продолжить?')) return;
         pending = {}; markUnsaved();
     }
-    if (!confirm('Удалить ВСЕ метки редактирования (data-edit, data-img) из ' + currentFile + '?\n\nПравки текстов и ручные ссылки СОХРАНЯТСЯ.\nПосле очистки нужно снова нажать «Подготовить страницу».\n\nПродолжить?')) return;
+    if (!confirm('Удалить ВСЕ метки редактирования (data-edit, data-img, data-img-id) из ' + currentFile + '?\n\nПравки текстов и ручные ссылки СОХРАНЯТСЯ.\nПосле очистки нужно снова нажать «Подготовить страницу».\n\nПродолжить?')) return;
     const btn = $('cleanBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Очищаю...';
@@ -952,8 +955,11 @@ function openText(key, value) {
     setTimeout(() => ta.focus(), 100);
 }
 
-function openImage(path, src) {
-    editKind = 'image'; editKey = path; pendingImg = null;
+function openImage(path, src, imgId) {
+    editKind = 'image';
+    editKey = imgId || path;
+    editImagePath = path;
+    pendingImg = null;
     openPanel('Замена изображения', path);
     $('editPanelContent').innerHTML = `
         <div style="margin-bottom: 16px;">
@@ -973,7 +979,7 @@ function openImage(path, src) {
         </div>
     `;
     if (src) $('curImg').src = src;
-    $('imgLink').value = readImageLink(path);
+    $('imgLink').value = readImageLink(editKey, path);
     $('imageFileInput').addEventListener('change', e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -988,9 +994,6 @@ function openImage(path, src) {
     });
 }
 
-// ═══════════════════════════════════════════════════════
-// ПРИМЕНИТЬ (исправлен баг: ссылка на фото без замены файла)
-// ═══════════════════════════════════════════════════════
 function applyEdit() {
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
@@ -1011,20 +1014,20 @@ function applyEdit() {
         showStatus(linkUrl ? 'Изменения и ссылка применены. Сохраните в GitHub.' : 'Изменения применены. Сохраните в GitHub.');
     } else if (editKind === 'image') {
         const imgLinkUrl = $('imgLink').value.trim();
-        // ИСПРАВЛЕНО: достаточно либо файла, либо ссылки
         if (!pendingImg && !imgLinkUrl) {
             return showStatus('Выберите файл или укажите ссылку', 'error');
         }
-        pending['i:' + editKey] = { type: 'image', data: pendingImg, path: editKey, link: imgLinkUrl };
+        const path = editImagePath || editKey;
+        pending['i:' + editKey] = { type: 'image', data: pendingImg, path: path, key: editKey, link: imgLinkUrl };
         if (d) {
-            const target = d.querySelector(`[data-img="${CSS.escape(editKey)}"]`);
-            if (target) {
+            const targets = findImgTargets(d, editKey, path);
+            targets.forEach(target => {
                 if (pendingImg) {
                     const img = target.tagName === 'IMG' ? target : target.querySelector('img');
                     if (img) { img.removeAttribute('srcset'); img.src = pendingImg; }
                 }
                 if (imgLinkUrl) applyLinkToImage(d, target, imgLinkUrl);
-            }
+            });
         }
         if (pendingImg && imgLinkUrl) showStatus('Фото и ссылка применены. Сохраните в GitHub.');
         else if (imgLinkUrl) showStatus('Ссылка на фото применена. Сохраните в GitHub.');
@@ -1036,12 +1039,9 @@ function applyEdit() {
 
 function closePanel() {
     $('editPanel').classList.remove('active');
-    editKind = editKey = pendingImg = null;
+    editKind = editKey = editImagePath = pendingImg = null;
 }
 
-// ═══════════════════════════════════════════════════════
-// СОХРАНИТЬ ВСЁ (с поддержкой многостраничности и ссылок)
-// ═══════════════════════════════════════════════════════
 async function saveAll() {
     const keys = Object.keys(pending);
     if (!keys.length) return showStatus('Нет изменений для сохранения', 'info');
@@ -1055,7 +1055,6 @@ async function saveAll() {
         const imagesWithData = images.filter(k => pending[k].data);
         const imagesWithLinks = images.filter(k => pending[k].link);
 
-        // Обновляем текущую страницу если есть тексты ИЛИ ссылки на фото
         if (texts.length || imagesWithLinks.length) {
             const f = await getFile(currentFile);
             const doc = new DOMParser().parseFromString(f.text, 'text/html');
@@ -1073,28 +1072,31 @@ async function saveAll() {
                 }
             }
 
+            // ИСПРАВЛЕНО: ссылка применяется ко ВСЕМ нужным элементам (по ID или по пути)
             for (const k of imagesWithLinks) {
-                const { path, link } = pending[k];
-                const target = doc.querySelector(`[data-img="${CSS.escape(path)}"]`);
-                if (target) applyLinkToImage(doc, target, link);
+                const { path, link, key } = pending[k];
+                const targets = findImgTargets(doc, key || k.slice(2), path);
+                if (targets.length) {
+                    targets.forEach(t => applyLinkToImage(doc, t, link));
+                } else {
+                    failed.push(k);
+                }
             }
 
             const rawHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
             await putFile(currentFile, b64e(prettifyHtml(rawHtml)), f.sha, `Редактирование текстов и ссылок в ${currentFile}`);
         }
 
-        // Сохраняем файлы картинок (только те, где есть новый файл)
         for (const k of imagesWithData) {
             const { path, data } = pending[k];
             try {
                 await putFile(path, data.split(',')[1], await getSha(path), `Обновление изображения ${path}`);
-                if (!texts.includes(k)) done.push(k);
+                if (!done.includes(k)) done.push(k);
             } catch (e) {
                 failed.push(k);
             }
         }
 
-        // Если были только ссылки на фото без файлов — считаем их выполненными
         imagesWithLinks.forEach(k => { if (!done.includes(k) && !failed.includes(k)) done.push(k); });
 
         done.forEach(k => delete pending[k]);
