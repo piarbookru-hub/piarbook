@@ -34,8 +34,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .editor-app { display: none; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
 .editor-app.active { display: flex; }
 
-.editor-toolbar { background: #1a1a1a; border-bottom: 1px solid #2a2a2a; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 100; gap: 10px; flex-wrap: wrap; }
-.editor-toolbar h1 { font-size: 16px; font-weight: 600; }
+/* ═══════════════════════════════════════════════════════ */
+/* ШАПКА: ФИКСИРОВАННО ДВА РЯДА                             */
+/* Ряд 1: лого + страница + деплой ... Сохранить + бейдж    */
+/* Ряд 2: рабочие кнопки                                    */
+/* ═══════════════════════════════════════════════════════ */
+.editor-toolbar { background: #1a1a1a; border-bottom: 1px solid #2a2a2a; padding: 12px 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; z-index: 100; }
+.toolbar-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.editor-toolbar h1 { font-size: 16px; font-weight: 600; display: flex; align-items: center; flex-wrap: wrap; row-gap: 6px; }
+.toolbar-save { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .toolbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .toolbar-btn { background: #2a2a2a; border: 1px solid #333; color: #fff; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: all .2s; }
 .toolbar-btn:hover { border-color: #F40009; }
@@ -44,12 +51,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .toolbar-btn.warning { background: #8B4513; border-color: #A0522D; }
 .toolbar-btn.warning:hover { background: #A0522D; border-color: #CD853F; }
 .toolbar-btn:disabled { opacity: .5; cursor: not-allowed; }
-.unsaved-badge { background: #F40009; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 11px; margin-left: 6px; display: none; }
+.unsaved-badge { background: #F40009; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 11px; margin-left: 0; display: none; white-space: nowrap; }
 .unsaved-badge.show { display: inline-block; }
 
-/* ═══════════════════════════════════════════════════════ */
-/* НОВОЕ: ИНДИКАТОР ДЕПЛОЯ GITHUB PAGES                     */
-/* ═══════════════════════════════════════════════════════ */
 .deploy-badge { display: none; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'Courier New', monospace; cursor: pointer; border: 1px solid #333; background: #0f0f0f; color: #888; margin-left: 6px; transition: all .2s; user-select: none; }
 .deploy-badge:hover { border-color: #666; }
 .deploy-badge.live { color: #00cc66; border-color: rgba(0, 204, 102, .45); background: rgba(0, 204, 102, .08); }
@@ -183,23 +187,31 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 
 <div class="editor-app" id="editorApp">
     <div class="editor-toolbar">
-        <h1>
-            <i class="fas fa-magic" style="color: #F40009;"></i>
-            <span id="projectNameHeader" style="font-weight: 600; margin-left: 8px;">Редактор</span>
-            <span id="repoNameHeader" style="color: #888; font-weight: 400; margin-left: 8px; font-size: 13px;"></span>
-            <span class="page-indicator" id="pageIndicatorBox" title="Текущая страница"><i class="fas fa-file"></i> <span id="currentPageIndicator">index.html</span></span>
-            <span class="unsaved-badge" id="unsavedBadge"><i class="fas fa-circle" style="font-size: 8px;"></i> есть несохранённые</span>
-            <span class="deploy-badge" id="deployBadge" title="Статус деплоя GitHub Pages. Клик — перепроверить."></span>
-        </h1>
-        <div class="toolbar-actions">
-            <button class="toolbar-btn" id="homeBtn" title="Вернуться к редактированию index.html"><i class="fas fa-home"></i></button>
-            <button class="toolbar-btn" id="openSiteBtn" title="Открыть текущую страницу в новой вкладке"><i class="fas fa-external-link-alt"></i> Открыть сайт</button>
-            <button class="toolbar-btn" id="checkBtn" title="Проверить токен"><i class="fas fa-shield-alt"></i> Проверить</button>
-            <button class="toolbar-btn" id="reloadBtn" title="Обновить превью"><i class="fas fa-sync"></i> Обновить</button>
-            <button class="toolbar-btn warning" id="cleanBtn" title="Удалить все метки data-edit и data-img из текущей страницы"><i class="fas fa-broom"></i> Очистить метки</button>
-            <button class="toolbar-btn" id="resetBtn" title="Подготовить текущую страницу заново"><i class="fas fa-redo"></i> Переподготовить</button>
-            <button class="toolbar-btn primary" id="saveBtn"><i class="fas fa-cloud-upload-alt"></i> Сохранить в GitHub</button>
-            <button class="toolbar-btn" id="logoutBtn" title="Выйти" aria-label="Выйти"><i class="fas fa-sign-out-alt"></i></button>
+        <!-- ═══ РЯД 1: лого + страница + деплой | Сохранить + бейдж ═══ -->
+        <div class="toolbar-row toolbar-row-top">
+            <h1>
+                <i class="fas fa-magic" style="color: #F40009;"></i>
+                <span id="projectNameHeader" style="font-weight: 600; margin-left: 8px;">Редактор</span>
+                <span id="repoNameHeader" style="color: #888; font-weight: 400; margin-left: 8px; font-size: 13px;"></span>
+                <span class="page-indicator" id="pageIndicatorBox" title="Текущая страница"><i class="fas fa-file"></i> <span id="currentPageIndicator">index.html</span></span>
+                <span class="deploy-badge" id="deployBadge" title="Статус деплоя GitHub Pages. Клик — перепроверить."></span>
+            </h1>
+            <div class="toolbar-save">
+                <button class="toolbar-btn primary" id="saveBtn"><i class="fas fa-cloud-upload-alt"></i> Сохранить в GitHub</button>
+                <span class="unsaved-badge" id="unsavedBadge"><i class="fas fa-circle" style="font-size: 8px;"></i> есть несохранённые</span>
+            </div>
+        </div>
+        <!-- ═══ РЯД 2: рабочие кнопки ═══ -->
+        <div class="toolbar-row toolbar-row-bottom">
+            <div class="toolbar-actions">
+                <button class="toolbar-btn" id="homeBtn" title="Вернуться к редактированию index.html"><i class="fas fa-home"></i></button>
+                <button class="toolbar-btn" id="openSiteBtn" title="Открыть текущую страницу в новой вкладке"><i class="fas fa-external-link-alt"></i> Открыть сайт</button>
+                <button class="toolbar-btn" id="checkBtn" title="Проверить токен"><i class="fas fa-shield-alt"></i> Проверить</button>
+                <button class="toolbar-btn" id="reloadBtn" title="Обновить превью"><i class="fas fa-sync"></i> Обновить</button>
+                <button class="toolbar-btn warning" id="cleanBtn" title="Удалить все метки data-edit и data-img из текущей страницы"><i class="fas fa-broom"></i> Очистить метки</button>
+                <button class="toolbar-btn" id="resetBtn" title="Подготовить текущую страницу заново"><i class="fas fa-redo"></i> Переподготовить</button>
+                <button class="toolbar-btn" id="logoutBtn" title="Выйти" aria-label="Выйти"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
         </div>
     </div>
 
@@ -268,11 +280,8 @@ let editKind = null, editKey = null, editImagePath = null, pendingImg = null, st
 let currentFile = localStorage.getItem('cms_currentFile') || 'index.html';
 let viewModeUrl = null;
 let siteBaseUrl = '';
-// ═══════════════════════════════════════════════════════
-// ДЕПЛОЙ-СТАТУС: метка версии в HTML + опрос живого сайта
-// ═══════════════════════════════════════════════════════
-let repoDeployId = null;   // метка в файле репозитория
-let deployPollGen = 0;     // генерация опроса (чтобы сбрасывать старые циклы)
+let repoDeployId = null;
+let deployPollGen = 0;
 const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
@@ -308,9 +317,6 @@ function updatePageIndicator() {
     }
 }
 
-// ═══════════════════════════════════════════════════════
-// ФУНКЦИИ ДЕПЛОЙ-МЕТКИ
-// ═══════════════════════════════════════════════════════
 function newDeployId() {
     return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
@@ -346,7 +352,6 @@ async function fetchLiveDeployId() {
     return readDeployId(text);
 }
 
-// Проверяет, дошёл ли сохранённый файл до живого сайта
 async function verifyDeploy(expectedId, singleCheck) {
     const gen = ++deployPollGen;
     if (!expectedId) { setDeployBadge('unknown', '<i class="fas fa-info-circle"></i> Нет метки'); return; }
@@ -359,7 +364,6 @@ async function verifyDeploy(expectedId, singleCheck) {
         }
         setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
         if (singleCheck) return;
-        // Опрос до 2 минут (30 раз по 4 сек)
         for (let i = 0; i < 30; i++) {
             await new Promise(r => setTimeout(r, 4000));
             if (gen !== deployPollGen) return;
@@ -566,9 +570,6 @@ function showEditor() {
     loadSite();
 }
 
-// ═══════════════════════════════════════════════════════
-// ЗАГРУЗКА СТРАНИЦЫ + АВТОПРОВЕРКА ДЕПЛОЯ
-// ═══════════════════════════════════════════════════════
 async function loadSite() {
     viewModeUrl = null;
     updatePageIndicator();
@@ -589,7 +590,7 @@ async function loadSite() {
         ifr.onload = () => {
             hookIframe();
             loader.classList.add('hidden');
-            verifyDeploy(repoDeployId, true); // разовая проверка статуса деплоя
+            verifyDeploy(repoDeployId, true);
         };
     } catch (e) {
         status.textContent = 'Ошибка: ' + e.message;
@@ -659,7 +660,6 @@ async function prepareCurrentFile(logContainer = null) {
         const r = processHtml(f.text);
         li(`Найдено ${r.textCount} текстов и ${r.imgCount} картинок`, 'done');
         li('Сохранение подготовленного ' + currentFile + '...', 'working');
-        // Ставим метку деплоя
         const deployId = newDeployId();
         const stamped = stampDeployId(r.html, deployId);
         await putFile(currentFile, b64e(stamped), f.sha, `Подготовка ${currentFile} к редактированию`);
@@ -1312,9 +1312,6 @@ function closePanel() {
     editKind = editKey = editImagePath = pendingImg = null;
 }
 
-// ═══════════════════════════════════════════════════════
-// СОХРАНЕНИЕ + СТАВIM МЕТКУ ДЕПЛОЯ + ЗАПУСКАЕМ ПРОВЕРКУ
-// ═══════════════════════════════════════════════════════
 async function saveAll() {
     const keys = Object.keys(pending);
     if (!keys.length) return showStatus('Нет изменений для сохранения', 'info');
@@ -1373,7 +1370,6 @@ async function saveAll() {
         else {
             showStatus('Сохранено! Ждём деплой GitHub Pages...', 'success');
             setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
-            // Перезагружаем превью и запускаем опрос живого сайта
             setTimeout(() => { loadSite(); verifyDeploy(repoDeployId, false); }, 500);
         }
     } catch (e) {
@@ -1408,7 +1404,6 @@ $('cancelBtn').addEventListener('click', closePanel);
 $('closePanelBtn').addEventListener('click', closePanel);
 $('homeBtn').addEventListener('click', goHome);
 $('openSiteBtn').addEventListener('click', openLiveSite);
-// Клик по значку деплоя — принудительная перепроверка
 $('deployBadge').addEventListener('click', () => verifyDeploy(repoDeployId, true));
 
 window.addEventListener('beforeunload', e => { if (Object.keys(pending).length) { e.preventDefault(); e.returnValue = ''; } });
