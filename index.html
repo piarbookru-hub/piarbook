@@ -165,7 +165,7 @@
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.4s;
-            background: linear-gradient(135deg, #1a1614 0%, #2a1f18 100%);
+            background: #1a1614;
             display: flex;
             align-items: flex-end;
             text-decoration: none;
@@ -187,22 +187,22 @@
             pointer-events: none;
         }
 
-        /* ===== ФОТО: вписывается в карточку, верх и бока видны полностью ===== */
+        /* ===== ФОТО: вписывается целиком, бока не обрезаются ===== */
         .portfolio-card img {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain;          /* ← contain: фото помещается целиком, бока не обрезаются */
-            object-position: center top;  /* ← прижато к верху, шапка сайта видна */
+            object-fit: contain;          /* ← contain: фото помещается целиком */
+            object-position: center top;  /* ← прижато к верху */
             z-index: 1;
             transition: transform 0.6s;
             opacity: 1;
-            background: #1a1614;          /* ← фон под прозрачные области фото */
+            background: #1a1614;          /* ← фон под пустые области */
         }
         .portfolio-card:hover img,
         .portfolio-card:hover .portfolio-card-bg {
-            transform: scale(1.03);       /* ← уменьшил zoom чтобы не вылезало за края */
+            transform: scale(1.03);       /* ← уменьшен zoom чтобы не вылезало */
         }
 
         /* ===== ЗАТЕМНЕНИЕ ===== */
