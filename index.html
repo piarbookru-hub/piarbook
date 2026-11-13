@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
+<html lang="ru"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Админ-панель — визуальный редактор</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="config.js"></script>
 <style>
@@ -114,87 +113,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
-<body>
-
-<div class="login-screen" id="loginScreen">
-    <div class="login-card">
-        <h1><i class="fas fa-lock" style="color: #F40009;"></i> Вход в админ-панель</h1>
-        <p class="subtitle">Введите ваш GitHub Personal Access Token</p>
-        <div class="form-group">
-            <label for="tokenInput">Personal Access Token</label>
-            <input type="password" id="tokenInput" placeholder="github_pat_… или ghp_…" autocomplete="off">
-        </div>
-        <button class="btn" id="loginBtn">Войти</button>
-        <div class="error-msg" id="loginError" role="alert"></div>
-        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" class="help-link">
-            <i class="fas fa-external-link-alt"></i> Создать fine-grained токен (один репозиторий, Contents: Read and write)
-        </a>
-    </div>
-</div>
-
-<div class="editor-app" id="editorApp">
-    <div class="editor-toolbar">
-        <h1>
-            <i class="fas fa-magic" style="color: #F40009;"></i>
-            <span id="projectNameHeader" style="font-weight: 600; margin-left: 8px;">Редактор</span>
-            <span id="repoNameHeader" style="color: #888; font-weight: 400; margin-left: 8px; font-size: 13px;"></span>
-            <span class="unsaved-badge" id="unsavedBadge"><i class="fas fa-circle" style="font-size: 8px;"></i> есть несохранённые</span>
-        </h1>
-        <div class="toolbar-actions">
-            <button class="toolbar-btn" id="checkBtn" title="Проверить токен"><i class="fas fa-shield-alt"></i> Проверить</button>
-            <button class="toolbar-btn" id="reloadBtn" title="Обновить превью"><i class="fas fa-sync"></i> Обновить</button>
-            <button class="toolbar-btn warning" id="cleanBtn" title="Удалить все метки data-edit и data-img из index.html"><i class="fas fa-broom"></i> Очистить метки</button>
-            <button class="toolbar-btn" id="resetBtn" title="Подготовить заново"><i class="fas fa-redo"></i> Переподготовить</button>
-            <button class="toolbar-btn primary" id="saveBtn"><i class="fas fa-cloud-upload-alt"></i> Сохранить в GitHub</button>
-            <button class="toolbar-btn" id="logoutBtn" title="Выйти" aria-label="Выйти"><i class="fas fa-sign-out-alt"></i></button>
-        </div>
-    </div>
-
-    <div class="hint-banner" id="hintBanner">
-        <i class="fas fa-lightbulb"></i> Наведите на любой <strong>текст</strong>, <strong>телефон</strong>, <strong>почту</strong>, <strong>цену</strong> или <strong>фото</strong> и кликните — откроется редактор. <strong>Esc</strong> — закрыть.
-    </div>
-
-    <div class="setup-screen" id="setupScreen">
-        <div class="setup-card">
-            <div class="setup-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
-            <h2 id="setupTitle">Подготовка сайта</h2>
-            <p>Админка автоматически:<br>• Загрузит ваш <strong>index.html</strong><br>• Найдёт все тексты, телефоны, email и цены<br>• Расставит метки для редактирования<br>• Сохранит обратно в репозиторий</p>
-            <div class="token-check-box"><h3><i class="fas fa-key"></i> Информация о токене</h3><div id="tokenInfo">Проверяю...</div></div>
-            <button class="btn" id="prepareBtn"><i class="fas fa-download"></i> Подготовить сайт</button>
-            <div class="btn-group">
-                <button class="btn btn-secondary btn-small" id="checkBtn2"><i class="fas fa-shield-alt"></i> Проверить токен</button>
-                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-small" style="text-decoration: none; text-align: center; color: #fff;"><i class="fas fa-plus"></i> Новый токен</a>
-            </div>
-            <div id="errorDetails" role="alert"></div>
-            <div class="progress-log" id="progressLog" style="display: none;"></div>
-        </div>
-    </div>
-
-    <div class="iframe-wrapper" id="iframeWrapper" style="display: none;">
-        <div class="iframe-loader" id="iframeLoader">
-            <div class="spinner"></div>
-            <div class="loader-text">Загрузка сайта...</div>
-            <div class="loader-status" id="loaderStatus">Инициализация</div>
-        </div>
-        <iframe id="siteIframe" class="site-iframe" title="Превью сайта" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
-    </div>
-</div>
-
-<div class="edit-panel" id="editPanel" role="dialog" aria-label="Редактирование">
-    <div class="edit-panel-header">
-        <h3><span id="editTitle">Редактирование</span><span class="key-badge" id="editKey"></span></h3>
-        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">✕</button>
-    </div>
-    <div id="editPanelContent"></div>
-    <div class="edit-panel-actions">
-        <button class="toolbar-btn btn-secondary" id="cancelBtn">Отмена</button>
-        <button class="toolbar-btn primary" id="applyBtn">Применить</button>
-    </div>
-</div>
-
-<div class="status-bar" id="statusBar" role="status" aria-live="polite"></div>
-
-<script>
+<body><div class="login-screen" id="loginScreen"><div class="login-card"><h1><i class="fas fa-lock" style="color: #F40009;"></i><span data-edit="auto_1"> Вход в админ-панель</span></h1><p class="subtitle"><span data-edit="auto_2">Введите ваш GitHub Personal Access Token</span></p><div class="form-group"><label for="tokenInput">Personal Access Token</label><input type="password" id="tokenInput" placeholder="github_pat_… или ghp_…" autocomplete="off"></div><button class="btn" id="loginBtn">Войти</button><div class="error-msg" id="loginError" role="alert"></div><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" class="help-link"><i class="fas fa-external-link-alt"></i><span data-edit="auto_3"> Создать fine-grained токен (один репозиторий, Contents: Read and write)
+        </span></a></div></div><div class="editor-app" id="editorApp"><div class="editor-toolbar"><h1><i class="fas fa-magic" style="color: #F40009;"></i><span id="projectNameHeader" style="font-weight: 600; margin-left: 8px;"><span data-edit="auto_4">Редактор</span></span><span id="repoNameHeader" style="color: #888; font-weight: 400; margin-left: 8px; font-size: 13px;"></span><span class="unsaved-badge" id="unsavedBadge"><i class="fas fa-circle" style="font-size: 8px;"></i><span data-edit="auto_5"> есть несохранённые</span></span></h1><div class="toolbar-actions"><button class="toolbar-btn" id="checkBtn" title="Проверить токен"><i class="fas fa-shield-alt"></i> Проверить</button><button class="toolbar-btn" id="reloadBtn" title="Обновить превью"><i class="fas fa-sync"></i> Обновить</button><button class="toolbar-btn warning" id="cleanBtn" title="Удалить все метки data-edit и data-img из index.html"><i class="fas fa-broom"></i> Очистить метки</button><button class="toolbar-btn" id="resetBtn" title="Подготовить заново"><i class="fas fa-redo"></i> Переподготовить</button><button class="toolbar-btn primary" id="saveBtn"><i class="fas fa-cloud-upload-alt"></i> Сохранить в GitHub</button><button class="toolbar-btn" id="logoutBtn" title="Выйти" aria-label="Выйти"><i class="fas fa-sign-out-alt"></i></button></div></div><div class="hint-banner" id="hintBanner"><i class="fas fa-lightbulb"></i><span data-edit="auto_6"> Наведите на любой </span><strong><span data-edit="auto_7">текст</span></strong>, <strong><span data-edit="auto_8">телефон</span></strong>, <strong><span data-edit="auto_9">почту</span></strong>, <strong><span data-edit="auto_10">цену</span></strong><span data-edit="auto_11"> или </span><strong><span data-edit="auto_12">фото</span></strong><span data-edit="auto_13"> и кликните — откроется редактор. </span><strong>Esc</strong><span data-edit="auto_14"> — закрыть.
+    </span></div><div class="setup-screen" id="setupScreen"><div class="setup-card"><div class="setup-icon"><i class="fas fa-wand-magic-sparkles"></i></div><h2 id="setupTitle"><span data-edit="auto_15">Подготовка сайта</span></h2><p><span data-edit="auto_16">Админка автоматически:</span><br><span data-edit="auto_17">• Загрузит ваш </span><strong>index.html</strong><br><span data-edit="auto_18">• Найдёт все тексты, телефоны, email и цены</span><br><span data-edit="auto_19">• Расставит метки для редактирования</span><br><span data-edit="auto_20">• Сохранит обратно в репозиторий</span></p><div class="token-check-box"><h3><i class="fas fa-key"></i><span data-edit="auto_21"> Информация о токене</span></h3><div id="tokenInfo"><span data-edit="auto_22">Проверяю...</span></div></div><button class="btn" id="prepareBtn"><i class="fas fa-download"></i> Подготовить сайт</button><div class="btn-group"><button class="btn btn-secondary btn-small" id="checkBtn2"><i class="fas fa-shield-alt"></i> Проверить токен</button><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-small" style="text-decoration: none; text-align: center; color: #fff;"><i class="fas fa-plus"></i><span data-edit="auto_23"> Новый токен</span></a></div><div id="errorDetails" role="alert"></div><div class="progress-log" id="progressLog" style="display: none;"></div></div></div><div class="iframe-wrapper" id="iframeWrapper" style="display: none;"><div class="iframe-loader" id="iframeLoader"><div class="spinner"></div><div class="loader-text"><span data-edit="auto_24">Загрузка сайта...</span></div><div class="loader-status" id="loaderStatus"><span data-edit="auto_25">Инициализация</span></div></div><iframe id="siteIframe" class="site-iframe" title="Превью сайта" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe></div></div><div class="edit-panel" id="editPanel" role="dialog" aria-label="Редактирование"><div class="edit-panel-header"><h3><span id="editTitle"><span data-edit="auto_26">Редактирование</span></span><span class="key-badge" id="editKey"></span></h3><button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">✕</button></div><div id="editPanelContent"></div><div class="edit-panel-actions"><button class="toolbar-btn btn-secondary" id="cancelBtn">Отмена</button><button class="toolbar-btn primary" id="applyBtn">Применить</button></div></div><div class="status-bar" id="statusBar" role="status" aria-live="polite"></div><script>
 'use strict';
 
 if (typeof CMS_CONFIG === 'undefined') {
@@ -1103,6 +1024,4 @@ window.addEventListener('beforeunload', e => {
         e.returnValue = '';
     }
 });
-</script>
-</body>
-</html>
+</script></body></html>
