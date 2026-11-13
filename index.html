@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="ru"><head>
+<html lang="ru">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Портфолио | piarbook.ru</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -181,19 +182,20 @@
             position: absolute;
             inset: 0;
             background-size: cover;
-            background-position: center top;  /* прижато к верху */
+            background-position: center top;
             transition: transform 0.6s, opacity 0.6s;
             opacity: 0.75;
+            pointer-events: none;
         }
 
-        /* ===== ФОТО: прижато к верху и бокам, обрезка только снизу ===== */
+        /* ===== ФОТО ===== */
         .portfolio-card img {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center top;  /* ← КЛЮЧЕВОЕ: фото прижато к верху */
+            object-position: center top;
             z-index: 1;
             transition: transform 0.6s;
             opacity: 0.95;
@@ -203,7 +205,7 @@
             transform: scale(1.05);
         }
 
-        /* ===== ЗАТЕМНЕНИЕ: сдвинуто ВЫШЕ (тень начинается раньше) ===== */
+        /* ===== ЗАТЕМНЕНИЕ ===== */
         .portfolio-card::before {
             content: '';
             position: absolute;
@@ -211,11 +213,11 @@
             background: linear-gradient(
                 180deg, 
                 transparent 0%, 
-                transparent 15%,          /* было 25% — теперь тень начинается раньше */
-                rgba(10, 9, 8, 0.35) 32%, /* было 45% */
-                rgba(10, 9, 8, 0.80) 48%, /* было 60% */
-                rgba(10, 9, 8, 0.97) 62%, /* было 75% */
-                #0a0908 80%               /* было 100% — чёрный уже на 80% */
+                transparent 15%,
+                rgba(10, 9, 8, 0.35) 32%,
+                rgba(10, 9, 8, 0.80) 48%,
+                rgba(10, 9, 8, 0.97) 62%,
+                #0a0908 80%
             );
             z-index: 2;
             pointer-events: none;
@@ -231,12 +233,13 @@
             pointer-events: none;
         }
 
+        /* ===== ТЕКСТ КАРТОЧКИ (pointer-events: auto — клики проходят!) ===== */
         .card-content {
             position: relative;
             z-index: 3;
             padding: 1rem 1.2rem;
             width: 100%;
-            pointer-events: none;
+            pointer-events: auto;
         }
 
         .card-num {
@@ -500,7 +503,7 @@
 
     <!-- ЗАГОЛОВОК -->
     <section class="portfolio-hero">
-        <h1><span data-edit="auto_1">Портфолио</span></h1>
+        <h1>Портфолио</h1>
         <div class="hero-divider">
             <div class="hero-divider-line"></div>
             <div class="hero-divider-diamond"></div>
@@ -514,175 +517,193 @@
 
             <!-- Ряд 1 -->
             <a href="https://avtomaster.piarbook.ru/" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-avtomaster.jpg" alt="АВТОМАСТЕР" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-avtomaster.jpg">
+                <img src="images/preview-avtomaster.jpg" alt="АВТОМАСТЕР" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(201, 169, 97, 0.3), rgba(42, 31, 24, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-avtomaster.jpg</strong>
-                    <span><span data-edit="auto_2">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 01</div>
-                    <div class="card-tag"><span data-edit="auto_3">Автосервис</span></div>
-                    <h3 class="card-title"><span data-edit="auto_4">АВТОМАСТЕР</span></h3>
-                    <p class="card-desc"><span data-edit="auto_5">Тёмная тема, каталог услуг с ценами и записью онлайн</span></p>
+                    <div class="card-tag">Автосервис</div>
+                    <h3 class="card-title">АВТОМАСТЕР</h3>
+                    <p class="card-desc">Тёмная тема, каталог услуг с ценами и записью онлайн</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_6">Тёмная</span></span>
-                        <span><span data-edit="auto_7">Каталог</span></span>
+                        <span>Тёмная</span>
+                        <span>Каталог</span>
                     </div>
                 </div>
             </a>
 
             <a href="https://salon.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-salon.jpg" alt="BEAUTY STUDIO" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-salon.jpg">
+                <img src="images/preview-salon.jpg" alt="BEAUTY STUDIO" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(220, 150, 180, 0.3), rgba(42, 31, 40, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-salon.jpg</strong>
-                    <span><span data-edit="auto_8">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 02</div>
-                    <div class="card-tag"><span data-edit="auto_9">Салон красоты</span></div>
+                    <div class="card-tag">Салон красоты</div>
                     <h3 class="card-title">BEAUTY STUDIO</h3>
-                    <p class="card-desc"><span data-edit="auto_10">Галерея работ, прайс-лист и форма онлайн-записи</span></p>
+                    <p class="card-desc">Галерея работ, прайс-лист и форма онлайн-записи</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_11">Галерея</span></span>
-                        <span><span data-edit="auto_12">Запись</span></span>
+                        <span>Галерея</span>
+                        <span>Запись</span>
                     </div>
                 </div>
             </a>
 
             <a href="https://garag.piarbook.ru/" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-garage.jpg" alt="ГАРАЖ" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-garage.jpg">
+                <img src="images/preview-garage.jpg" alt="ГАРАЖ" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(120, 140, 90, 0.3), rgba(30, 35, 25, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-garage.jpg</strong>
-                    <span><span data-edit="auto_13">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 03</div>
-                    <div class="card-tag"><span data-edit="auto_14">Гараж</span></div>
-                    <h3 class="card-title"><span data-edit="auto_15">ГАРАЖ</span></h3>
-                    <p class="card-desc"><span data-edit="auto_16">Оливковая тема, минимализм, брутальный характер</span></p>
+                    <div class="card-tag">Гараж</div>
+                    <h3 class="card-title">ГАРАЖ</h3>
+                    <p class="card-desc">Оливковая тема, минимализм, брутальный характер</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_17">Минимал</span></span>
-                        <span><span data-edit="auto_18">Бруталь</span></span>
+                        <span>Минимал</span>
+                        <span>Бруталь</span>
                     </div>
                 </div>
             </a>
 
             <!-- Ряд 2 -->
             <a href="https://law.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-law.jpg" alt="ЮРИСТ" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-law.jpg">
+                <img src="images/preview-law.jpg" alt="ЮРИСТ" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(60, 80, 120, 0.3), rgba(20, 25, 40, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-law.jpg</strong>
-                    <span><span data-edit="auto_19">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 04</div>
-                    <div class="card-tag"><span data-edit="auto_20">Юрист</span></div>
-                    <h3 class="card-title"><span data-edit="auto_21">ЮРИСТ</span></h3>
-                    <p class="card-desc"><span data-edit="auto_22">Строгий стиль, услуги с ценами и форма заявки</span></p>
+                    <div class="card-tag">Юрист</div>
+                    <h3 class="card-title">ЮРИСТ</h3>
+                    <p class="card-desc">Строгий стиль, услуги с ценами и форма заявки</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_23">Строгий</span></span>
-                        <span><span data-edit="auto_24">Заявки</span></span>
+                        <span>Строгий</span>
+                        <span>Заявки</span>
                     </div>
                 </div>
             </a>
 
             <a href="https://den.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-dental.jpg" alt="ЗДОРОВАЯ УЛЫБКА" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-dental.jpg">
+                <img src="images/preview-dental.jpg" alt="ЗДОРОВАЯ УЛЫБКА" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(100, 180, 200, 0.3), rgba(20, 40, 50, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-dental.jpg</strong>
-                    <span><span data-edit="auto_25">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 05</div>
-                    <div class="card-tag"><span data-edit="auto_26">Стоматология</span></div>
-                    <h3 class="card-title"><span data-edit="auto_27">ЗДОРОВАЯ УЛЫБКА</span></h3>
-                    <p class="card-desc"><span data-edit="auto_28">Услуги, цены, команда врачей и онлайн-запись</span></p>
+                    <div class="card-tag">Стоматология</div>
+                    <h3 class="card-title">ЗДОРОВАЯ УЛЫБКА</h3>
+                    <p class="card-desc">Услуги, цены, команда врачей и онлайн-запись</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_29">Медицина</span></span>
-                        <span><span data-edit="auto_30">Врачи</span></span>
+                        <span>Медицина</span>
+                        <span>Врачи</span>
                     </div>
                 </div>
             </a>
 
             <a href="https://med.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-med.jpg" alt="МЕДКЛИНИКА" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-med.jpg">
+                <img src="images/preview-med.jpg" alt="МЕДКЛИНИКА" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(130, 170, 200, 0.3), rgba(25, 35, 50, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-med.jpg</strong>
-                    <span><span data-edit="auto_31">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 06</div>
-                    <div class="card-tag"><span data-edit="auto_32">Медцентр</span></div>
-                    <h3 class="card-title"><span data-edit="auto_33">МЕДКЛИНИКА</span></h3>
-                    <p class="card-desc"><span data-edit="auto_34">Специалисты, спектр услуг и прозрачные цены</span></p>
+                    <div class="card-tag">Медцентр</div>
+                    <h3 class="card-title">МЕДКЛИНИКА</h3>
+                    <p class="card-desc">Специалисты, спектр услуг и прозрачные цены</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_35">Клиника</span></span>
-                        <span><span data-edit="auto_36">Специалисты</span></span>
+                        <span>Клиника</span>
+                        <span>Специалисты</span>
                     </div>
                 </div>
             </a>
 
             <!-- Ряд 3 -->
             <a href="https://foto.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-foto.jpg" alt="PHOTO STUDIO" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-foto.jpg">
+                <img src="images/preview-foto.jpg" alt="PHOTO STUDIO" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(201, 169, 97, 0.4), rgba(42, 31, 24, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-foto.jpg</strong>
-                    <span><span data-edit="auto_37">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 07</div>
-                    <div class="card-tag"><span data-edit="auto_38">Фото / Видео</span></div>
+                    <div class="card-tag">Фото / Видео</div>
                     <h3 class="card-title">PHOTO STUDIO</h3>
-                    <p class="card-desc"><span data-edit="auto_39">Портфолио, три зала, услуги и цены с бронированием</span></p>
+                    <p class="card-desc">Портфолио, три зала, услуги и цены с бронированием</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_40">Премиум</span></span>
-                        <span><span data-edit="auto_41">Студия</span></span>
+                        <span>Премиум</span>
+                        <span>Студия</span>
                     </div>
                 </div>
             </a>
 
             <a href="https://demo-komp.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-komp.jpg" alt="РЕМОНТ КОМПЬЮТЕРОВ" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-komp.jpg">
+                <img src="images/preview-komp.jpg" alt="РЕМОНТ КОМПЬЮТЕРОВ" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(180, 80, 50, 0.3), rgba(40, 25, 20, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-komp.jpg</strong>
-                    <span><span data-edit="auto_42">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 08</div>
-                    <div class="card-tag"><span data-edit="auto_43">Ремонт техники</span></div>
-                    <h3 class="card-title"><span data-edit="auto_44">РЕМОНТ КОМПЬЮТЕРОВ</span></h3>
-                    <p class="card-desc"><span data-edit="auto_45">Услуги, прайс-лист и блок с отзывами клиентов</span></p>
+                    <div class="card-tag">Ремонт техники</div>
+                    <h3 class="card-title">РЕМОНТ КОМПЬЮТЕРОВ</h3>
+                    <p class="card-desc">Услуги, прайс-лист и блок с отзывами клиентов</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_46">Услуги</span></span>
-                        <span><span data-edit="auto_47">Отзывы</span></span>
+                        <span>Услуги</span>
+                        <span>Отзывы</span>
                     </div>
                 </div>
             </a>
 
             <!-- Карточка 9: дубликат салона красоты -->
             <a href="https://salon.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card">
-                <img src="images/preview-salon.jpg" alt="BEAUTY STUDIO" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'" data-img="images/preview-salon.jpg">
+                <img src="images/preview-salon.jpg" alt="BEAUTY STUDIO" 
+                     onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" 
+                     onerror="this.style.display='none'">
                 <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(220, 150, 180, 0.3), rgba(42, 31, 40, 0.8));"></div>
                 <div class="placeholder-label">
                     <strong>preview-salon.jpg</strong>
-                    <span><span data-edit="auto_48">Скриншот сайта</span></span>
+                    <span>Скриншот сайта</span>
                 </div>
                 <div class="card-content">
                     <div class="card-num">№ 09</div>
-                    <div class="card-tag"><span data-edit="auto_49">Салон красоты</span></div>
+                    <div class="card-tag">Салон красоты</div>
                     <h3 class="card-title">BEAUTY STUDIO</h3>
-                    <p class="card-desc"><span data-edit="auto_50">Галерея работ, прайс-лист и форма онлайн-записи</span></p>
+                    <p class="card-desc">Галерея работ, прайс-лист и форма онлайн-записи</p>
                     <div class="card-meta">
-                        <span><span data-edit="auto_51">Галерея</span></span>
-                        <span><span data-edit="auto_52">Запись</span></span>
+                        <span>Галерея</span>
+                        <span>Запись</span>
                     </div>
                 </div>
             </a>
@@ -694,7 +715,7 @@
     <div class="divider">
         <div class="divider-line"></div>
         <div class="divider-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
         <div class="divider-line"></div>
     </div>
@@ -704,53 +725,53 @@
         <div class="info-grid">
 
             <div class="info-card">
-                <div class="info-card-title"><span data-edit="auto_53">Для кого</span></div>
+                <div class="info-card-title">Для кого</div>
                 <div class="tags">
-                    <span class="tag"><span data-edit="auto_54">🔧 Автосервисы</span></span>
-                    <span class="tag"><span data-edit="auto_55">🚗 СТО, шиномонтаж</span></span>
-                    <span class="tag"><span data-edit="auto_56">💅 Салоны красоты</span></span>
-                    <span class="tag"><span data-edit="auto_57">💄 Маникюр, брови</span></span>
-                    <span class="tag"><span data-edit="auto_58">🦷 Стоматологии</span></span>
-                    <span class="tag"><span data-edit="auto_59">🏥 Медцентры</span></span>
-                    <span class="tag"><span data-edit="auto_60">📷 Фотографы</span></span>
-                    <span class="tag"><span data-edit="auto_61">🎥 Видеографы</span></span>
-                    <span class="tag"><span data-edit="auto_62">⚖️ Юристы</span></span>
-                    <span class="tag"><span data-edit="auto_63">📊 Бухгалтеры</span></span>
-                    <span class="tag"><span data-edit="auto_64">🔨 Мастера ремонта</span></span>
-                    <span class="tag"><span data-edit="auto_65">🏪 Любой малый бизнес</span></span>
+                    <span class="tag">🔧 Автосервисы</span>
+                    <span class="tag">🚗 СТО, шиномонтаж</span>
+                    <span class="tag">💅 Салоны красоты</span>
+                    <span class="tag">💄 Маникюр, брови</span>
+                    <span class="tag">🦷 Стоматологии</span>
+                    <span class="tag">🏥 Медцентры</span>
+                    <span class="tag">📷 Фотографы</span>
+                    <span class="tag">🎥 Видеографы</span>
+                    <span class="tag">⚖️ Юристы</span>
+                    <span class="tag">📊 Бухгалтеры</span>
+                    <span class="tag">🔨 Мастера ремонта</span>
+                    <span class="tag">🏪 Любой малый бизнес</span>
                 </div>
             </div>
 
             <div class="info-card">
-                <div class="info-card-title"><span data-edit="auto_66">Что входит</span></div>
+                <div class="info-card-title">Что входит</div>
                 <ul class="checklist">
-                    <li><span data-edit="auto_67">Уникальный дизайн (не шаблон)</span></li>
-                    <li><span data-edit="auto_68">До 10 разделов на сайте</span></li>
-                    <li><span data-edit="auto_69">Форма заявок на вашу почту</span></li>
-                    <li><span data-edit="auto_70">Адаптив: телефон, планшет, ПК</span></li>
-                    <li><span data-edit="auto_71">Подключение вашего домена</span></li>
-                    <li><span data-edit="auto_72">Хостинг — бесплатно навсегда</span></li>
-                    <li><span data-edit="auto_73">Настройка Яндекс.Карт</span></li>
-                    <li><span data-edit="auto_74">Базовая SEO-оптимизация</span></li>
+                    <li>Уникальный дизайн (не шаблон)</li>
+                    <li>До 10 разделов на сайте</li>
+                    <li>Форма заявок на вашу почту</li>
+                    <li>Адаптив: телефон, планшет, ПК</li>
+                    <li>Подключение вашего домена</li>
+                    <li>Хостинг — бесплатно навсегда</li>
+                    <li>Настройка Яндекс.Карт</li>
+                    <li>Базовая SEO-оптимизация</li>
                 </ul>
             </div>
 
             <div class="info-card">
-                <div class="info-card-title"><span data-edit="auto_75">Гарантии</span></div>
+                <div class="info-card-title">Гарантии</div>
                 <div class="guarantee-item">
-                    <span><span data-edit="auto_76">Верну деньги, если не понравится — без разговоров</span></span>
+                    <span>Верну деньги, если не понравится — без разговоров</span>
                 </div>
                 <div class="guarantee-item">
-                    <span><span data-edit="auto_77">Бесплатная поддержка 1 месяц после сдачи</span></span>
+                    <span>Бесплатная поддержка 1 месяц после сдачи</span>
                 </div>
                 <div class="guarantee-item">
-                    <span><span data-edit="auto_78">Оплата только после вашего одобрения</span></span>
+                    <span>Оплата только после вашего одобрения</span>
                 </div>
                 <div class="guarantee-item">
-                    <span><span data-edit="auto_79">Продление домена — всего 500₽ в год</span></span>
+                    <span>Продление домена — всего 500₽ в год</span>
                 </div>
                 <div class="guarantee-item">
-                    <span><span data-edit="auto_80">Срок запуска — 1-2 дня от старта работ</span></span>
+                    <span>Срок запуска — 1-2 дня от старта работ</span>
                 </div>
             </div>
 
@@ -759,6 +780,5 @@
 
 </div>
 
-
-
-</body></html>
+</body>
+</html>
