@@ -215,19 +215,14 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const encPath = p => p.split('/').map(encodeURIComponent).join('/');
 
 const b64d = b => {
-    try {
-        return new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCodeAt(0)));
-    } catch (e) {
-        return atob(b);
-    }
+    try { return new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCodeAt(0))); }
+    catch (e) { return atob(b); }
 };
 
 const b64e = s => {
     const bytes = new TextEncoder().encode(s);
     let result = '';
-    for (let i = 0; i < bytes.length; i += 8192) {
-        result += String.fromCharCode(...bytes.subarray(i, i + 8192));
-    }
+    for (let i = 0; i < bytes.length; i += 8192) result += String.fromCharCode(...bytes.subarray(i, i + 8192));
     return btoa(result);
 };
 
@@ -247,24 +242,15 @@ function markUnsaved() {
 
 async function gh(url, opts = {}) {
     const res = await fetch(url, {
-        ...opts,
-        cache: 'no-store',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Accept': 'application/vnd.github+json',
-            ...(opts.headers || {})
-        }
+        ...opts, cache: 'no-store',
+        headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', ...(opts.headers || {}) }
     });
     if (!res.ok) {
         const raw = await res.text();
         let msg = raw;
-        try {
-            const j = JSON.parse(raw);
-            msg = j.message || raw;
-        } catch {}
+        try { msg = (JSON.parse(raw)).message || raw; } catch {}
         const err = new Error(`HTTP ${res.status}: ${msg}`);
-        err.status = res.status;
-        err.body = msg;
+        err.status = res.status; err.body = msg;
         throw err;
     }
     return res;
@@ -274,34 +260,21 @@ async function getFile(path) {
     const url = `${API}/contents/${encPath(path)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`;
     const d = await (await gh(url)).json();
     let text;
-    if (d.encoding === 'base64' && d.content) {
-        text = b64d(d.content);
-    } else {
-        text = await (await gh(url, { headers: { 'Accept': 'application/vnd.github.raw+json' } })).text();
-    }
+    if (d.encoding === 'base64' && d.content) text = b64d(d.content);
+    else text = await (await gh(url, { headers: { 'Accept': 'application/vnd.github.raw+json' } })).text();
     return { text, sha: d.sha };
 }
 
 async function getSha(path) {
-    try {
-        return (await (await gh(`${API}/contents/${encPath(path)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`)).json()).sha;
-    } catch (e) {
-        if (e.status === 404) return null;
-        throw e;
-    }
+    try { return (await (await gh(`${API}/contents/${encPath(path)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`)).json()).sha; }
+    catch (e) { if (e.status === 404) return null; throw e; }
 }
 
 async function putFile(path, b64, sha, message) {
-    const body = {
-        message: message || `Обновление ${path}`,
-        content: b64,
-        branch: CMS_CONFIG.branch
-    };
+    const body = { message: message || `Обновление ${path}`, content: b64, branch: CMS_CONFIG.branch };
     if (sha) body.sha = sha;
     return (await gh(`${API}/contents/${encPath(path)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     })).json();
 }
 
@@ -332,33 +305,20 @@ async function checkToken() {
     const box = $('tokenInfo');
     box.textContent = 'Проверка токена...';
     $('errorDetails').innerHTML = '';
-
     try {
         const user = await (await gh('https://api.github.com/user')).json();
         const repo = await (await gh(API)).json();
-
         let hasIndex = true;
-        try {
-            await gh(`${API}/contents/index.html?ref=${encodeURIComponent(CMS_CONFIG.branch)}`);
-        } catch {
-            hasIndex = false;
-        }
-
+        try { await gh(`${API}/contents/index.html?ref=${encodeURIComponent(CMS_CONFIG.branch)}`); } catch { hasIndex = false; }
         const canPush = repo.permissions ? !!repo.permissions.push : null;
-
         box.innerHTML = `
             <div class="token-info"><span class="label"><i class="fas fa-check-circle" style="color: #00cc66;"></i> Пользователь:</span> ${esc(user.login)}</div>
             <div class="token-info" style="margin-top: 8px;"><span class="label"><i class="fas fa-check-circle" style="color: #00cc66;"></i> Репозиторий:</span> ${esc(repo.full_name)} (${repo.private ? 'приватный' : 'публичный'})</div>
             <div class="token-info" style="margin-top: 8px;"><span class="label"><i class="fas fa-${canPush === false ? 'times-circle' : 'check-circle'}" style="color: ${canPush === false ? '#ff4444' : '#00cc66'};"></i> Запись в репозиторий:</span> ${canPush === null ? 'нет данных' : canPush ? 'есть' : 'НЕТ — сохранение не удастся'}</div>
             <div class="token-info" style="margin-top: 8px;"><span class="label"><i class="fas fa-${hasIndex ? 'check-circle' : 'exclamation-circle'}" style="color: ${hasIndex ? '#00cc66' : '#ff9900'};"></i> index.html в ветке ${esc(CMS_CONFIG.branch)}:</span> ${hasIndex ? 'найден' : 'НЕ НАЙДЕН'}</div>
         `;
-
-        if (canPush === false) {
-            showErrorDetails('Нет прав записи', 'WARNING', '', 'Выдайте токену право Contents: Read and write на этот репозиторий.');
-        } else if (!hasIndex) {
-            showErrorDetails('Файл index.html не найден', '404', `Ветка "${CMS_CONFIG.branch}" или файл не существует`, 'Создайте index.html в корне репозитория или проверьте ветку в config.js.');
-        }
-
+        if (canPush === false) showErrorDetails('Нет прав записи', 'WARNING', '', 'Выдайте токену право Contents: Read and write на этот репозиторий.');
+        else if (!hasIndex) showErrorDetails('Файл index.html не найден', '404', `Ветка "${CMS_CONFIG.branch}" или файл не существует`, 'Создайте index.html в корне репозитория или проверьте ветку в config.js.');
         const ok = hasIndex && canPush !== false;
         showStatus(ok ? 'Токен валиден' : 'Есть проблемы — см. подробности', ok ? 'success' : 'error');
         return ok;
@@ -375,8 +335,7 @@ async function login() {
     const t = $('tokenInput').value.trim();
     if (!t) return;
     const btn = $('loginBtn');
-    btn.disabled = true;
-    btn.textContent = 'Проверка...';
+    btn.disabled = true; btn.textContent = 'Проверка...';
     token = t;
     try {
         await gh('https://api.github.com/user');
@@ -387,8 +346,7 @@ async function login() {
         const i = interpretError(e.status, e.body);
         $('loginError').innerHTML = `<strong>${esc(i.title)}</strong><br><small>${esc(i.fix)}</small>`;
         $('loginError').classList.add('show');
-        btn.disabled = false;
-        btn.textContent = 'Войти';
+        btn.disabled = false; btn.textContent = 'Войти';
     }
 }
 
@@ -400,22 +358,13 @@ async function enterApp() {
     $('editorApp').classList.add('active');
     try {
         const f = await getFile('index.html');
-        if (f.text.includes('data-edit="')) {
-            showEditor();
-        } else {
-            showSetup();
-            await checkToken();
-        }
+        if (f.text.includes('data-edit="')) showEditor();
+        else { showSetup(); await checkToken(); }
     } catch (e) {
         showSetup();
-        if (e.status === 404) {
-            showErrorDetails('Файл index.html не найден', 404, `В репозитории ${CMS_CONFIG.owner}/${CMS_CONFIG.repo} ветка ${CMS_CONFIG.branch}`, 'Создайте файл index.html в корне репозитория.');
-        } else if (e.status === 401 || e.status === 403) {
-            await checkToken();
-        } else {
-            const i = interpretError(e.status, e.body);
-            showErrorDetails(i.title, e.status || 'unknown', e.body || e.message, i.fix);
-        }
+        if (e.status === 404) showErrorDetails('Файл index.html не найден', 404, `В репозитории ${CMS_CONFIG.owner}/${CMS_CONFIG.repo} ветка ${CMS_CONFIG.branch}`, 'Создайте файл index.html в корне репозитория.');
+        else if (e.status === 401 || e.status === 403) await checkToken();
+        else { const i = interpretError(e.status, e.body); showErrorDetails(i.title, e.status || 'unknown', e.body || e.message, i.fix); }
     }
 }
 
@@ -446,10 +395,7 @@ function loadSite() {
     const ifr = $('siteIframe');
     $('iframeLoader').classList.remove('hidden');
     $('loaderStatus').textContent = 'Загрузка index.html...';
-    ifr.onload = () => {
-        hookIframe();
-        $('iframeLoader').classList.add('hidden');
-    };
+    ifr.onload = () => { hookIframe(); $('iframeLoader').classList.add('hidden'); };
     ifr.src = `../index.html?edit=1&t=${Date.now()}`;
 }
 
@@ -463,210 +409,112 @@ function hookIframe() {
     let d;
     try { d = $('siteIframe').contentDocument; } catch { return; }
     if (!d || !d.head) return;
-
     const st = d.createElement('style');
     st.textContent = `[data-edit]:hover, [data-img]:hover { outline: 2px dashed #F40009; outline-offset: 2px; cursor: pointer; }`;
     d.head.appendChild(st);
-
     d.addEventListener('click', ev => {
         const textEl = ev.target.closest && ev.target.closest('[data-edit]');
-        if (textEl) {
-            ev.preventDefault();
-            ev.stopPropagation();
-            openText(textEl.getAttribute('data-edit'), textEl.textContent);
-            return;
-        }
+        if (textEl) { ev.preventDefault(); ev.stopPropagation(); openText(textEl.getAttribute('data-edit'), textEl.textContent); return; }
         const imgEl = ev.target.closest && ev.target.closest('[data-img]');
         if (imgEl) {
-            ev.preventDefault();
-            ev.stopPropagation();
+            ev.preventDefault(); ev.stopPropagation();
             const path = imgEl.getAttribute('data-img');
             const actualImg = imgEl.tagName === 'IMG' ? imgEl : imgEl.querySelector('img');
             openImage(path, actualImg ? (actualImg.currentSrc || actualImg.src) : '');
             return;
         }
-        if (ev.target.closest && ev.target.closest('a[href]')) {
-            ev.preventDefault();
-        }
+        if (ev.target.closest && ev.target.closest('a[href]')) ev.preventDefault();
     }, true);
-
-    d.addEventListener('keydown', ev => {
-        if (ev.key === 'Escape') {
-            window.parent.postMessage({ type: 'CLOSE_PANEL' }, '*');
-        }
-    });
+    d.addEventListener('keydown', ev => { if (ev.key === 'Escape') window.parent.postMessage({ type: 'CLOSE_PANEL' }, '*'); });
 }
 
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && $('editPanel').classList.contains('active')) closePanel();
-});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('editPanel').classList.contains('active')) closePanel(); });
+window.addEventListener('message', ev => { if (ev.data && ev.data.type === 'CLOSE_PANEL') closePanel(); });
 
-window.addEventListener('message', ev => {
-    if (ev.data && ev.data.type === 'CLOSE_PANEL') closePanel();
-});
-
-function normImgPath(src) {
-    if (!src || /^(data:|blob:|https?:|\/\/)/i.test(src)) return null;
-    let p = src.split(/[?#]/)[0];
-    try { p = decodeURIComponent(p); } catch {}
-    p = p.replace(/^(\.\/)+/, '').replace(/^\/+/, '');
-    return (!p || p.startsWith('../')) ? null : p;
-}
-
-// ============ СИНХРОНИЗАЦИЯ HREF (телефоны, email, мессенджеры) ============
 function syncHref(el, newValue) {
     const parentLink = el.closest('a[href^="tel:"], a[href^="mailto:"], a[href*="t.me"], a[href*="wa.me"], a[href*="vk.com"], a[href*="instagram.com"]');
     if (!parentLink) return;
-    
     const href = parentLink.getAttribute('href') || '';
-    
     if (href.startsWith('tel:')) {
-        const cleanNum = newValue.replace(/[^\d+]/g, '');
-        if (cleanNum.length >= 7) {
-            parentLink.setAttribute('href', 'tel:' + cleanNum);
-        }
+        const clean = newValue.replace(/[^\d+]/g, '');
+        if (clean.length >= 7) parentLink.setAttribute('href', 'tel:' + clean);
     } else if (href.startsWith('mailto:')) {
-        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newValue.trim())) {
-            parentLink.setAttribute('href', 'mailto:' + newValue.trim());
-        }
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newValue.trim())) parentLink.setAttribute('href', 'mailto:' + newValue.trim());
     } else if (href.includes('t.me/') || href.includes('telegram.me/')) {
-        const username = newValue.trim().replace(/^@/, '').replace(/^https?:\/\/(t\.me|telegram\.me)\//, '');
-        if (username && /^[a-zA-Z0-9_]{3,}$/.test(username)) {
-            parentLink.setAttribute('href', 'https://t.me/' + username);
-        }
+        const u = newValue.trim().replace(/^@/, '').replace(/^https?:\/\/(t\.me|telegram\.me)\//, '');
+        if (u && /^[a-zA-Z0-9_]{3,}$/.test(u)) parentLink.setAttribute('href', 'https://t.me/' + u);
     } else if (href.includes('wa.me/')) {
-        const cleanNum = newValue.replace(/[^\d]/g, '');
-        if (cleanNum.length >= 7) {
-            parentLink.setAttribute('href', 'https://wa.me/' + cleanNum);
-        }
+        const clean = newValue.replace(/[^\d]/g, '');
+        if (clean.length >= 7) parentLink.setAttribute('href', 'https://wa.me/' + clean);
     } else if (href.includes('vk.com/')) {
-        const username = newValue.trim().replace(/^@/, '').replace(/^https?:\/\/vk\.com\//, '');
-        if (username && /^[a-zA-Z0-9_.]+$/.test(username)) {
-            parentLink.setAttribute('href', 'https://vk.com/' + username);
-        }
+        const u = newValue.trim().replace(/^@/, '').replace(/^https?:\/\/vk\.com\//, '');
+        if (u && /^[a-zA-Z0-9_.]+$/.test(u)) parentLink.setAttribute('href', 'https://vk.com/' + u);
     } else if (href.includes('instagram.com/')) {
-        const username = newValue.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '');
-        if (username && /^[a-zA-Z0-9_.]+$/.test(username)) {
-            parentLink.setAttribute('href', 'https://instagram.com/' + username);
-        }
+        const u = newValue.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '');
+        if (u && /^[a-zA-Z0-9_.]+$/.test(u)) parentLink.setAttribute('href', 'https://instagram.com/' + u);
     }
 }
 
-// ============ ФУНКЦИЯ ОЧИСТКИ МЕТОК (используется кнопкой "Очистить метки") ============
 function cleanHtmlMarks(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    
-    console.log('[Очистка] Начинаем удаление меток...');
-    
-    // Считаем до очистки
     const beforeEdit = doc.querySelectorAll('[data-edit]').length;
     const beforeImg = doc.querySelectorAll('[data-img]').length;
-    console.log(`[Очистка] До: ${beforeEdit} data-edit, ${beforeImg} data-img`);
-    
-    // 1. Распутываем <span data-edit="...">текст</span> обратно в голый текст
     let pass = 0;
     while (doc.querySelector('[data-edit]') && pass < 10) {
-        const elements = doc.querySelectorAll('[data-edit]');
-        elements.forEach(el => {
+        doc.querySelectorAll('[data-edit]').forEach(el => {
             const parent = el.parentNode;
             if (!parent) return;
-            while (el.firstChild) {
-                parent.insertBefore(el.firstChild, el);
-            }
+            while (el.firstChild) parent.insertBefore(el.firstChild, el);
             parent.removeChild(el);
         });
         pass++;
     }
-    
-    // 2. Удаляем все атрибуты data-img (сами элементы остаются!)
-    doc.querySelectorAll('[data-img]').forEach(el => {
-        el.removeAttribute('data-img');
-    });
-    
-    // 3. Нормализуем документ (объединяет соседние текстовые узлы)
+    doc.querySelectorAll('[data-img]').forEach(el => el.removeAttribute('data-img'));
     doc.body.normalize();
-    
-    // 4. Удаляем пустые текстовые узлы (могли появиться после распутывания)
-    const textWalker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+    const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
     const emptyNodes = [];
     let node;
-    while (node = textWalker.nextNode()) {
-        if (node.textContent.trim() === '') {
-            emptyNodes.push(node);
-        }
-    }
+    while (node = walker.nextNode()) if (node.textContent.trim() === '') emptyNodes.push(node);
     emptyNodes.forEach(n => n.parentNode?.removeChild(n));
-    
-    // Проверяем результат
-    const afterEdit = doc.querySelectorAll('[data-edit]').length;
-    const afterImg = doc.querySelectorAll('[data-img]').length;
-    console.log(`[Очистка] После: ${afterEdit} data-edit, ${afterImg} data-img`);
-    
-    return {
-        html: '<!DOCTYPE html>\n' + doc.documentElement.outerHTML,
-        removedEdit: beforeEdit,
-        removedImg: beforeImg
-    };
+    return { html: '<!DOCTYPE html>\n' + doc.documentElement.outerHTML, removedEdit: beforeEdit, removedImg: beforeImg };
 }
 
-// ============ УМНЫЙ ПАРСЕР HTML (только ДОБАВЛЯЕТ метки) ============
 function processHtml(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-
-    console.log('[Парсер] === Начинаем обработку HTML ===');
-
     let textCounter = 0;
-
-    const SKIP_TAGS = new Set([
-        'script', 'style', 'title', 'meta', 'noscript',
-        'input', 'textarea', 'select', 'option', 'button',
-        'svg', 'path', 'rect', 'circle', 'line', 'polygon', 'polyline',
-        'head', 'link', 'form'
-    ]);
-
-    // ============ УМНЫЕ ПАТТЕРНЫ ============
+    const SKIP_TAGS = new Set(['script', 'style', 'title', 'meta', 'noscript', 'input', 'textarea', 'select', 'option', 'button', 'svg', 'path', 'rect', 'circle', 'line', 'polygon', 'polyline', 'head', 'link', 'form']);
     const PHONE_REGEX = /(?:\+7|8)[\s\-\(]*\d{3}[\s\-\)]*\d{3}[\s\-]*\d{2}[\s\-]*\d{2}/;
     const PHONE_SIMPLE = /^\d{3}[\s\-]\d{2}[\s\-]\d{2}$/;
     const EMAIL_REGEX = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
     const CURRENCY_REGEX = /[₽$€£¥₴₸]/;
     const MESSENGER_REGEX = /\b(t\.me|wa\.me|vk\.com|instagram\.com)\/[a-zA-Z0-9_.]+/;
 
-    // ============ ПРАВИЛО 1: КИРИЛЛИЦА ============
-    const walker = doc.createTreeWalker(
-        doc.body,
-        NodeFilter.SHOW_TEXT,
-        {
-            acceptNode(node) {
-                const parent = node.parentElement;
-                if (!parent) return NodeFilter.FILTER_REJECT;
-                if (SKIP_TAGS.has(parent.tagName.toLowerCase())) return NodeFilter.FILTER_REJECT;
-                if (parent.hasAttribute('data-edit')) return NodeFilter.FILTER_REJECT;
-                const text = node.textContent;
-                if (!text || !text.trim()) return NodeFilter.FILTER_REJECT;
-                if (/[а-яА-ЯёЁ]/.test(text)) return NodeFilter.FILTER_ACCEPT;
-                return NodeFilter.FILTER_REJECT;
-            }
+    // Правило 1: Кириллица
+    const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+            const parent = node.parentElement;
+            if (!parent) return NodeFilter.FILTER_REJECT;
+            if (SKIP_TAGS.has(parent.tagName.toLowerCase())) return NodeFilter.FILTER_REJECT;
+            if (parent.hasAttribute('data-edit')) return NodeFilter.FILTER_REJECT;
+            const text = node.textContent;
+            if (!text || !text.trim()) return NodeFilter.FILTER_REJECT;
+            return /[а-яА-ЯёЁ]/.test(text) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
         }
-    );
-
+    });
     const nodesToProcess = [];
-    let node2;
-    while (node2 = walker.nextNode()) nodesToProcess.push(node2);
-
+    let node;
+    while (node = walker.nextNode()) nodesToProcess.push(node);
     let textCount = 0;
-    console.log(`[Парсер] Правило 1 (кириллица): найдено ${nodesToProcess.length} текстовых узлов`);
-    
     nodesToProcess.forEach(textNode => {
-        const parent = textNode.parentElement;
         const key = `auto_${++textCounter}`;
         const span = doc.createElement('span');
         span.setAttribute('data-edit', key);
         span.textContent = textNode.textContent;
-        parent.replaceChild(span, textNode);
+        textNode.parentElement.replaceChild(span, textNode);
         textCount++;
     });
 
-    // ============ ПРАВИЛО 2: УМНОЕ РАСПОЗНАВАНИЕ (телефоны, email, цены) ============
+    // Правило 2: Умное распознавание
     const candidates = [];
     doc.body.querySelectorAll('*').forEach(el => {
         if (el.hasAttribute('data-edit')) return;
@@ -675,20 +523,14 @@ function processHtml(html) {
         if (el.children.length > 0) return;
         candidates.push(el);
     });
-    
-    let smartCount = 0;
     candidates.forEach(el => {
         if (el.hasAttribute('data-edit')) return;
-        
         const text = el.textContent.trim();
-        if (!text) return;
-        if (/[а-яА-ЯёЁ]/.test(text)) return;
-
+        if (!text || /[а-яА-ЯёЁ]/.test(text)) return;
         const isPhone = PHONE_REGEX.test(text) || PHONE_SIMPLE.test(text);
         const isEmail = EMAIL_REGEX.test(text) && text.length < 100;
         const isCurrency = CURRENCY_REGEX.test(text) && text.length < 40;
         const isMessenger = MESSENGER_REGEX.test(text);
-
         if (isPhone || isEmail || isCurrency || isMessenger) {
             const key = `auto_${++textCounter}`;
             const span = doc.createElement('span');
@@ -697,22 +539,14 @@ function processHtml(html) {
             el.textContent = '';
             el.appendChild(span);
             textCount++;
-            smartCount++;
         }
     });
-    console.log(`[Парсер] Правило 2 (умное): найдено ${smartCount} элементов`);
 
-    // ============ ПРАВИЛО 3: ССЫЛКИ tel: и mailto: ============
-    const telMailLinks = doc.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]');
-    let linkCount = 0;
-    telMailLinks.forEach(el => {
-        if (el.hasAttribute('data-edit')) return;
-        if (el.closest('form')) return;
-        if (el.querySelector('[data-edit]')) return;
-
+    // Правило 3: Ссылки tel: и mailto:
+    doc.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]').forEach(el => {
+        if (el.hasAttribute('data-edit') || el.closest('form') || el.querySelector('[data-edit]')) return;
         const text = el.textContent.trim();
         if (!text) return;
-
         const key = `auto_${++textCounter}`;
         const span = doc.createElement('span');
         span.setAttribute('data-edit', key);
@@ -720,17 +554,13 @@ function processHtml(html) {
         el.textContent = '';
         el.appendChild(span);
         textCount++;
-        linkCount++;
     });
-    console.log(`[Парсер] Правило 3 (tel/mailto): найдено ${linkCount} ссылок`);
 
-    // ============ ПРАВИЛО 4: РУЧНЫЕ МЕТКИ data-editable ============
-    let manualCount = 0;
+    // Правило 4: Ручные метки data-editable
     doc.querySelectorAll('[data-editable]').forEach(el => {
         if (el.hasAttribute('data-edit')) return;
         const text = el.textContent.trim();
         if (!text) return;
-
         const key = `auto_${++textCounter}`;
         if (el.children.length === 0) {
             const span = doc.createElement('span');
@@ -738,25 +568,18 @@ function processHtml(html) {
             span.textContent = text;
             el.textContent = '';
             el.appendChild(span);
-        } else {
-            el.setAttribute('data-edit', key);
-        }
+        } else el.setAttribute('data-edit', key);
         el.removeAttribute('data-editable');
         textCount++;
-        manualCount++;
     });
-    console.log(`[Парсер] Правило 4 (ручные метки): найдено ${manualCount} элементов`);
 
-    // ============ ПРАВИЛО 5: ДОП. СЕЛЕКТОРЫ из config.js ============
-    let extraCount = 0;
+    // Правило 5: Доп. селекторы из config.js
     const extraSelectors = (CMS_CONFIG.extraEditableSelectors || []).join(', ');
     if (extraSelectors) {
         doc.querySelectorAll(extraSelectors).forEach(el => {
-            if (el.hasAttribute('data-edit')) return;
-            if (el.closest('form')) return;
+            if (el.hasAttribute('data-edit') || el.closest('form')) return;
             const text = el.textContent.trim();
             if (!text) return;
-
             const key = `auto_${++textCounter}`;
             if (el.children.length === 0) {
                 const span = doc.createElement('span');
@@ -764,65 +587,48 @@ function processHtml(html) {
                 span.textContent = text;
                 el.textContent = '';
                 el.appendChild(span);
-            } else {
-                el.setAttribute('data-edit', key);
-            }
+            } else el.setAttribute('data-edit', key);
             textCount++;
-            extraCount++;
         });
     }
-    console.log(`[Парсер] Правило 5 (доп. селекторы): найдено ${extraCount} элементов`);
 
-    // ============ КАРТИНКИ ============
+    // Картинки — .portfolio-card добавлен для портфолио на piarbook.ru
     const CORE_IMAGE_WRAPPERS = [
         '.img-wrapper', '.gallery-item', '.team-photo',
-        '.about-img-wrapper', '.hero-img-wrapper', '.product-image'
+        '.about-img-wrapper', '.hero-img-wrapper', '.product-image',
+        '.portfolio-card', '.space-card', '.portfolio-item'
     ];
     const userWrappers = (CMS_CONFIG.imageWrappers || []);
     const wrapperSelector = [...CORE_IMAGE_WRAPPERS, ...userWrappers].join(', ');
-
     let imgCount = 0;
     doc.querySelectorAll('img').forEach(img => {
         if (img.hasAttribute('data-img')) return;
         const src = img.getAttribute('src');
         if (!src || /^(data:|blob:|https?:|\/\/)/i.test(src)) return;
-
         let path = src.split(/[?#]/)[0];
         try { path = decodeURIComponent(path); } catch {}
         path = path.replace(/^(\.\/)+/, '').replace(/^\/+/, '');
         if (!path || path.startsWith('../')) return;
-
-        let wrapper = null;
-        if (wrapperSelector) wrapper = img.closest(wrapperSelector);
+        let wrapper = wrapperSelector ? img.closest(wrapperSelector) : null;
         if (wrapper && wrapper.hasAttribute('data-img')) return;
-
-        if (wrapper && wrapper.querySelector('[data-edit]')) {
-            img.setAttribute('data-img', path);
-        } else if (wrapper) {
+        // data-img ставим на wrapper (на всю карточку), чтобы клик по фото открывал редактор
+        if (wrapper) {
             wrapper.setAttribute('data-img', path);
         } else {
             img.setAttribute('data-img', path);
         }
         imgCount++;
     });
-    console.log(`[Парсер] Картинки: найдено ${imgCount} изображений`);
-    console.log(`[Парсер] ✓ ИТОГО: ${textCount} текстов + ${imgCount} картинок = готово`);
 
-    return {
-        html: '<!DOCTYPE html>\n' + doc.documentElement.outerHTML,
-        textCount,
-        imgCount
-    };
+    return { html: '<!DOCTYPE html>\n' + doc.documentElement.outerHTML, textCount, imgCount };
 }
 
 async function prepareSite() {
     const btn = $('prepareBtn'), log = $('progressLog');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Подготовка...';
-    log.style.display = 'block';
-    log.innerHTML = '';
+    log.style.display = 'block'; log.innerHTML = '';
     $('errorDetails').innerHTML = '';
-
     const li = (msg, type = '') => {
         const div = document.createElement('div');
         div.className = 'log-item ' + type;
@@ -830,35 +636,25 @@ async function prepareSite() {
         log.appendChild(div);
         log.scrollTop = log.scrollHeight;
     };
-
     try {
         li('Загрузка index.html из репозитория...', 'working');
         const f = await getFile('index.html');
         if (!f.text.trim()) throw new Error('index.html пуст или не прочитан — подготовка остановлена, чтобы не затереть сайт');
         li(`index.html загружен (${(f.text.length / 1024).toFixed(1)} КБ)`, 'done');
-
-        // Если в HTML уже есть метки — сначала чистим (чтобы не было дублей)
         if (f.text.includes('data-edit="') || f.text.includes('data-img=')) {
             li('Обнаружены старые метки — очищаем...', 'working');
             const cleaned = cleanHtmlMarks(f.text);
             f.text = cleaned.html;
             li(`Удалено: ${cleaned.removedEdit} text-меток и ${cleaned.removedImg} img-меток`, 'done');
         }
-
         li('Анализ контента и расстановка меток...', 'working');
         const r = processHtml(f.text);
         li(`Найдено ${r.textCount} текстов (включая телефоны, email, цены) и ${r.imgCount} картинок`, 'done');
-
         li('Сохранение подготовленного index.html...', 'working');
         await putFile('index.html', b64e(r.html), f.sha, 'Подготовка index.html к редактированию');
         li('index.html обновлён в репозитории', 'done');
-
         li('Подготовка завершена!', 'done');
-
-        setTimeout(() => {
-            showStatus('Сайт подготовлен! Открываем редактор...');
-            setTimeout(showEditor, 1000);
-        }, 500);
+        setTimeout(() => { showStatus('Сайт подготовлен! Открываем редактор...'); setTimeout(showEditor, 1000); }, 500);
     } catch (e) {
         li('Ошибка: ' + e.message, 'error');
         const i = interpretError(e.status, e.body);
@@ -869,55 +665,31 @@ async function prepareSite() {
     }
 }
 
-// ============ НОВАЯ ФУНКЦИЯ: ОЧИСТКА МЕТОК ПО КНОПКЕ ============
 async function cleanMarks() {
-    // Проверяем несохранённые правки
     if (Object.keys(pending).length > 0) {
         if (!confirm('У вас есть несохранённые правки. Они будут потеряны при очистке. Продолжить?')) return;
-        pending = {};
-        markUnsaved();
+        pending = {}; markUnsaved();
     }
-    
-    if (!confirm(
-        'Удалить ВСЕ метки редактирования (data-edit, data-img) из index.html?\n\n' +
-        'Сайт вернётся в исходное состояние, но:\n' +
-        '• Все ваши правки текстов, телефонов и email СОХРАНЯТСЯ\n' +
-        '• Ссылки tel: и mailto: останутся рабочими\n' +
-        '• После очистки нужно снова нажать "Подготовить сайт"\n\n' +
-        'Продолжить?'
-    )) return;
-    
+    if (!confirm('Удалить ВСЕ метки редактирования (data-edit, data-img) из index.html?\n\nСайт вернётся в исходное состояние, но:\n• Все ваши правки текстов, телефонов и email СОХРАНЯТСЯ\n• Ссылки tel: и mailto: останутся рабочими\n• После очистки нужно снова нажать "Подготовить сайт"\n\nПродолжить?')) return;
     const btn = $('cleanBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Очищаю...';
-    
     try {
         showStatus('Загружаю index.html...', 'info');
         const f = await getFile('index.html');
-        
         if (!f.text.includes('data-edit="') && !f.text.includes('data-img=')) {
             showStatus('Меток в файле нет — очищать нечего', 'info');
             return;
         }
-        
         showStatus('Удаляю метки...', 'info');
         const result = cleanHtmlMarks(f.text);
-        
         showStatus('Сохраняю очищенный файл...', 'info');
         await putFile('index.html', b64e(result.html), f.sha, 'Очистка меток редактирования (data-edit, data-img)');
-        
         showStatus(`✓ Очищено: ${result.removedEdit} text-меток и ${result.removedImg} img-меток. Сайт в исходном состоянии.`, 'success');
-        
-        // Переходим на экран подготовки
-        setTimeout(() => {
-            showSetup();
-            $('setupTitle').textContent = 'Сайт очищен — готов к подготовке';
-        }, 1500);
-        
+        setTimeout(() => { showSetup(); $('setupTitle').textContent = 'Сайт очищен — готов к подготовке'; }, 1500);
     } catch (e) {
         const i = interpretError(e.status, e.body);
         showStatus(`✗ Ошибка: ${i.title}`, 'error');
-        console.error('Ошибка очистки:', e);
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-broom"></i> Очистить метки';
@@ -931,8 +703,7 @@ function openPanel(title, key) {
 }
 
 function openText(key, value) {
-    editKind = 'text';
-    editKey = key;
+    editKind = 'text'; editKey = key;
     openPanel('Редактирование текста', key);
     $('editPanelContent').innerHTML = '<textarea id="editTextArea" aria-label="Текст"></textarea>';
     const ta = $('editTextArea');
@@ -941,9 +712,7 @@ function openText(key, value) {
 }
 
 function openImage(path, src) {
-    editKind = 'image';
-    editKey = path;
-    pendingImg = null;
+    editKind = 'image'; editKey = path; pendingImg = null;
     openPanel('Замена изображения', path);
     $('editPanelContent').innerHTML = `
         <div style="margin-bottom: 16px;">
@@ -952,10 +721,7 @@ function openImage(path, src) {
         </div>
         <label class="file-upload">
             <i class="fas fa-cloud-upload-alt"></i>
-            <div class="upload-text">
-                <strong>Выберите новое изображение</strong><br>
-                <small>JPG, PNG, WebP, GIF. Максимум 2 МБ. Файл заменит ${esc(path)}.</small>
-            </div>
+            <div class="upload-text"><strong>Выберите новое изображение</strong><br><small>JPG, PNG, WebP, GIF. Максимум 2 МБ. Файл заменит ${esc(path)}.</small></div>
             <input type="file" id="imageFileInput" accept="image/jpeg,image/png,image/webp,image/gif">
         </label>
         <div id="imagePreview" style="margin-top: 12px;"></div>
@@ -978,16 +744,12 @@ function openImage(path, src) {
 function applyEdit() {
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
-
     if (editKind === 'text') {
         const v = $('editTextArea').value;
         pending['t:' + editKey] = { type: 'text', value: v };
         if (d) {
             const el = d.querySelector(`[data-edit="${CSS.escape(editKey)}"]`);
-            if (el) {
-                el.textContent = keepWs(el.textContent, v);
-                syncHref(el, v);
-            }
+            if (el) { el.textContent = keepWs(el.textContent, v); syncHref(el, v); }
         }
         showStatus('Изменения применены. Сохраните в GitHub.');
     } else if (editKind === 'image') {
@@ -997,10 +759,7 @@ function applyEdit() {
             const target = d.querySelector(`[data-img="${CSS.escape(editKey)}"]`);
             if (target) {
                 const img = target.tagName === 'IMG' ? target : target.querySelector('img');
-                if (img) {
-                    img.removeAttribute('srcset');
-                    img.src = pendingImg;
-                }
+                if (img) { img.removeAttribute('srcset'); img.src = pendingImg; }
             }
         }
         showStatus('Фото изменено. Сохраните в GitHub.');
@@ -1017,54 +776,32 @@ function closePanel() {
 async function saveAll() {
     const keys = Object.keys(pending);
     if (!keys.length) return showStatus('Нет изменений для сохранения', 'info');
-
     const btn = $('saveBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Сохранение...';
-
     const done = [], failed = [];
-
     try {
         const texts = keys.filter(k => pending[k].type === 'text');
         if (texts.length) {
             const f = await getFile('index.html');
             const doc = new DOMParser().parseFromString(f.text, 'text/html');
-
             for (const k of texts) {
                 const key = k.slice(2);
                 const el = doc.querySelector(`[data-edit="${CSS.escape(key)}"]`);
-                if (el) {
-                    el.textContent = pending[k].value;
-                    syncHref(el, pending[k].value);
-                    done.push(k);
-                } else {
-                    failed.push(k);
-                }
+                if (el) { el.textContent = pending[k].value; syncHref(el, pending[k].value); done.push(k); }
+                else failed.push(k);
             }
-
-            const newHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-            await putFile('index.html', b64e(newHtml), f.sha, 'Редактирование текстов');
+            await putFile('index.html', b64e('<!DOCTYPE html>\n' + doc.documentElement.outerHTML), f.sha, 'Редактирование текстов');
         }
-
         for (const k of keys.filter(k => pending[k].type === 'image')) {
             const { path, data } = pending[k];
-            try {
-                await putFile(path, data.split(',')[1], await getSha(path), `Обновление изображения ${path}`);
-                done.push(k);
-            } catch (e) {
-                console.error('Фото не сохранено:', path, e.message);
-                failed.push(k);
-            }
+            try { await putFile(path, data.split(',')[1], await getSha(path), `Обновление изображения ${path}`); done.push(k); }
+            catch (e) { failed.push(k); }
         }
-
         done.forEach(k => delete pending[k]);
         markUnsaved();
-
-        if (failed.length) {
-            showStatus(`Сохранено: ${done.length}. Не сохранено: ${failed.length} (элемент не найден в HTML или ошибка загрузки). Они остались в очереди.`, 'error');
-        } else {
-            showStatus('Сохранено! Сайт обновится через 1-2 минуты.');
-        }
+        if (failed.length) showStatus(`Сохранено: ${done.length}. Не сохранено: ${failed.length}. Они остались в очереди.`, 'error');
+        else showStatus('Сохранено! Сайт обновится через 1-2 минуты.');
     } catch (e) {
         const i = interpretError(e.status, e.body);
         showStatus(`✗ ${i.title}. ${i.fix}`, 'error');
@@ -1077,8 +814,7 @@ async function saveAll() {
 async function resetSite() {
     if (Object.keys(pending).length && !confirm('Есть несохранённые правки, они будут потеряны. Продолжить?')) return;
     if (!confirm('Переподготовить сайт? Метки в HTML будут обновлены.')) return;
-    pending = {};
-    markUnsaved();
+    pending = {}; markUnsaved();
     showSetup();
     $('setupTitle').textContent = 'Переподготовка';
     $('progressLog').style.display = 'none';
@@ -1097,12 +833,7 @@ $('applyBtn').addEventListener('click', applyEdit);
 $('cancelBtn').addEventListener('click', closePanel);
 $('closePanelBtn').addEventListener('click', closePanel);
 
-window.addEventListener('beforeunload', e => {
-    if (Object.keys(pending).length) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-});
+window.addEventListener('beforeunload', e => { if (Object.keys(pending).length) { e.preventDefault(); e.returnValue = ''; } });
 </script>
 </body>
 </html>
