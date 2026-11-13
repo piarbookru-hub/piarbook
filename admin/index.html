@@ -164,7 +164,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     </div>
 
     <div class="hint-banner" id="hintBanner">
-        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту</strong> или <strong>фото</strong> — редактирование. <strong>Ctrl+клик</strong> по ссылке — открыть в новой вкладке. Клик по <strong>странице сайта</strong> — переход внутри админки. <strong>Esc</strong> — закрыть панель.
+        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по ссылке — открыть страницу в админке. <strong>Ctrl+клик</strong> — открыть в новой вкладке. <strong>Esc</strong> — закрыть панель.
     </div>
 
     <div class="setup-screen" id="setupScreen">
@@ -476,6 +476,13 @@ function openLiveSite() {
     window.open(`../${currentFile}`, '_blank');
 }
 
+// ═══════════════════════════════════════════════════════
+// ОБРАБОТЧИК КЛИКОВ В IFRAME
+// Alt+клик — переход на другую страницу внутри админки
+// Ctrl/Cmd/средняя кнопка — открыть в новой вкладке
+// Обычный клик по редактируемому — редактор
+// Обычный клик по ссылке — блокируем
+// ═══════════════════════════════════════════════════════
 function hookIframe() {
     let d;
     try { d = $('siteIframe').contentDocument; } catch { return; }
@@ -484,37 +491,56 @@ function hookIframe() {
     st.textContent = `[data-edit]:hover, [data-img]:hover { outline: 2px dashed #F40009; outline-offset: 2px; cursor: pointer; }`;
     d.head.appendChild(st);
     d.addEventListener('click', ev => {
-        const modifier = ev.ctrlKey || ev.metaKey || ev.button === 1;
+        const isAlt = ev.altKey;
+        const isModifier = ev.ctrlKey || ev.metaKey || ev.button === 1;
 
-        if (!modifier) {
-            const textEl = ev.target.closest && ev.target.closest('[data-edit]');
-            if (textEl) { ev.preventDefault(); ev.stopPropagation(); openText(textEl.getAttribute('data-edit'), textEl.textContent); return; }
-            const imgEl = ev.target.closest && ev.target.closest('[data-img]');
-            if (imgEl) {
-                ev.preventDefault(); ev.stopPropagation();
-                const path = imgEl.getAttribute('data-img');
-                const imgId = imgEl.getAttribute('data-img-id') || '';
-                const actualImg = imgEl.tagName === 'IMG' ? imgEl : imgEl.querySelector('img');
-                openImage(path, actualImg ? (actualImg.currentSrc || actualImg.src) : '', imgId);
+        // 1. Alt + клик — попытка перехода внутри админки (если это ссылка на .html)
+        if (isAlt) {
+            const linkEl = ev.target.closest && ev.target.closest('a[href]');
+            if (linkEl) {
+                const href = linkEl.getAttribute('href');
+                if (isInternalPage(href)) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    navigateTo(href);
+                    return;
+                }
+                // Если это внешняя ссылка — просто блокируем клик (Alt не открывает в новой вкладке)
+                ev.preventDefault();
+                return;
+            }
+            // Alt+клик по редактируемому элементу (не ссылке) — блокируем, не открываем редактор
+            ev.preventDefault();
+            return;
+        }
+
+        // 2. Ctrl/Cmd/средняя кнопка — открыть в новой вкладке
+        if (isModifier) {
+            const linkEl = ev.target.closest && ev.target.closest('a[href]');
+            if (linkEl) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                window.open(linkEl.getAttribute('href'), '_blank', 'noopener');
                 return;
             }
         }
 
+        // 3. Обычный клик по редактируемому элементу — редактор
+        const textEl = ev.target.closest && ev.target.closest('[data-edit]');
+        if (textEl) { ev.preventDefault(); ev.stopPropagation(); openText(textEl.getAttribute('data-edit'), textEl.textContent); return; }
+        const imgEl = ev.target.closest && ev.target.closest('[data-img]');
+        if (imgEl) {
+            ev.preventDefault(); ev.stopPropagation();
+            const path = imgEl.getAttribute('data-img');
+            const imgId = imgEl.getAttribute('data-img-id') || '';
+            const actualImg = imgEl.tagName === 'IMG' ? imgEl : imgEl.querySelector('img');
+            openImage(path, actualImg ? (actualImg.currentSrc || actualImg.src) : '', imgId);
+            return;
+        }
+
+        // 4. Обычный клик по обычной ссылке — блокируем
         const linkEl = ev.target.closest && ev.target.closest('a[href]');
         if (linkEl) {
-            const href = linkEl.getAttribute('href');
-            if (isInternalPage(href)) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                navigateTo(href);
-                return;
-            }
-            if (modifier) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                window.open(href, '_blank', 'noopener');
-                return;
-            }
             ev.preventDefault();
         }
     }, true);
@@ -549,10 +575,6 @@ function syncHref(el, newValue) {
     }
 }
 
-// ═══════════════════════════════════════════════════════
-// ПОИСК ЭЛЕМЕНТОВ ФОТО: по уникальному ID или по пути (все совпадения)
-// ИСПРАВЛЕНИЕ БАГА: раньше брался только ПЕРВЫЙ элемент с одинаковым data-img
-// ═══════════════════════════════════════════════════════
 function findImgTargets(doc, key, path) {
     if (!doc) return [];
     if (key && /^img_\d+$/.test(key)) {
@@ -837,7 +859,6 @@ function processHtml(html) {
         if (!path || path.startsWith('../')) return;
         let wrapper = wrapperSelector ? img.closest(wrapperSelector) : null;
         if (wrapper && wrapper.hasAttribute('data-img')) return;
-        // Уникальный ID для каждого фото — чтобы дубликаты не конфликтовали
         const imgId = 'img_' + (++imgIdCounter);
         if (wrapper) {
             wrapper.setAttribute('data-img', path);
@@ -1072,7 +1093,6 @@ async function saveAll() {
                 }
             }
 
-            // ИСПРАВЛЕНО: ссылка применяется ко ВСЕМ нужным элементам (по ID или по пути)
             for (const k of imagesWithLinks) {
                 const { path, link, key } = pending[k];
                 const targets = findImgTargets(doc, key || k.slice(2), path);
