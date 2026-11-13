@@ -151,14 +151,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     </div>
 
     <div class="hint-banner" id="hintBanner">
-        <i class="fas fa-lightbulb"></i> Наведите на любой <strong>текст</strong>, <strong>телефон</strong>, <strong>почту</strong>, <strong>цену</strong> или <strong>фото</strong> и кликните — откроется редактор. <strong>Esc</strong> — закрыть.
+        <i class="fas fa-lightbulb"></i> Наведите на <strong>любой текст</strong>, <strong>фото</strong> и кликните — откроется редактор. <strong>Esc</strong> — закрыть.
     </div>
 
     <div class="setup-screen" id="setupScreen">
         <div class="setup-card">
             <div class="setup-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
             <h2 id="setupTitle">Подготовка сайта</h2>
-            <p>Админка автоматически:<br>• Загрузит ваш <strong>index.html</strong><br>• Найдёт все тексты, телефоны, email и цены<br>• Расставит метки для редактирования<br>• Сохранит обратно в репозиторий</p>
+            <p>Админка автоматически:<br>• Загрузит ваш <strong>index.html</strong><br>• Пометит <strong>весь видимый текст</strong> (любой язык, цифры)<br>• Расставит метки на <strong>фотографии</strong><br>• Сохранит обратно в репозиторий</p>
             <div class="token-check-box"><h3><i class="fas fa-key"></i> Информация о токене</h3><div id="tokenInfo">Проверяю...</div></div>
             <button class="btn" id="prepareBtn"><i class="fas fa-download"></i> Подготовить сайт</button>
             <div class="btn-group">
@@ -483,13 +483,12 @@ function processHtml(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     let textCounter = 0;
     const SKIP_TAGS = new Set(['script', 'style', 'title', 'meta', 'noscript', 'input', 'textarea', 'select', 'option', 'button', 'svg', 'path', 'rect', 'circle', 'line', 'polygon', 'polyline', 'head', 'link', 'form']);
-    const PHONE_REGEX = /(?:\+7|8)[\s\-\(]*\d{3}[\s\-\)]*\d{3}[\s\-]*\d{2}[\s\-]*\d{2}/;
-    const PHONE_SIMPLE = /^\d{3}[\s\-]\d{2}[\s\-]\d{2}$/;
-    const EMAIL_REGEX = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
-    const CURRENCY_REGEX = /[₽$€£¥₴₸]/;
-    const MESSENGER_REGEX = /\b(t\.me|wa\.me|vk\.com|instagram\.com)\/[a-zA-Z0-9_.]+/;
 
-    // Правило 1: Кириллица
+    // ═══════════════════════════════════════════════════════
+    // УНИВЕРСАЛЬНОЕ ПРАВИЛО: любой видимый текст
+    // Работает для: кириллицы, латиницы, цифр, смешанных текстов
+    // Пропускает: пустые строки, только пробелы, только пунктуацию
+    // ═══════════════════════════════════════════════════════
     const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, {
         acceptNode(node) {
             const parent = node.parentElement;
@@ -498,7 +497,10 @@ function processHtml(html) {
             if (parent.hasAttribute('data-edit')) return NodeFilter.FILTER_REJECT;
             const text = node.textContent;
             if (!text || !text.trim()) return NodeFilter.FILTER_REJECT;
-            return /[а-яА-ЯёЁ]/.test(text) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            // Главное изменение: помечаем текст с ЛЮБОЙ буквой (любой алфавит) или цифрой
+            // [\wа-яА-ЯёЁ] = латинские буквы + цифры + _ + кириллица
+            if (/[\wа-яА-ЯёЁ]/.test(text)) return NodeFilter.FILTER_ACCEPT;
+            return NodeFilter.FILTER_REJECT;
         }
     });
     const nodesToProcess = [];
@@ -514,35 +516,7 @@ function processHtml(html) {
         textCount++;
     });
 
-    // Правило 2: Умное распознавание
-    const candidates = [];
-    doc.body.querySelectorAll('*').forEach(el => {
-        if (el.hasAttribute('data-edit')) return;
-        if (SKIP_TAGS.has(el.tagName.toLowerCase())) return;
-        if (el.closest('form')) return;
-        if (el.children.length > 0) return;
-        candidates.push(el);
-    });
-    candidates.forEach(el => {
-        if (el.hasAttribute('data-edit')) return;
-        const text = el.textContent.trim();
-        if (!text || /[а-яА-ЯёЁ]/.test(text)) return;
-        const isPhone = PHONE_REGEX.test(text) || PHONE_SIMPLE.test(text);
-        const isEmail = EMAIL_REGEX.test(text) && text.length < 100;
-        const isCurrency = CURRENCY_REGEX.test(text) && text.length < 40;
-        const isMessenger = MESSENGER_REGEX.test(text);
-        if (isPhone || isEmail || isCurrency || isMessenger) {
-            const key = `auto_${++textCounter}`;
-            const span = doc.createElement('span');
-            span.setAttribute('data-edit', key);
-            span.textContent = text;
-            el.textContent = '';
-            el.appendChild(span);
-            textCount++;
-        }
-    });
-
-    // Правило 3: Ссылки tel: и mailto:
+    // Правило 2: Ссылки tel: и mailto: (если внутри есть ссылка с текстом)
     doc.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]').forEach(el => {
         if (el.hasAttribute('data-edit') || el.closest('form') || el.querySelector('[data-edit]')) return;
         const text = el.textContent.trim();
@@ -556,7 +530,7 @@ function processHtml(html) {
         textCount++;
     });
 
-    // Правило 4: Ручные метки data-editable
+    // Правило 3: Ручные метки data-editable (для особых случаев)
     doc.querySelectorAll('[data-editable]').forEach(el => {
         if (el.hasAttribute('data-edit')) return;
         const text = el.textContent.trim();
@@ -573,7 +547,7 @@ function processHtml(html) {
         textCount++;
     });
 
-    // Правило 5: Доп. селекторы из config.js
+    // Правило 4: Доп. селекторы из config.js (для кастомных случаев)
     const extraSelectors = (CMS_CONFIG.extraEditableSelectors || []).join(', ');
     if (extraSelectors) {
         doc.querySelectorAll(extraSelectors).forEach(el => {
@@ -592,7 +566,7 @@ function processHtml(html) {
         });
     }
 
-    // Картинки — .portfolio-card добавлен для портфолио на piarbook.ru
+    // Картинки
     const CORE_IMAGE_WRAPPERS = [
         '.img-wrapper', '.gallery-item', '.team-photo',
         '.about-img-wrapper', '.hero-img-wrapper', '.product-image',
@@ -611,7 +585,6 @@ function processHtml(html) {
         if (!path || path.startsWith('../')) return;
         let wrapper = wrapperSelector ? img.closest(wrapperSelector) : null;
         if (wrapper && wrapper.hasAttribute('data-img')) return;
-        // data-img ставим на wrapper (на всю карточку), чтобы клик по фото открывал редактор
         if (wrapper) {
             wrapper.setAttribute('data-img', path);
         } else {
@@ -649,7 +622,7 @@ async function prepareSite() {
         }
         li('Анализ контента и расстановка меток...', 'working');
         const r = processHtml(f.text);
-        li(`Найдено ${r.textCount} текстов (включая телефоны, email, цены) и ${r.imgCount} картинок`, 'done');
+        li(`Найдено ${r.textCount} текстов и ${r.imgCount} картинок`, 'done');
         li('Сохранение подготовленного index.html...', 'working');
         await putFile('index.html', b64e(r.html), f.sha, 'Подготовка index.html к редактированию');
         li('index.html обновлён в репозитории', 'done');
