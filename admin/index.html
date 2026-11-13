@@ -47,6 +47,16 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .unsaved-badge { background: #F40009; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 11px; margin-left: 6px; display: none; }
 .unsaved-badge.show { display: inline-block; }
 
+/* ═══════════════════════════════════════════════════════ */
+/* НОВОЕ: ИНДИКАТОР ДЕПЛОЯ GITHUB PAGES                     */
+/* ═══════════════════════════════════════════════════════ */
+.deploy-badge { display: none; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'Courier New', monospace; cursor: pointer; border: 1px solid #333; background: #0f0f0f; color: #888; margin-left: 6px; transition: all .2s; user-select: none; }
+.deploy-badge:hover { border-color: #666; }
+.deploy-badge.live { color: #00cc66; border-color: rgba(0, 204, 102, .45); background: rgba(0, 204, 102, .08); }
+.deploy-badge.pending { color: #fbbf24; border-color: rgba(251, 191, 36, .45); background: rgba(251, 191, 36, .08); }
+.deploy-badge.error { color: #ff4444; border-color: rgba(255, 68, 68, .45); background: rgba(255, 68, 68, .08); }
+.deploy-badge.unknown { color: #888; }
+
 .page-indicator { display: inline-flex; align-items: center; gap: 6px; background: #0f0f0f; border: 1px solid #333; padding: 7px 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; color: #c9a961; margin-left: 4px; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .page-indicator i { color: #F40009; font-size: 11px; flex-shrink: 0; }
 .page-indicator.viewmode { color: #888; border-color: #555; }
@@ -101,9 +111,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .link-checkbox input[type="checkbox"] { width: 16px; height: 16px; accent-color: #F40009; cursor: pointer; }
 .link-hint { font-size: 11px; color: #666; margin-top: 6px; }
 
-/* ═══════════════════════════════════════════════════════ */
-/* НОВОЕ: ОПЦИИ ССЫЛКИ (цвет и окно открытия)              */
-/* ═══════════════════════════════════════════════════════ */
 .link-option { margin-top: 12px; }
 .link-option > .field-label { margin-bottom: 8px; }
 .option-group { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -122,26 +129,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     user-select: none;
 }
 .radio-label:hover { border-color: #666; }
-.radio-label input[type="radio"] {
-    accent-color: #F40009;
-    cursor: pointer;
-    margin: 0;
-}
-.radio-label input[type="radio"]:checked + .color-preview,
-.radio-label input[type="radio"]:checked ~ .target-label {
-    font-weight: 600;
-}
-.radio-label:has(input:checked) {
-    border-color: #F40009;
-    background: rgba(244, 0, 9, .08);
-}
+.radio-label input[type="radio"] { accent-color: #F40009; cursor: pointer; margin: 0; }
+.radio-label:has(input:checked) { border-color: #F40009; background: rgba(244, 0, 9, .08); }
 
-.color-preview {
-    display: inline-block;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-weight: 500;
-}
+.color-preview { display: inline-block; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
 .color-preview.inherit { color: #fff; background: #2a2a2a; }
 .color-preview.brown { color: #fff; background: #8B4513; }
 .color-preview.lightbrown { color: #fff; background: #CD853F; }
@@ -198,6 +189,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
             <span id="repoNameHeader" style="color: #888; font-weight: 400; margin-left: 8px; font-size: 13px;"></span>
             <span class="page-indicator" id="pageIndicatorBox" title="Текущая страница"><i class="fas fa-file"></i> <span id="currentPageIndicator">index.html</span></span>
             <span class="unsaved-badge" id="unsavedBadge"><i class="fas fa-circle" style="font-size: 8px;"></i> есть несохранённые</span>
+            <span class="deploy-badge" id="deployBadge" title="Статус деплоя GitHub Pages. Клик — перепроверить."></span>
         </h1>
         <div class="toolbar-actions">
             <button class="toolbar-btn" id="homeBtn" title="Вернуться к редактированию index.html"><i class="fas fa-home"></i></button>
@@ -212,7 +204,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     </div>
 
     <div class="hint-banner" id="hintBanner">
-        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по ссылке — открыть страницу в админке для редактирования. <strong>Ctrl+клик</strong> — открыть в новой вкладке. <strong>Esc</strong> — закрыть панель.
+        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по ссылке — открыть страницу в админке. <strong>Ctrl+клик</strong> — новая вкладка. Зелёный значок <strong>«Сайт обновлён»</strong> — правки уже на живом сайте. <strong>Esc</strong> — закрыть панель.
     </div>
 
     <div class="setup-screen" id="setupScreen">
@@ -263,13 +255,10 @@ if (typeof CMS_CONFIG === 'undefined') {
     throw new Error('CMS_CONFIG is not defined');
 }
 
-// ═══════════════════════════════════════════════════════
-// ЦВЕТА ССЫЛОК (единая константа — можно менять в одном месте)
-// ═══════════════════════════════════════════════════════
 const LINK_COLORS = {
-    inherit: null,          // текущий цвет (data-keep-color)
-    brown: '#8B4513',       // коричневый
-    lightbrown: '#CD853F'   // светло-коричневый
+    inherit: null,
+    brown: '#8B4513',
+    lightbrown: '#CD853F'
 };
 
 const $ = id => document.getElementById(id);
@@ -279,6 +268,11 @@ let editKind = null, editKey = null, editImagePath = null, pendingImg = null, st
 let currentFile = localStorage.getItem('cms_currentFile') || 'index.html';
 let viewModeUrl = null;
 let siteBaseUrl = '';
+// ═══════════════════════════════════════════════════════
+// ДЕПЛОЙ-СТАТУС: метка версии в HTML + опрос живого сайта
+// ═══════════════════════════════════════════════════════
+let repoDeployId = null;   // метка в файле репозитория
+let deployPollGen = 0;     // генерация опроса (чтобы сбрасывать старые циклы)
 const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
@@ -311,6 +305,76 @@ function updatePageIndicator() {
     } else {
         el.textContent = currentFile;
         if (box) { box.classList.remove('viewmode'); box.title = 'Текущая страница (сохраняется при F5)'; }
+    }
+}
+
+// ═══════════════════════════════════════════════════════
+// ФУНКЦИИ ДЕПЛОЙ-МЕТКИ
+// ═══════════════════════════════════════════════════════
+function newDeployId() {
+    return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function readDeployId(html) {
+    const m = html.match(/<meta\s+name=["']cms-deploy-id["']\s+content=["']([^"']+)["']/i);
+    return m ? m[1] : null;
+}
+
+function stampDeployId(html, id) {
+    const tag = `<meta name="cms-deploy-id" content="${id}">`;
+    if (/<meta\s+name=["']cms-deploy-id["']/i.test(html)) {
+        return html.replace(/<meta\s+name=["']cms-deploy-id["'][^>]*>/i, tag);
+    }
+    return html.replace(/<head(\s[^>]*)?>|<head>/i, m => m + '\n' + tag);
+}
+
+function setDeployBadge(state, html) {
+    const b = $('deployBadge');
+    if (!b) return;
+    if (state === 'idle') { b.className = 'deploy-badge'; b.style.display = 'none'; b.innerHTML = ''; return; }
+    b.className = 'deploy-badge ' + state;
+    b.style.display = 'inline-flex';
+    b.innerHTML = html;
+}
+
+async function fetchLiveDeployId() {
+    const url = siteBaseUrl + currentFile;
+    const sep = url.includes('?') ? '&' : '?';
+    const res = await fetch(url + sep + 'cb=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    return readDeployId(text);
+}
+
+// Проверяет, дошёл ли сохранённый файл до живого сайта
+async function verifyDeploy(expectedId, singleCheck) {
+    const gen = ++deployPollGen;
+    if (!expectedId) { setDeployBadge('unknown', '<i class="fas fa-info-circle"></i> Нет метки'); return; }
+    try {
+        const live = await fetchLiveDeployId();
+        if (gen !== deployPollGen) return;
+        if (live === expectedId) {
+            setDeployBadge('live', '<i class="fas fa-check-circle"></i> Сайт обновлён');
+            return;
+        }
+        setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
+        if (singleCheck) return;
+        // Опрос до 2 минут (30 раз по 4 сек)
+        for (let i = 0; i < 30; i++) {
+            await new Promise(r => setTimeout(r, 4000));
+            if (gen !== deployPollGen) return;
+            const live2 = await fetchLiveDeployId();
+            if (gen !== deployPollGen) return;
+            if (live2 === expectedId) {
+                setDeployBadge('live', '<i class="fas fa-check-circle"></i> Сайт обновлён');
+                showStatus('✓ GitHub Pages задеплоил изменения — сайт обновлён!', 'success');
+                return;
+            }
+        }
+        setDeployBadge('pending', '<i class="fas fa-clock"></i> Долгий деплой');
+    } catch (e) {
+        if (gen !== deployPollGen) return;
+        setDeployBadge('unknown', '<i class="fas fa-question-circle"></i> Не проверить');
     }
 }
 
@@ -502,6 +566,9 @@ function showEditor() {
     loadSite();
 }
 
+// ═══════════════════════════════════════════════════════
+// ЗАГРУЗКА СТРАНИЦЫ + АВТОПРОВЕРКА ДЕПЛОЯ
+// ═══════════════════════════════════════════════════════
 async function loadSite() {
     viewModeUrl = null;
     updatePageIndicator();
@@ -513,12 +580,17 @@ async function loadSite() {
     try {
         const f = await getFile(currentFile);
         status.textContent = 'Подготовка превью...';
+        repoDeployId = readDeployId(f.text);
         let html = f.text;
         if (!/<base\s/i.test(html)) {
             html = html.replace(/<head(\s[^>]*)?>|<head>/i, (match) => match + '\n<base href="' + esc(siteBaseUrl) + '">');
         }
         ifr.srcdoc = html;
-        ifr.onload = () => { hookIframe(); loader.classList.add('hidden'); };
+        ifr.onload = () => {
+            hookIframe();
+            loader.classList.add('hidden');
+            verifyDeploy(repoDeployId, true); // разовая проверка статуса деплоя
+        };
     } catch (e) {
         status.textContent = 'Ошибка: ' + e.message;
         setTimeout(() => {
@@ -587,7 +659,11 @@ async function prepareCurrentFile(logContainer = null) {
         const r = processHtml(f.text);
         li(`Найдено ${r.textCount} текстов и ${r.imgCount} картинок`, 'done');
         li('Сохранение подготовленного ' + currentFile + '...', 'working');
-        await putFile(currentFile, b64e(r.html), f.sha, `Подготовка ${currentFile} к редактированию`);
+        // Ставим метку деплоя
+        const deployId = newDeployId();
+        const stamped = stampDeployId(r.html, deployId);
+        await putFile(currentFile, b64e(stamped), f.sha, `Подготовка ${currentFile} к редактированию`);
+        repoDeployId = deployId;
         li(currentFile + ' обновлён в репозитории', 'done');
         li('Подготовка завершена!', 'done');
         return true;
@@ -756,9 +832,6 @@ function findImgTargets(doc, key, path) {
     return Array.from(doc.querySelectorAll(`[data-img="${lookupPath}"]`));
 }
 
-// ═══════════════════════════════════════════════════════
-// ЧТЕНИЕ ТЕКУЩИХ ПАРАМЕТРОВ ССЫЛКИ (добавлены цвет и target)
-// ═══════════════════════════════════════════════════════
 function readTextLink(key) {
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
@@ -769,11 +842,10 @@ function readTextLink(key) {
     if (!link) return { url: '', keepColor: false, linkColor: 'inherit', linkTarget: '_blank' };
     const storedColor = link.getAttribute('data-link-color') || 'inherit';
     const target = link.getAttribute('target') || '_blank';
-    const hasKeepColor = link.hasAttribute('data-keep-color');
     return {
         url: link.getAttribute('href') || '',
-        keepColor: hasKeepColor,
-        linkColor: LINK_COLORS[storedColor] ? storedColor : 'inherit',
+        keepColor: link.hasAttribute('data-keep-color'),
+        linkColor: LINK_COLORS[storedColor] !== undefined ? storedColor : 'inherit',
         linkTarget: target === '_self' ? '_self' : '_blank'
     };
 }
@@ -796,9 +868,6 @@ function readImageLink(key, path) {
     return '';
 }
 
-// ═══════════════════════════════════════════════════════
-// ПРИМЕНИТЬ ССЫЛКУ К ТЕКСТУ (с поддержкой цвета и target)
-// ═══════════════════════════════════════════════════════
 function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget) {
     if (!el) return;
     let link = el.closest ? el.closest('a') : null;
@@ -814,8 +883,6 @@ function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget) {
         link.setAttribute('target', linkTarget === '_self' ? '_self' : '_blank');
         if (linkTarget === '_blank') link.setAttribute('rel', 'noopener');
         else link.removeAttribute('rel');
-
-        // Цвет ссылки
         const colorKey = linkColor && LINK_COLORS[linkColor] !== undefined ? linkColor : 'inherit';
         link.setAttribute('data-link-color', colorKey);
         if (colorKey === 'inherit' || keepColor) {
@@ -829,7 +896,6 @@ function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget) {
             link.style.textDecoration = 'underline';
         }
     } else {
-        // Ссылка пустая — снять обёртку
         if (link && link.hasAttribute('data-cms-link')) {
             link.parentNode.insertBefore(el, link);
             if (link.textContent.trim() === '') link.parentNode.removeChild(link);
@@ -1071,8 +1137,11 @@ async function cleanMarks() {
         showStatus('Удаляю метки...', 'info');
         const result = cleanHtmlMarks(f.text);
         const pretty = prettifyHtml(result.html);
+        const deployId = newDeployId();
+        const stamped = stampDeployId(pretty, deployId);
         showStatus('Сохраняю очищенный файл...', 'info');
-        await putFile(currentFile, b64e(pretty), f.sha, `Очистка меток редактирования в ${currentFile}`);
+        await putFile(currentFile, b64e(stamped), f.sha, `Очистка меток редактирования в ${currentFile}`);
+        repoDeployId = deployId;
         showStatus(`✓ Очищено: ${result.removedEdit} text-меток и ${result.removedImg} img-меток.`, 'success');
         setTimeout(() => { showSetup(); $('setupTitle').textContent = 'Страница очищена — готова к подготовке'; }, 1500);
     } catch (e) {
@@ -1090,9 +1159,6 @@ function openPanel(title, key) {
     $('editPanel').classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════
-// ПАНЕЛЬ РЕДАКТИРОВАНИЯ ТЕКСТА — С ВЫБОРОМ ЦВЕТА И ОКНА
-// ═══════════════════════════════════════════════════════
 function openText(key, value) {
     editKind = 'text'; editKey = key;
     openPanel('Редактирование текста', key);
@@ -1138,18 +1204,17 @@ function openText(key, value) {
     const ta = $('editTextArea');
     ta.value = pending['t:' + key] ? pending['t:' + key].value : value.trim();
     $('editLink').value = linkData.url;
-    // Устанавливаем значения радио-кнопок
     const colorRadio = document.querySelector(`input[name="linkColor"][value="${linkData.linkColor || 'inherit'}"]`);
     if (colorRadio) colorRadio.checked = true;
     else {
-        const fallback = document.querySelector('input[name="linkColor"][value="inherit"]');
-        if (fallback) fallback.checked = true;
+        const fb = document.querySelector('input[name="linkColor"][value="inherit"]');
+        if (fb) fb.checked = true;
     }
     const targetRadio = document.querySelector(`input[name="linkTarget"][value="${linkData.linkTarget || '_blank'}"]`);
     if (targetRadio) targetRadio.checked = true;
     else {
-        const fallback = document.querySelector('input[name="linkTarget"][value="_blank"]');
-        if (fallback) fallback.checked = true;
+        const fb = document.querySelector('input[name="linkTarget"][value="_blank"]');
+        if (fb) fb.checked = true;
     }
     setTimeout(() => ta.focus(), 100);
 }
@@ -1193,9 +1258,6 @@ function openImage(path, src, imgId) {
     });
 }
 
-// ═══════════════════════════════════════════════════════
-// ПРИМЕНИТЬ ИЗМЕНЕНИЯ (с сохранением цвета и target)
-// ═══════════════════════════════════════════════════════
 function applyEdit() {
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
@@ -1208,13 +1270,10 @@ function applyEdit() {
         const linkColor = colorEl ? colorEl.value : 'inherit';
         const linkTarget = targetEl ? targetEl.value : '_blank';
         const keepColor = linkColor === 'inherit';
-
         pending['t:' + editKey] = {
             type: 'text', value: v,
-            link: linkUrl,
-            keepColor: keepColor,
-            linkColor: linkColor,
-            linkTarget: linkTarget
+            link: linkUrl, keepColor: keepColor,
+            linkColor: linkColor, linkTarget: linkTarget
         };
         if (d) {
             const el = d.querySelector(`[data-edit="${CSS.escape(editKey)}"]`);
@@ -1224,8 +1283,7 @@ function applyEdit() {
                 if (!linkUrl) syncHref(el, v);
             }
         }
-        const msg = linkUrl ? 'Изменения и ссылка применены.' : 'Изменения применены.';
-        showStatus(msg + ' Сохраните в GitHub.');
+        showStatus((linkUrl ? 'Изменения и ссылка применены.' : 'Изменения применены.') + ' Сохраните в GitHub.');
     } else if (editKind === 'image') {
         const imgLinkUrl = $('imgLink').value.trim();
         if (!pendingImg && !imgLinkUrl) return showStatus('Выберите файл или укажите ссылку', 'error');
@@ -1255,7 +1313,7 @@ function closePanel() {
 }
 
 // ═══════════════════════════════════════════════════════
-// СОХРАНЕНИЕ В GITHUB (с цветом и target)
+// СОХРАНЕНИЕ + СТАВIM МЕТКУ ДЕПЛОЯ + ЗАПУСКАЕМ ПРОВЕРКУ
 // ═══════════════════════════════════════════════════════
 async function saveAll() {
     const keys = Object.keys(pending);
@@ -1279,18 +1337,10 @@ async function saveAll() {
                 const el = doc.querySelector(`[data-edit="${CSS.escape(key)}"]`);
                 if (el) {
                     el.textContent = pending[k].value;
-                    applyLinkToText(
-                        doc, el,
-                        pending[k].link || '',
-                        pending[k].keepColor || false,
-                        pending[k].linkColor || 'inherit',
-                        pending[k].linkTarget || '_blank'
-                    );
+                    applyLinkToText(doc, el, pending[k].link || '', pending[k].keepColor || false, pending[k].linkColor || 'inherit', pending[k].linkTarget || '_blank');
                     if (!pending[k].link) syncHref(el, pending[k].value);
                     done.push(k);
-                } else {
-                    failed.push(k);
-                }
+                } else failed.push(k);
             }
 
             for (const k of imagesWithLinks) {
@@ -1301,7 +1351,10 @@ async function saveAll() {
             }
 
             const rawHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-            await putFile(currentFile, b64e(prettifyHtml(rawHtml)), f.sha, `Редактирование текстов и ссылок в ${currentFile}`);
+            const deployId = newDeployId();
+            const stamped = stampDeployId(prettifyHtml(rawHtml), deployId);
+            await putFile(currentFile, b64e(stamped), f.sha, `Редактирование текстов и ссылок в ${currentFile}`);
+            repoDeployId = deployId;
         }
 
         for (const k of imagesWithData) {
@@ -1318,8 +1371,10 @@ async function saveAll() {
         markUnsaved();
         if (failed.length) showStatus(`Сохранено: ${done.length}. Не сохранено: ${failed.length}.`, 'error');
         else {
-            showStatus('Сохранено! Перезагружаю превью...', 'success');
-            setTimeout(loadSite, 500);
+            showStatus('Сохранено! Ждём деплой GitHub Pages...', 'success');
+            setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
+            // Перезагружаем превью и запускаем опрос живого сайта
+            setTimeout(() => { loadSite(); verifyDeploy(repoDeployId, false); }, 500);
         }
     } catch (e) {
         const i = interpretError(e.status, e.body);
@@ -1353,6 +1408,8 @@ $('cancelBtn').addEventListener('click', closePanel);
 $('closePanelBtn').addEventListener('click', closePanel);
 $('homeBtn').addEventListener('click', goHome);
 $('openSiteBtn').addEventListener('click', openLiveSite);
+// Клик по значку деплоя — принудительная перепроверка
+$('deployBadge').addEventListener('click', () => verifyDeploy(repoDeployId, true));
 
 window.addEventListener('beforeunload', e => { if (Object.keys(pending).length) { e.preventDefault(); e.returnValue = ''; } });
 </script>
