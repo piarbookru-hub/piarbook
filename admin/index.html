@@ -122,6 +122,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .btn-group .btn { flex: 1; }
 .btn-small { width: auto; padding: 10px 16px; font-size: 13px; }
 
+/* Плавающий лог подготовки (показывается при автоподготовке) */
+.float-log { position: fixed; bottom: 20px; left: 20px; width: 380px; max-height: 260px; overflow-y: auto; background: #1a1a1a; border: 1px solid #F40009; border-radius: 10px; padding: 14px 16px; z-index: 900; box-shadow: 0 8px 30px rgba(0,0,0,.5); font-family: 'Courier New', monospace; font-size: 13px; display: none; }
+.float-log.active { display: block; animation: slideIn .3s ease-out; }
+.float-log-title { color: #F40009; font-weight: 600; margin-bottom: 8px; font-family: 'Inter', sans-serif; font-size: 13px; }
+
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -165,7 +170,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     </div>
 
     <div class="hint-banner" id="hintBanner">
-        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик по ЛЮБОЙ ссылке</strong> — открыть её здесь же, в админке. <strong>Ctrl+клик</strong> — открыть в новой вкладке. <strong>Esc</strong> — закрыть панель.
+        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по ссылке — открыть её в админке (внутренние страницы подготавливаются автоматически). <strong>Ctrl+клик</strong> — открыть в новой вкладке. <strong>Esc</strong> — закрыть панель.
     </div>
 
     <div class="setup-screen" id="setupScreen">
@@ -206,6 +211,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     </div>
 </div>
 
+<!-- Плавающий лог автоподготовки (в углу экрана, не мешает) -->
+<div class="float-log" id="floatLog">
+    <div class="float-log-title"><i class="fas fa-wand-magic-sparkles"></i> Автоподготовка страницы...</div>
+    <div id="floatLogItems"></div>
+</div>
+
 <div class="status-bar" id="statusBar" role="status" aria-live="polite"></div>
 
 <script>
@@ -221,7 +232,7 @@ let token = localStorage.getItem('gh_token');
 let pending = {};
 let editKind = null, editKey = null, editImagePath = null, pendingImg = null, statusTimer = null;
 let currentFile = 'index.html';
-let viewModeUrl = null; // если открыта внешняя страница в режиме просмотра
+let viewModeUrl = null;
 const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
@@ -452,6 +463,72 @@ function normalizePagePath(href) {
     return p;
 }
 
+// ═══════════════════════════════════════════════════════
+// УНИВЕРСАЛЬНАЯ ПОДГОТОВКА ТЕКУЩЕГО ФАЙЛА
+// Используется и при ручном нажатии, и при автоподготовке
+// logContainer: DOM-элемент, куда писать лог (или null для console)
+// ═══════════════════════════════════════════════════════
+async function prepareCurrentFile(logContainer = null, showSetupScreen = true) {
+    const btn = $('prepareBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Подготовка...'; }
+    
+    const li = (msg, type = '') => {
+        if (logContainer) {
+            const div = document.createElement('div');
+            div.className = 'log-item ' + type;
+            div.textContent = (type === 'done' ? '✓ ' : type === 'error' ? '✗ ' : '→ ') + msg;
+            logContainer.appendChild(div);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        } else {
+            console.log((type === 'done' ? '✓ ' : type === 'error' ? '✗ ' : '→ ') + msg);
+        }
+    };
+
+    try {
+        li('Загрузка ' + currentFile + ' из репозитория...', 'working');
+        const f = await getFile(currentFile);
+        if (!f.text.trim()) throw new Error(currentFile + ' пуст или не прочитан — подготовка остановлена');
+        li(`${currentFile} загружен (${(f.text.length / 1024).toFixed(1)} КБ)`, 'done');
+        if (f.text.includes('data-edit="') || f.text.includes('data-img=')) {
+            li('Обнаружены старые метки — очищаем...', 'working');
+            const cleaned = cleanHtmlMarks(f.text);
+            f.text = cleaned.html;
+            li(`Удалено: ${cleaned.removedEdit} text-меток и ${cleaned.removedImg} img-меток`, 'done');
+        }
+        li('Анализ контента и расстановка меток...', 'working');
+        const r = processHtml(f.text);
+        li(`Найдено ${r.textCount} текстов и ${r.imgCount} картинок`, 'done');
+        li('Сохранение подготовленного ' + currentFile + '...', 'working');
+        await putFile(currentFile, b64e(r.html), f.sha, `Подготовка ${currentFile} к редактированию`);
+        li(currentFile + ' обновлён в репозитории', 'done');
+        li('Подготовка завершена!', 'done');
+        return true;
+    } catch (e) {
+        li('Ошибка: ' + e.message, 'error');
+        const i = interpretError(e.status, e.body);
+        if (showSetupScreen) showErrorDetails(i.title, e.status || 'ошибка', e.body || e.message, i.fix);
+        showStatus(`✗ ${i.title}`, 'error');
+        return false;
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download"></i> Подготовить страницу'; }
+    }
+}
+
+// Ручная подготовка (кнопка «Подготовить страницу» в setup-экране)
+async function prepareSite() {
+    const log = $('progressLog');
+    log.style.display = 'block'; log.innerHTML = '';
+    $('errorDetails').innerHTML = '';
+    const ok = await prepareCurrentFile(log, true);
+    if (ok) {
+        setTimeout(() => { showStatus('Страница подготовлена! Открываем редактор...'); setTimeout(showEditor, 1000); }, 500);
+    }
+}
+
+// ═══════════════════════════════════════════════════════
+// ПЕРЕХОД НА ДРУГУЮ СТРАНИЦУ
+// Если страница не подготовлена — АВТОПОДГОТОВКА
+// ═══════════════════════════════════════════════════════
 async function navigateTo(href) {
     const cleanPath = normalizePagePath(href);
     if (!cleanPath) return;
@@ -464,13 +541,37 @@ async function navigateTo(href) {
     currentFile = cleanPath;
     viewModeUrl = null;
     updatePageIndicator();
+    
     try {
         const f = await getFile(currentFile);
-        showEditor();
+        
         if (f.text.includes('data-edit="')) {
-            showStatus('Страница ' + cleanPath + ' загружена и готова к редактированию.', 'success');
+            // Страница уже подготовлена — просто показываем
+            showEditor();
+            showStatus('Страница ' + cleanPath + ' загружена.', 'success');
         } else {
-            showStatus('Страница ' + cleanPath + ' НЕ подготовлена. Нажмите «Переподготовить», чтобы расставить метки.', 'info');
+            // ═══ АВТОПОДГОТОВКА ═══
+            showStatus('Страница ' + cleanPath + ' не подготовлена — подготавливаю автоматически...', 'info');
+            showEditor(); // показываем редактор, чтобы был виден iframe
+            
+            // Показываем плавающий лог
+            const floatLog = $('floatLog');
+            const floatItems = $('floatLogItems');
+            floatItems.innerHTML = '';
+            floatLog.classList.add('active');
+            
+            const ok = await prepareCurrentFile(floatItems, false);
+            
+            // Скрываем лог через 2 сек после завершения
+            setTimeout(() => { floatLog.classList.remove('active'); }, 2500);
+            
+            if (ok) {
+                // Перезагружаем превью чтобы увидеть метки
+                loadSite();
+                showStatus('Страница ' + cleanPath + ' подготовлена и готова к редактированию!', 'success');
+            } else {
+                showStatus('Не удалось подготовить ' + cleanPath, 'error');
+            }
         }
     } catch (e) {
         const i = interpretError(e.status, e.body);
@@ -480,9 +581,6 @@ async function navigateTo(href) {
     }
 }
 
-// ═══════════════════════════════════════════════════════
-// РЕЖИМ ПРОСМОТРА: открыть ЛЮБУЮ ссылку внутри админки (в iframe)
-// ═══════════════════════════════════════════════════════
 function openExternalInIframe(url) {
     viewModeUrl = url;
     updatePageIndicator();
@@ -504,13 +602,6 @@ function openLiveSite() {
     window.open(viewModeUrl ? viewModeUrl : `../${currentFile}`, '_blank');
 }
 
-// ═══════════════════════════════════════════════════════
-// ОБРАБОТЧИК КЛИКОВ В IFRAME
-// Alt+клик по ЛЮБОЙ ссылке — открыть её внутри админки
-// Ctrl/Cmd/средняя кнопка — открыть в новой вкладке
-// Обычный клик по редактируемому — редактор
-// Обычный клик по ссылке — блокируем
-// ═══════════════════════════════════════════════════════
 function hookIframe() {
     let d;
     try { d = $('siteIframe').contentDocument; } catch { return; }
@@ -522,7 +613,6 @@ function hookIframe() {
         const isAlt = ev.altKey;
         const isModifier = ev.ctrlKey || ev.metaKey || ev.button === 1;
 
-        // 1. Alt + клик по ЛЮБОЙ ссылке — открываем внутри админки
         if (isAlt) {
             const linkEl = ev.target.closest && ev.target.closest('a[href]');
             if (linkEl) {
@@ -530,18 +620,14 @@ function hookIframe() {
                 ev.stopPropagation();
                 const href = (linkEl.getAttribute('href') || '').trim();
                 if (!href) return;
-                // tel: и mailto: не могут открыться в iframe — открываем в новой вкладке
                 if (/^(tel:|mailto:)/i.test(href)) { window.open(href, '_blank'); return; }
-                // якорь #section — прокрутка внутри превью
                 if (href.startsWith('#')) {
                     const id = href.slice(1);
                     const target = id ? (d.getElementById(id) || d.querySelector(`[name="${CSS.escape(id)}"]`)) : null;
                     if (target) target.scrollIntoView({ behavior: 'smooth' });
                     return;
                 }
-                // внутренняя .html страница этого сайта — режим редактирования
                 if (isInternalPage(href)) { navigateTo(href); return; }
-                // любая другая ссылка (внешний сайт, картинка и т.д.) — режим просмотра в iframe
                 let abs = href;
                 if (/^https?:\/\//i.test(href)) abs = href;
                 else if (href.startsWith('//')) abs = 'https:' + href;
@@ -551,12 +637,10 @@ function hookIframe() {
                 openExternalInIframe(abs);
                 return;
             }
-            // Alt+клик не по ссылке — просто блокируем
             ev.preventDefault();
             return;
         }
 
-        // 2. Ctrl/Cmd/средняя кнопка — открыть в новой вкладке
         if (isModifier) {
             const linkEl = ev.target.closest && ev.target.closest('a[href]');
             if (linkEl) {
@@ -567,7 +651,6 @@ function hookIframe() {
             }
         }
 
-        // 3. Обычный клик по редактируемому элементу — редактор
         const textEl = ev.target.closest && ev.target.closest('[data-edit]');
         if (textEl) { ev.preventDefault(); ev.stopPropagation(); openText(textEl.getAttribute('data-edit'), textEl.textContent); return; }
         const imgEl = ev.target.closest && ev.target.closest('[data-img]');
@@ -580,7 +663,6 @@ function hookIframe() {
             return;
         }
 
-        // 4. Обычный клик по обычной ссылке — блокируем
         const linkEl = ev.target.closest && ev.target.closest('a[href]');
         if (linkEl) {
             ev.preventDefault();
@@ -913,48 +995,6 @@ function processHtml(html) {
     });
     const rawHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     return { html: prettifyHtml(rawHtml), textCount, imgCount };
-}
-
-async function prepareSite() {
-    const btn = $('prepareBtn'), log = $('progressLog');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Подготовка...';
-    log.style.display = 'block'; log.innerHTML = '';
-    $('errorDetails').innerHTML = '';
-    const li = (msg, type = '') => {
-        const div = document.createElement('div');
-        div.className = 'log-item ' + type;
-        div.textContent = (type === 'done' ? '✓ ' : type === 'error' ? '✗ ' : '→ ') + msg;
-        log.appendChild(div);
-        log.scrollTop = log.scrollHeight;
-    };
-    try {
-        li('Загрузка ' + currentFile + ' из репозитория...', 'working');
-        const f = await getFile(currentFile);
-        if (!f.text.trim()) throw new Error(currentFile + ' пуст или не прочитан — подготовка остановлена');
-        li(`${currentFile} загружен (${(f.text.length / 1024).toFixed(1)} КБ)`, 'done');
-        if (f.text.includes('data-edit="') || f.text.includes('data-img=')) {
-            li('Обнаружены старые метки — очищаем...', 'working');
-            const cleaned = cleanHtmlMarks(f.text);
-            f.text = cleaned.html;
-            li(`Удалено: ${cleaned.removedEdit} text-меток и ${cleaned.removedImg} img-меток`, 'done');
-        }
-        li('Анализ контента и расстановка меток...', 'working');
-        const r = processHtml(f.text);
-        li(`Найдено ${r.textCount} текстов и ${r.imgCount} картинок`, 'done');
-        li('Сохранение подготовленного ' + currentFile + '...', 'working');
-        await putFile(currentFile, b64e(r.html), f.sha, `Подготовка ${currentFile} к редактированию`);
-        li(currentFile + ' обновлён в репозитории', 'done');
-        li('Подготовка завершена!', 'done');
-        setTimeout(() => { showStatus('Страница подготовлена! Открываем редактор...'); setTimeout(showEditor, 1000); }, 500);
-    } catch (e) {
-        li('Ошибка: ' + e.message, 'error');
-        const i = interpretError(e.status, e.body);
-        showErrorDetails(i.title, e.status || 'ошибка', e.body || e.message, i.fix);
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-download"></i> Подготовить страницу';
-    }
 }
 
 async function cleanMarks() {
