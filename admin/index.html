@@ -108,27 +108,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .link-section input[type="url"] { width: 100%; padding: 10px 12px; background: #0f0f0f; border: 1px solid #333; border-radius: 6px; color: #fff; font: inherit; font-size: 13px; }
 .link-hint { font-size: 11px; color: #666; margin-top: 6px; }
 
-/* ═══════════════════════════════════════════════════════ */
-/* НОВОЕ: стили для блока слота файла                      */
-/* ═══════════════════════════════════════════════════════ */
-.file-slot-box { margin-top: 10px; padding: 10px 12px; background: rgba(201, 169, 97, 0.08); border: 1px solid rgba(201, 169, 97, 0.3); border-radius: 6px; font-size: 12px; color: #c9a961; line-height: 1.5; }
-.file-slot-box.occupied { background: rgba(0, 204, 102, 0.08); border-color: rgba(0, 204, 102, 0.3); color: #00cc66; }
-.file-slot-box.limit { background: rgba(255, 68, 68, 0.1); border-color: rgba(255, 68, 68, 0.4); color: #ff6b6b; }
-.file-slot-box strong { color: #fff; }
-.file-slot-box code { background: #0f0f0f; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 11px; color: #f4b888; }
-.file-slot-box small { display: block; margin-top: 4px; }
-
-.file-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-.upload-file-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-.upload-file-btn:hover { background: #333; border-color: #F40009; }
-.upload-file-btn i { color: #F40009; }
-.upload-file-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.upload-file-btn:disabled:hover { background: #2a2a2a; border-color: #444; }
-.unlink-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; background: transparent; border: 1px solid #555; border-radius: 6px; color: #aaa; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-.unlink-btn:hover { background: rgba(255, 68, 68, 0.1); color: #ff6b6b; border-color: rgba(255, 68, 68, 0.4); }
-.unlink-btn i { color: #F40009; }
-.unlink-btn:hover i { color: #ff6b6b; }
-
 .link-option { margin-top: 12px; }
 .link-option > .field-label { margin-bottom: 8px; display: block; font-size: 12px; color: #aaa; font-weight: 500; }
 .option-group { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -148,6 +127,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .file-upload i { font-size: 24px; color: #F40009; }
 .upload-text { flex: 1; font-size: 14px; color: #aaa; }
 .file-upload input[type=file] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.file-upload.disabled { opacity: .5; cursor: not-allowed; }
+
+.file-slot-box { font-size: 12px; line-height: 1.5; padding: 10px 12px; border-radius: 6px; margin: 6px 0 10px; word-break: break-all; }
+.file-slot-box.ok { background: rgba(0, 204, 102, .08); border: 1px solid rgba(0, 204, 102, .35); color: #00cc66; }
+.file-slot-box.cur { background: rgba(201, 169, 97, .08); border: 1px solid rgba(201, 169, 97, .35); color: #c9a961; }
+.file-slot-box.full { background: rgba(255, 68, 68, .08); border: 1px solid rgba(255, 68, 68, .35); color: #ff4444; }
 
 .status-bar { position: fixed; top: 60px; right: 24px; background: #1a1a1a; padding: 12px 18px; border-radius: 8px; border: 1px solid #2a2a2a; font-size: 14px; display: none; z-index: 2000; max-width: 420px; }
 .status-bar.show { display: block; animation: slideIn .3s ease-out; }
@@ -244,7 +229,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 <div class="edit-panel" id="editPanel" role="dialog" aria-modal="true" aria-label="Редактирование">
     <div class="edit-panel-header">
         <h3><span id="editTitle">Редактирование</span><span class="key-badge" id="editKey"></span></h3>
-        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">✕</button>
+        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">?</button>
     </div>
     <div id="editPanelContent"></div>
     <div class="edit-panel-actions">
@@ -269,15 +254,14 @@ const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 const PREVIEW_SANDBOX = 'allow-same-origin allow-popups allow-popups-to-escape-sandbox';
 const VIEW_SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
 
-// ═══════════════════════════════════════════════════════
-// НОВОЕ: система слотов для файлов (максимум 3)
-// ═══════════════════════════════════════════════════════
-const FILE_SLOTS = ['prices.pdf', 'prices1.pdf', 'prices2.pdf'];
-const MAX_FILE_SLOTS = FILE_SLOTS.length;
+// Файлы для скачивания: папка files/, максимум 3 файла одновременно,
+// имена prices, prices1, prices2, prices3... с ЛЮБЫМ расширением файла.
 const FILES_FOLDER = 'files';
-const MAX_FILE_SIZE = 1024 * 1024; // 1 МБ (лимит GitHub API для base64)
-// Опасные расширения (исполняемые файлы) — запрещены
-const BLOCKED_EXTS = ['exe', 'bat', 'cmd', 'sh', 'ps1', 'msi', 'dll', 'com', 'vbs', 'jar', 'apk', 'app', 'scr', 'pif', 'lnk'];
+const FILES_BASE = 'prices';
+const MAX_FILES = 3;
+const MAX_FILE_SIZE = 1024 * 1024; // 1 МБ
+const BLOCKED_EXTS = ['exe', 'bat', 'cmd', 'sh', 'com', 'scr', 'msi', 'vbs', 'ps1', 'jar'];
+const SLOT_RE = /^prices(\d*)(\.[^/]*)?$/i;
 
 const $ = id => document.getElementById(id);
 
@@ -301,6 +285,8 @@ let siteBaseUrl = '';
 let siteBasePath = '/';
 let repoDeployId = null;
 let deployPollGen = 0;
+let panelFileData = null, panelFileNew = null, panelFileOld = null;
+let sessionFileNames = [];
 const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
@@ -496,6 +482,42 @@ async function putFile(path, b64, sha, message) {
     return (await gh(`${API}/contents/${encPath(path)}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     })).json();
+}
+
+async function delFile(path) {
+    const sha = await getSha(path);
+    if (!sha) return;
+    await gh(`${API}/contents/${encPath(path)}`, {
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Удаление ${path}`, sha, branch: CMS_CONFIG.branch })
+    });
+}
+
+// Список имён файлов-слотов в папке files/ (только prices, prices1, prices2...)
+async function listSlotFiles() {
+    try {
+        const d = await (await gh(`${API}/contents/${encPath(FILES_FOLDER)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`)).json();
+        if (!Array.isArray(d)) return [];
+        return d.filter(x => x.type === 'file' && SLOT_RE.test(x.name)).map(x => x.name);
+    } catch (e) { return []; }
+}
+
+function slotNumber(name) {
+    const m = name.match(SLOT_RE);
+    if (!m) return -1;
+    return m[1] === '' ? 0 : parseInt(m[1], 10);
+}
+
+function nextSlotNumber(names) {
+    let max = -1;
+    names.forEach(n => { const v = slotNumber(n); if (v > max) max = v; });
+    return max + 1 < 0 ? 0 : max + 1;
+}
+
+function buildSlotName(n, fileName) {
+    const m = fileName.match(/\.([^.]+)$/);
+    const ext = m ? m[1].toLowerCase() : '';
+    return FILES_BASE + (n === 0 ? '' : String(n)) + (ext ? '.' + ext : '');
 }
 
 function interpretError(status, body = '') {
@@ -753,14 +775,14 @@ async function prepareCurrentFile(logContainer = null) {
         if (logContainer) {
             const div = document.createElement('div');
             div.className = 'log-item ' + type;
-            div.textContent = (type === 'done' ? '✓ ' : type === 'error' ? '✗ ' : '→ ') + msg;
+            div.textContent = (type === 'done' ? '✓ ' : type === 'error' ? '✗ ' : '> ') + msg;
             logContainer.appendChild(div);
             logContainer.scrollTop = logContainer.scrollHeight;
         }
     };
     try {
         if (isAdminSelf(fileBeingPrepared)) {
-            li('⚠ Операция отменена: это файл самой админ-панели', 'error');
+            li('✗ Операция отменена: это файл самой админ-панели', 'error');
             showStatus('Админку нельзя редактировать через саму себя. Переместите её в папку admin/.', 'error');
             return false;
         }
@@ -998,11 +1020,8 @@ function findImgTargets(doc, key, path) {
     return Array.from(doc.querySelectorAll(`[data-img="${CSS.escape(lookupPath)}"]`));
 }
 
-// ═══════════════════════════════════════════════════════
-// НОВОЕ: чтение fileSlot из ссылки
-// ═══════════════════════════════════════════════════════
 function readTextLink(key) {
-    const dflt = { url: '', linkColor: 'inherit', linkTarget: '_blank', fileSlot: null };
+    const dflt = { url: '', linkColor: 'inherit', linkTarget: '_blank', fileName: '' };
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
     if (!d) return dflt;
@@ -1012,12 +1031,11 @@ function readTextLink(key) {
     if (!link) return dflt;
     const storedColor = link.getAttribute('data-link-color') || 'inherit';
     const target = link.getAttribute('target') || '_blank';
-    const fileSlot = link.getAttribute('data-cms-file') || null;
     return {
         url: link.getAttribute('href') || '',
         linkColor: LINK_COLORS[storedColor] !== undefined ? storedColor : 'inherit',
         linkTarget: target === '_self' ? '_self' : '_blank',
-        fileSlot: fileSlot
+        fileName: link.getAttribute('data-cms-file') || ''
     };
 }
 
@@ -1042,10 +1060,7 @@ function readImageLink(key, path) {
     return { url: '', linkTarget: '_blank' };
 }
 
-// ═══════════════════════════════════════════════════════
-// ИЗМЕНЕНО: поддержка fileSlot (атрибут data-cms-file на ссылке)
-// ═══════════════════════════════════════════════════════
-function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget, fileSlot) {
+function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget, fileName) {
     if (!el) return;
     let link = el.closest ? el.closest('a') : null;
     if (url && url.trim()) {
@@ -1060,14 +1075,12 @@ function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget, fileSlo
         link.setAttribute('target', linkTarget === '_self' ? '_self' : '_blank');
         if (linkTarget === '_blank') link.setAttribute('rel', 'noopener');
         else link.removeAttribute('rel');
+        if (fileName !== undefined) {
+            if (fileName) link.setAttribute('data-cms-file', fileName);
+            else link.removeAttribute('data-cms-file');
+        }
         const colorKey = linkColor && LINK_COLORS[linkColor] !== undefined ? linkColor : 'inherit';
         link.setAttribute('data-link-color', colorKey);
-        // НОВОЕ: ставим/снимаем data-cms-file
-        if (fileSlot) {
-            link.setAttribute('data-cms-file', fileSlot);
-        } else {
-            link.removeAttribute('data-cms-file');
-        }
         if (colorKey === 'inherit' || keepColor) {
             link.style.color = 'inherit';
             link.style.textDecoration = 'none';
@@ -1083,7 +1096,7 @@ function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget, fileSlo
         if (link.textContent.trim() === '' && !link.querySelector('img, [data-edit], [data-img]')) {
             link.parentNode.removeChild(link);
         } else {
-            ['data-cms-link', 'data-keep-color', 'data-link-color', 'href', 'target', 'rel', 'data-cms-file'].forEach(a => link.removeAttribute(a));
+            ['data-cms-link', 'data-keep-color', 'data-link-color', 'data-cms-file', 'href', 'target', 'rel'].forEach(a => link.removeAttribute(a));
             link.style.color = '';
             link.style.textDecoration = '';
         }
@@ -1103,7 +1116,7 @@ function applyLinkToImage(doc, target, url, linkTarget = '_blank') {
         const link = isA ? target : ((target.closest && target.closest('a')) || findInner());
         if (!link) return;
         if (link === target) {
-            ['href', 'target', 'rel', 'data-cms-link', 'data-cms-file'].forEach(a => link.removeAttribute(a));
+            ['href', 'target', 'rel', 'data-cms-link'].forEach(a => link.removeAttribute(a));
             return;
         }
         while (link.firstChild) link.parentNode.insertBefore(link.firstChild, link);
@@ -1143,7 +1156,6 @@ function cleanHtmlMarks(html) {
         el.removeAttribute('data-img');
         el.removeAttribute('data-img-id');
     });
-    // ВАЖНО: НЕ стираем data-cms-file — это пользовательская метка слота файла
     doc.body.normalize();
     return { html: '<!DOCTYPE html>\n' + doc.documentElement.outerHTML, removedEdit: beforeEdit, removedImg: beforeImg };
 }
@@ -1212,7 +1224,7 @@ async function cleanMarks() {
         if (!confirm('У вас есть несохранённые правки. Они будут потеряны при очистке. Продолжить?')) return;
         pending = {}; markUnsaved();
     }
-    if (!confirm('Удалить ВСЕ метки редактирования (data-edit, data-img, data-img-id) из ' + currentFile + '?\n\nПравки текстов, ручные ссылки и слоты файлов (data-cms-file) СОХРАНЯТСЯ.\nПосле очистки нужно снова нажать «Подготовить страницу».\n\nПродолжить?')) return;
+    if (!confirm('Удалить ВСЕ метки редактирования (data-edit, data-img, data-img-id) из ' + currentFile + '?\n\nПравки текстов и ручные ссылки СОХРАНЯТСЯ.\nПосле очистки нужно снова нажать «Подготовить страницу».\n\nПродолжить?')) return;
     const btn = $('cleanBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Очищаю...';
@@ -1248,103 +1260,28 @@ function openPanel(title, key) {
     $('editPanel').classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════
-// НОВОЕ: вспомогательные функции для слотов файлов
-// ═══════════════════════════════════════════════════════
-function getUsedFileSlots(doc) {
-    const used = new Set();
-    if (!doc) return used;
-    doc.querySelectorAll('[data-cms-file]').forEach(el => {
-        const slot = el.getAttribute('data-cms-file');
-        if (slot && FILE_SLOTS.includes(slot)) used.add(slot);
-    });
-    return used;
-}
-
-function getNextFreeSlot(usedSlots) {
-    for (const slot of FILE_SLOTS) {
-        if (!usedSlots.has(slot)) return slot;
-    }
-    return null;
-}
-
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const base64 = reader.result.split(',')[1];
-            resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-
-// ═══════════════════════════════════════════════════════
-// НОВОЕ: панель редактирования текста с поддержкой загрузки файлов
-// ═══════════════════════════════════════════════════════
-function openText(key, value) {
+async function openText(key, value) {
     editKind = 'text'; editKey = key;
+    panelFileData = null; panelFileNew = null; panelFileOld = null;
     openPanel('Редактирование текста', key);
     const linkData = readTextLink(key);
     editOrigText = linkData;
-
-    // Сканируем занятые слоты
-    let d = null;
-    try { d = $('siteIframe').contentDocument; } catch {}
-    const usedSlots = d ? getUsedFileSlots(d) : new Set();
-    const currentSlot = linkData.fileSlot;
-    const nextFreeSlot = getNextFreeSlot(usedSlots);
-    const allSlotsUsed = !nextFreeSlot && !currentSlot;
-
-    // Формируем блок статуса слота
-    let slotBoxHtml = '';
-    if (currentSlot) {
-        // Слот уже назначен ЭТОМУ тексту — можно перезаписать
-        slotBoxHtml = `
-            <div class="file-slot-box occupied">
-                <i class="fas fa-file-pdf"></i> Текущий слот: <code>files/${esc(currentSlot)}</code>
-                <small>Новый файл <strong>перезапишет</strong> текущий. Ссылка на сайте не изменится.</small>
-            </div>
-        `;
-    } else if (allSlotsUsed) {
-        // Все слоты заняты ДРУГИМИ текстами — блок загрузки
-        const usedList = Array.from(usedSlots).map(s => `<code>files/${esc(s)}</code>`).join(', ');
-        slotBoxHtml = `
-            <div class="file-slot-box limit">
-                <i class="fas fa-exclamation-triangle"></i> <strong>Лимит ${MAX_FILE_SLOTS} файлов исчерпан</strong>
-                <small>Занятые слоты: ${usedList}<br>
-                Чтобы загрузить новый файл, сначала <strong>уберите ссылку</strong> на одном из других текстов через кнопку «Убрать ссылку» в его панели редактирования. Файл удалится из папки <code>files/</code>, и его слот освободится.</small>
-            </div>
-        `;
-    } else {
-        // Есть свободный слот
-        slotBoxHtml = `
-            <div class="file-slot-box">
-                <i class="fas fa-info-circle"></i> Файл будет сохранён как: <code>files/${esc(nextFreeSlot)}</code>
-                <small>Любой формат (PDF, DOC, XLS, и т.д.). Максимум ${MAX_FILE_SIZE / 1024 / 1024} МБ.</small>
-            </div>
-        `;
-    }
-
-    const uploadDisabled = allSlotsUsed && !currentSlot ? 'disabled' : '';
-    const uploadLabel = currentSlot
-        ? '🔄 Загрузить новый файл (перезапишет)'
-        : (allSlotsUsed ? '⚠ Лимит исчерпан' : '📤 Загрузить файл');
-
     $('editPanelContent').innerHTML = `
         <textarea id="editTextArea" aria-label="Текст"></textarea>
         <div class="link-section">
             <label class="field-label" for="editLink"><i class="fas fa-link" style="color:#F40009;"></i> Ссылка при клике на текст (необязательно)</label>
             <input type="url" id="editLink" placeholder="https://..." autocomplete="off">
             <div class="link-hint">Оставьте поле пустым, чтобы убрать ссылку с текста.</div>
-            ${slotBoxHtml}
-            <div class="file-actions">
-                <button type="button" class="upload-file-btn" id="uploadFileBtn" ${uploadDisabled}>
-                    <i class="fas fa-upload"></i> <span id="uploadFileLabel">${uploadLabel}</span>
-                </button>
-                ${currentSlot ? `<button type="button" class="unlink-btn" id="unlinkFileBtn"><i class="fas fa-unlink"></i> Убрать ссылку</button>` : ''}
-            </div>
+        </div>
+        <div class="link-section">
+            <span class="field-label"><i class="fas fa-paperclip" style="color:#c9a961;"></i> Файл для скачивания (прайс, документ)</span>
+            <div class="file-slot-box ok" id="fileSlotInfo">Проверяю папку ${FILES_FOLDER}/…</div>
+            <label class="file-upload" id="docUploadLabel">
+                <i class="fas fa-file-upload"></i>
+                <div class="upload-text"><strong>Прикрепить файл</strong><br><small>Любой формат, до 1 МБ. Файл уйдёт в папку ${FILES_FOLDER}/</small></div>
+                <input type="file" id="docFileInput">
+            </label>
+            <div id="filePreview" style="margin-top:8px;"></div>
         </div>
         <div class="link-option">
             <span class="field-label"><i class="fas fa-palette" style="color:#CD853F;"></i> Цвет ссылки</span>
@@ -1369,202 +1306,56 @@ function openText(key, value) {
     if (colorRadio) colorRadio.checked = true;
     const targetRadio = document.querySelector(`input[name="linkTarget"][value="${linkData.linkTarget}"]`) || document.querySelector('input[name="linkTarget"][value="_blank"]');
     if (targetRadio) targetRadio.checked = true;
-
-    // Привязываем обработчики
-    if (!allSlotsUsed || currentSlot) {
-        $('uploadFileBtn').addEventListener('click', () => uploadFileToSlot(currentSlot || nextFreeSlot));
-    }
-    if (currentSlot) {
-        $('unlinkFileBtn').addEventListener('click', () => unlinkFileFromSlot(currentSlot));
-    }
-
     setTimeout(() => ta.focus(), 100);
-}
 
-// ═══════════════════════════════════════════════════════
-// НОВОЕ: загрузка файла в слот
-// ═══════════════════════════════════════════════════════
-async function uploadFileToSlot(slotName) {
-    if (!slotName) {
-        showStatus('⚠ Нет свободного слота. Сначала уберите ссылку на одном из текстов.', 'error');
-        return;
+    // Состояние папки files/
+    const slotNames = await listSlotFiles();
+    const info = $('fileSlotInfo');
+    const input = $('docFileInput');
+    const label = $('docUploadLabel');
+    if (!info || !input) return;
+    const allNames = slotNames.concat(sessionFileNames);
+    if (linkData.fileName) {
+        panelFileOld = linkData.fileName;
+        info.className = 'file-slot-box cur';
+        info.innerHTML = `<i class="fas fa-file"></i> Текущий файл: <strong>${FILES_FOLDER}/${esc(linkData.fileName)}</strong><br>Загрузите новый — он получит следующий номер, а старый файл удалится.`;
+    } else if (slotNames.length >= MAX_FILES) {
+        info.className = 'file-slot-box full';
+        info.innerHTML = `<i class="fas fa-exclamation-triangle"></i> В папке ${FILES_FOLDER}/ уже ${MAX_FILES} файла: ${slotNames.map(n => esc(n)).join(', ')}.<br>Чтобы прикрепить файл сюда — удалите ссылку с одного из текстов (освободите слот).`;
+        label.classList.add('disabled');
+        input.disabled = true;
+    } else {
+        const n = nextSlotNumber(allNames);
+        info.className = 'file-slot-box ok';
+        info.innerHTML = `<i class="fas fa-info-circle"></i> Файл запишется как <strong>${FILES_FOLDER}/${esc(FILES_BASE + (n === 0 ? '' : n))}.&lt;расширение вашего файла&gt;</strong><br>Занято ${slotNames.length} из ${MAX_FILES} слотов.`;
     }
 
-    const input = document.createElement('input');
-    input.type = 'file';
-    // Разрешаем ЛЮБОЙ файл (кроме исполняемых — проверка ниже)
-    input.accept = '';
-
-    input.onchange = async (e) => {
+    input.addEventListener('change', e => {
         const file = e.target.files[0];
         if (!file) return;
-
-        // Проверка размера
         if (file.size > MAX_FILE_SIZE) {
-            showStatus(`Файл слишком большой (${(file.size/1024/1024).toFixed(1)} МБ). Максимум ${MAX_FILE_SIZE/1024/1024} МБ (лимит GitHub API).`, 'error');
-            return;
+            e.target.value = '';
+            return showStatus('Файл слишком большой (максимум 1 МБ)', 'error');
         }
-
-        // Проверка опасного расширения
-        const fileExt = (file.name.split('.').pop() || '').toLowerCase();
-        if (BLOCKED_EXTS.includes(fileExt)) {
-            showStatus(`Файл с расширением .${fileExt} запрещён по соображениям безопасности.`, 'error');
-            return;
+        const m = file.name.match(/\.([^.]+)$/);
+        const ext = m ? m[1].toLowerCase() : '';
+        if (ext && BLOCKED_EXTS.includes(ext)) {
+            e.target.value = '';
+            return showStatus('Формат .' + ext + ' запрещён (исполняемые файлы)', 'error');
         }
-
-        const btn = $('uploadFileBtn');
-        const label = $('uploadFileLabel');
-        btn.disabled = true;
-        label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
-
-        try {
-            const base64 = await fileToBase64(file);
-            const filePath = `${FILES_FOLDER}/${slotName}`;
-
-            // Проверяем существование файла (для обновления, а не создания)
-            let sha = null;
-            try {
-                const existing = await getFile(filePath);
-                sha = existing.sha;
-            } catch (err) {
-                if (err.status !== 404) throw err;
-                // Файла нет — создадим новый
-            }
-
-            // Загружаем в репозиторий
-            await putFile(filePath, base64, sha, `Обновление файла ${filePath}`);
-
-            // Формируем URL файла
-            const fileUrl = siteBaseUrl + filePath;
-            $('editLink').value = fileUrl;
-
-            // Обновляем превью: подставляем ссылку и data-cms-file на элемент
-            let d = null;
-            try { d = $('siteIframe').contentDocument; } catch {}
-            if (d) {
-                const el = d.querySelector(`[data-edit="${CSS.escape(editKey)}"]`);
-                if (el) {
-                    const colorEl = document.querySelector('input[name="linkColor"]:checked');
-                    const targetEl = document.querySelector('input[name="linkTarget"]:checked');
-                    const linkColor = colorEl ? colorEl.value : 'inherit';
-                    const linkTarget = targetEl ? targetEl.value : '_blank';
-                    const keepColor = linkColor === 'inherit';
-                    applyLinkToText(d, el, fileUrl, keepColor, linkColor, linkTarget, slotName);
-                }
-            }
-
-            showStatus(`✓ Файл загружен в ${filePath} (${(file.size/1024).toFixed(0)} КБ). Нажмите «Применить» и «Сохранить в GitHub».`, 'success');
-
-            // Восстанавливаем кнопку (но оставляем текущий slotName для повторной загрузки)
-            btn.disabled = false;
-            label.innerHTML = '<i class="fas fa-upload"></i> 🔄 Загрузить другой файл (перезапишет)';
-
-            // Показываем кнопку «Убрать ссылку» если её ещё нет
-            if (!$('unlinkFileBtn')) {
-                const actions = btn.parentElement;
-                const unlinkBtn = document.createElement('button');
-                unlinkBtn.type = 'button';
-                unlinkBtn.className = 'unlink-btn';
-                unlinkBtn.id = 'unlinkFileBtn';
-                unlinkBtn.innerHTML = '<i class="fas fa-unlink"></i> Убрать ссылку';
-                unlinkBtn.addEventListener('click', () => unlinkFileFromSlot(slotName));
-                actions.appendChild(unlinkBtn);
-            }
-
-            // Обновляем блок статуса слота
-            const slotBox = document.querySelector('.file-slot-box');
-            if (slotBox) {
-                slotBox.className = 'file-slot-box occupied';
-                slotBox.innerHTML = `
-                    <i class="fas fa-file-pdf"></i> Текущий слот: <code>files/${esc(slotName)}</code>
-                    <small>Новый файл <strong>перезапишет</strong> текущий. Ссылка на сайте не изменится.</small>
-                `;
-            }
-        } catch (err) {
-            const i = interpretError(err.status, err.body);
-            showStatus(`✗ Ошибка загрузки: ${i.title}`, 'error');
-            btn.disabled = false;
-            label.innerHTML = '<i class="fas fa-upload"></i> 📤 Загрузить файл';
-        }
-    };
-    input.click();
-}
-
-// ═══════════════════════════════════════════════════════
-// НОВОЕ: отвязка файла от текста + удаление файла из репозитория
-// ═══════════════════════════════════════════════════════
-async function unlinkFileFromSlot(slotName) {
-    if (!confirm(`Убрать ссылку и удалить файл из папки files/?\n\nФайл "files/${slotName}" будет УДАЛЁН из репозитория.\nСлот освободится для другого текста.`)) return;
-
-    const filePath = `${FILES_FOLDER}/${slotName}`;
-
-    const btn = $('unlinkFileBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Удаляю...';
-
-    try {
-        // Удаляем файл из репозитория
-        const sha = await getSha(filePath);
-        if (sha) {
-            await gh(`${API}/contents/${encPath(filePath)}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: `Удаление файла ${filePath}`,
-                    sha: sha,
-                    branch: CMS_CONFIG.branch
-                })
-            });
-        }
-
-        // Очищаем поле ссылки
-        $('editLink').value = '';
-
-        // Обновляем превью: убираем ссылку и data-cms-file с элемента
-        let d = null;
-        try { d = $('siteIframe').contentDocument; } catch {}
-        if (d) {
-            const el = d.querySelector(`[data-edit="${CSS.escape(editKey)}"]`);
-            if (el) {
-                applyLinkToText(d, el, '', false, 'inherit', '_blank', null);
-            }
-        }
-
-        // Обновляем editOrigText чтобы applyEdit знал что файл отвязан
-        if (editOrigText) editOrigText.fileSlot = null;
-
-        showStatus(`✓ Ссылка убрана. Файл "files/${slotName}" удалён из репозитория. Слот свободен.`, 'success');
-
-        // Обновляем блок статуса слота
-        const slotBox = document.querySelector('.file-slot-box');
-        if (slotBox) {
-            // Пересчитываем свободные слоты
-            let d2 = null;
-            try { d2 = $('siteIframe').contentDocument; } catch {}
-            const usedSlots = d2 ? getUsedFileSlots(d2) : new Set();
-            const nextFree = getNextFreeSlot(usedSlots);
-            if (nextFree) {
-                slotBox.className = 'file-slot-box';
-                slotBox.innerHTML = `
-                    <i class="fas fa-info-circle"></i> Файл будет сохранён как: <code>files/${esc(nextFree)}</code>
-                    <small>Любой формат (PDF, DOC, XLS, и т.д.). Максимум ${MAX_FILE_SIZE / 1024 / 1024} МБ.</small>
-                `;
-            }
-        }
-
-        // Убираем кнопку «Убрать ссылку»
-        btn.remove();
-
-        // Переименовываем кнопку загрузки
-        const label = $('uploadFileLabel');
-        if (label) label.innerHTML = '<i class="fas fa-upload"></i> 📤 Загрузить файл';
-
-    } catch (err) {
-        const i = interpretError(err.status, err.body);
-        showStatus(`✗ Ошибка удаления: ${i.title}`, 'error');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-unlink"></i> Убрать ссылку';
-    }
+        const names = slotNames.concat(sessionFileNames);
+        const newName = buildSlotName(nextSlotNumber(names), file.name);
+        const rd = new FileReader();
+        rd.onload = ev => {
+            panelFileData = ev.target.result;
+            panelFileNew = newName;
+            panelFileOld = linkData.fileName || null;
+            sessionFileNames.push(newName);
+            $('editLink').value = FILES_FOLDER + '/' + newName;
+            $('filePreview').innerHTML = `<div style="color: #00cc66; font-size: 13px;"><i class="fas fa-check-circle"></i> Файл: <strong>${esc(file.name)}</strong> (${(file.size / 1024).toFixed(0)} КБ) → будет записан как <strong>${FILES_FOLDER}/${esc(newName)}</strong>${panelFileOld ? ', старый ' + esc(panelFileOld) + ' удалится' : ''}</div>`;
+        };
+        rd.readAsDataURL(file);
+    });
 }
 
 function openImage(path, src, imgId) {
@@ -1586,7 +1377,7 @@ function openImage(path, src, imgId) {
         </div>
         <label class="file-upload">
             <i class="fas fa-cloud-upload-alt"></i>
-            <div class="upload-text"><strong>Выберите новое изображение</strong><br><small>Поддерживаются: JPG, PNG, WebP, GIF, SVG. Максимум 2 МБ.</small></div>
+            <div class="upload-text"><strong>Выберите новое изображение</strong><br><small>Поддерживаются: JPG, PNG, WebP, GIF, SVG. Максимум 2 МБ. Файл заменит <code style="background:#2a2a2a;padding:1px 5px;border-radius:3px;">${esc(path)}</code>.</small></div>
             <input type="file" id="imageFileInput" accept="image/*">
         </label>
         <div id="imagePreview" style="margin-top: 12px;"></div>
@@ -1613,24 +1404,20 @@ function openImage(path, src, imgId) {
     $('imageFileInput').addEventListener('change', e => {
         const file = e.target.files[0];
         if (!file) return;
-
         if (!IMAGE_TYPES.includes(file.type) && !file.type.startsWith('image/')) {
             e.target.value = '';
             return showStatus('Файл должен быть изображением (JPG, PNG, WebP, GIF, SVG)', 'error');
         }
-
         if (file.size > 2 * 1024 * 1024) {
             e.target.value = '';
             return showStatus('Файл слишком большой (максимум 2 МБ)', 'error');
         }
-
         const fileExt = (file.name.split('.').pop() || '').toLowerCase();
         const ALLOWED_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp', 'ico'];
         if (!ALLOWED_EXTS.includes(fileExt)) {
             e.target.value = '';
             return showStatus('Неподдерживаемое расширение файла: .' + fileExt, 'error');
         }
-
         const rd = new FileReader();
         rd.onload = ev => {
             pendingImg = ev.target.result;
@@ -1640,55 +1427,42 @@ function openImage(path, src, imgId) {
     });
 }
 
-// ═══════════════════════════════════════════════════════
-// ИЗМЕНЕНО: applyEdit теперь обрабатывает fileSlot
-// ═══════════════════════════════════════════════════════
 function applyEdit() {
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
 
     if (editKind === 'text') {
         const v = $('editTextArea').value;
-        const linkUrl = $('editLink').value.trim();
+        let linkUrl = $('editLink').value.trim();
         if (!validLinkUrl(linkUrl)) return showStatus('Недопустимая ссылка (разрешены http, https, tel, mailto, #)', 'error');
+        let fileNew = panelFileNew, fileOld = panelFileOld, fileData = panelFileData;
+        if (!linkUrl) { fileNew = null; fileData = null; }
+        const deleteOld = (!linkUrl && editOrigText && editOrigText.fileName && !fileData) ? editOrigText.fileName : null;
         const colorEl = document.querySelector('input[name="linkColor"]:checked');
         const targetEl = document.querySelector('input[name="linkTarget"]:checked');
         const linkColor = colorEl ? colorEl.value : 'inherit';
         const linkTarget = targetEl ? targetEl.value : '_blank';
         const keepColor = linkColor === 'inherit';
-        const o = editOrigText || { url: '', linkColor: 'inherit', linkTarget: '_blank', fileSlot: null };
+        const o = editOrigText || { url: '', linkColor: 'inherit', linkTarget: '_blank', fileName: '' };
         const prev = pending['t:' + editKey];
-
-        // Определяем fileSlot:
-        // - Если ссылка пустая → slot = null (отвязан)
-        // - Если ссылка указывает на files/{slot} из списка → slot = slot
-        // - Иначе → сохраняем предыдущий (если был)
-        let fileSlot = null;
-        if (linkUrl) {
-            const match = linkUrl.match(new RegExp(`${FILES_FOLDER}/(${FILE_SLOTS.map(s => s.replace('.', '\\.')).join('|')})$`));
-            if (match) {
-                fileSlot = match[1];
-            } else {
-                // Ссылка не на файловый слот (например, внешняя) — сохраняем предыдущий slot если был
-                fileSlot = o.fileSlot || null;
-            }
-        }
-
-        const changed = linkUrl !== o.url || fileSlot !== o.fileSlot ||
-                       (!!linkUrl && (linkColor !== o.linkColor || linkTarget !== o.linkTarget));
-        const linkChanged = changed || !!(prev && prev.linkChanged);
+        const changed = linkUrl !== o.url || (!!linkUrl && (linkColor !== o.linkColor || linkTarget !== o.linkTarget));
+        const linkChanged = changed || !!fileData || !!deleteOld || !!(prev && prev.linkChanged);
         pending['t:' + editKey] = {
-            type: 'text', value: v, link: linkUrl, keepColor, linkColor, linkTarget, linkChanged, fileSlot
+            type: 'text', value: v, link: linkUrl, keepColor, linkColor, linkTarget, linkChanged,
+            fileNew: fileNew || (prev && prev.fileNew) || null,
+            fileOld: fileOld || (prev && prev.fileOld) || null,
+            fileData: fileData || (prev && prev.fileData) || null,
+            deleteOld: deleteOld || (prev && prev.deleteOld) || null
         };
         if (d) {
             const el = d.querySelector(`[data-edit="${CSS.escape(editKey)}"]`);
             if (el) {
                 el.textContent = keepWs(el.textContent, v);
-                if (linkChanged) applyLinkToText(d, el, linkUrl, keepColor, linkColor, linkTarget, fileSlot);
+                if (linkChanged) applyLinkToText(d, el, linkUrl, keepColor, linkColor, linkTarget, fileData ? fileNew : undefined);
                 if (!linkUrl) syncHref(el, v);
             }
         }
-        showStatus((linkUrl ? 'Изменения и ссылка применены.' : 'Изменения применены.') + ' Сохраните в GitHub.');
+        showStatus((fileData ? 'Файл и ссылка применены.' : linkUrl ? 'Изменения и ссылка применены.' : 'Изменения применены.') + ' Сохраните в GitHub.');
     } else if (editKind === 'image') {
         const imgLinkUrl = $('imgLink').value.trim();
         if (!validLinkUrl(imgLinkUrl)) return showStatus('Недопустимая ссылка (разрешены http, https, tel, mailto, #)', 'error');
@@ -1728,6 +1502,7 @@ function applyEdit() {
 function closePanel() {
     $('editPanel').classList.remove('active');
     editKind = editKey = editImagePath = pendingImg = editOrigText = editOrigImg = null;
+    panelFileData = panelFileNew = panelFileOld = null;
     if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch {} }
     lastFocus = null;
 }
@@ -1745,16 +1520,28 @@ async function saveAll() {
         const imagesWithData = images.filter(k => pending[k].data);
         const imagesWithLinks = images.filter(k => pending[k].linkChanged);
 
-        if (texts.length || imagesWithLinks.length) {
+        // 1) Сначала загружаем новые файлы в files/
+        const fileUploads = texts.filter(k => pending[k].fileNew && pending[k].fileData);
+        for (const k of fileUploads) {
+            const p = pending[k];
+            try {
+                const fp = FILES_FOLDER + '/' + p.fileNew;
+                await putFile(fp, p.fileData.split(',')[1], await getSha(fp), `Загрузка файла ${p.fileNew}`);
+            } catch (e) { failed.push(k); }
+        }
+
+        // 2) Потом коммит HTML со ссылками на новые имена
+        const htmlTexts = texts.filter(k => !failed.includes(k) && (pending[k].linkChanged || true));
+        if (htmlTexts.length || imagesWithLinks.length) {
             const f = await getFile(currentFile);
             const doc = new DOMParser().parseFromString(f.text, 'text/html');
 
-            for (const k of texts) {
+            for (const k of htmlTexts) {
                 const p = pending[k];
                 const el = doc.querySelector(`[data-edit="${CSS.escape(k.slice(2))}"]`);
                 if (!el) { failed.push(k); continue; }
                 el.textContent = keepWs(el.textContent, p.value);
-                if (p.linkChanged) applyLinkToText(doc, el, p.link || '', p.keepColor || false, p.linkColor || 'inherit', p.linkTarget || '_blank', p.fileSlot || null);
+                if (p.linkChanged) applyLinkToText(doc, el, p.link || '', p.keepColor || false, p.linkColor || 'inherit', p.linkTarget || '_blank', p.fileNew || undefined);
                 if (!p.link) syncHref(el, p.value);
                 done.push(k);
             }
@@ -1772,6 +1559,17 @@ async function saveAll() {
             repoDeployId = deployId;
         }
 
+        // 3) После коммита удаляем старые файлы (заменённые и отвязанные)
+        for (const k of texts) {
+            if (failed.includes(k)) continue;
+            const p = pending[k];
+            if (p.fileOld && (p.fileNew || p.deleteOld)) {
+                try { await delFile(FILES_FOLDER + '/' + p.fileOld); } catch {}
+            } else if (p.deleteOld && !p.fileNew) {
+                try { await delFile(FILES_FOLDER + '/' + p.deleteOld); } catch {}
+            }
+        }
+
         for (const k of imagesWithData) {
             const { path, data } = pending[k];
             try {
@@ -1781,10 +1579,12 @@ async function saveAll() {
         }
 
         imagesWithLinks.forEach(k => { if (!done.includes(k) && !failed.includes(k)) done.push(k); });
+        fileUploads.forEach(k => { if (!done.includes(k) && !failed.includes(k)) done.push(k); });
 
         done.filter(k => !failed.includes(k)).forEach(k => delete pending[k]);
+        sessionFileNames = [];
         markUnsaved();
-        if (failed.length) showStatus(`Сохранено: ${done.length - failed.filter(k => done.includes(k)).length}. Не сохранено: ${failed.length}.`, 'error');
+        if (failed.length) showStatus(`Сохранено: ${done.length}. Не сохранено: ${failed.length}.`, 'error');
         else {
             showStatus('Сохранено! Ждём деплой GitHub Pages...', 'success');
             setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
