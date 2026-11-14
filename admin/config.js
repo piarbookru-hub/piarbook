@@ -1,8 +1,8 @@
 const CMS_CONFIG {
     owner: 'piarbookru-hub',
-    repo: 'piarbookru',
+    repo: 'piarbook',
     branch: 'main',
-    projectName: 'piarbookru',
+    projectName: 'piarbook',
     
     // Безопасность превью:
     // false = скрипты сайта в превью НЕ выполняются (токен защищён)
