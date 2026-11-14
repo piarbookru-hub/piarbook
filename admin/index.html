@@ -101,17 +101,33 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .edit-panel-close { background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; padding: 4px 8px; }
 .edit-panel-close:hover { color: #fff; }
 .edit-panel textarea { width: 100%; min-height: 90px; padding: 12px; background: #0f0f0f; border: 1px solid #333; border-radius: 8px; color: #fff; font: inherit; font-size: 14px; resize: vertical; }
-.edit-panel-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
+.edit-panel-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; flex-wrap: wrap; }
 
 .link-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
 .link-section label.field-label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 500; }
 .link-section input[type="url"] { width: 100%; padding: 10px 12px; background: #0f0f0f; border: 1px solid #333; border-radius: 6px; color: #fff; font: inherit; font-size: 13px; }
 .link-hint { font-size: 11px; color: #666; margin-top: 6px; }
 
-.upload-file-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+/* ═══════════════════════════════════════════════════════ */
+/* НОВОЕ: стили для блока слота файла                      */
+/* ═══════════════════════════════════════════════════════ */
+.file-slot-box { margin-top: 10px; padding: 10px 12px; background: rgba(201, 169, 97, 0.08); border: 1px solid rgba(201, 169, 97, 0.3); border-radius: 6px; font-size: 12px; color: #c9a961; }
+.file-slot-box.occupied { background: rgba(0, 204, 102, 0.08); border-color: rgba(0, 204, 102, 0.3); color: #00cc66; }
+.file-slot-box.limit { background: rgba(255, 68, 68, 0.1); border-color: rgba(255, 68, 68, 0.4); color: #ff6b6b; }
+.file-slot-box strong { color: #fff; }
+.file-slot-box code { background: #0f0f0f; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 11px; color: #f4b888; }
+
+.upload-file-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer; transition: all 0.2s; margin-top: 8px; font-family: inherit; }
 .upload-file-btn:hover { background: #333; border-color: #F40009; }
 .upload-file-btn i { color: #F40009; }
 .upload-file-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.upload-file-btn.danger { background: rgba(255, 68, 68, 0.15); border-color: rgba(255, 68, 68, 0.4); color: #ff6b6b; }
+.upload-file-btn.danger i { color: #ff6b6b; }
+.upload-file-btn.danger:hover { background: rgba(255, 68, 68, 0.25); }
+
+.unlink-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: transparent; border: 1px solid #555; border-radius: 6px; color: #aaa; font-size: 12px; cursor: pointer; transition: all 0.2s; margin-top: 8px; margin-left: 8px; font-family: inherit; }
+.unlink-btn:hover { background: #2a2a2a; color: #fff; border-color: #F40009; }
+.unlink-btn i { color: #F40009; }
 
 .link-option { margin-top: 12px; }
 .link-option > .field-label { margin-bottom: 8px; display: block; font-size: 12px; color: #aaa; font-weight: 500; }
@@ -252,6 +268,13 @@ const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 
 const PREVIEW_SANDBOX = 'allow-same-origin allow-popups allow-popups-to-escape-sandbox';
 const VIEW_SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
+
+// ═══════════════════════════════════════════════════════
+// НОВОЕ: система слотов для файлов (макс 3)
+// ═══════════════════════════════════════════════════════
+const FILE_SLOTS = ['prices.pdf', 'prices1.pdf', 'prices2.pdf'];
+const MAX_FILE_SLOTS = FILE_SLOTS.length;
+const FILES_FOLDER = 'files';
 
 const $ = id => document.getElementById(id);
 
@@ -972,8 +995,27 @@ function findImgTargets(doc, key, path) {
     return Array.from(doc.querySelectorAll(`[data-img="${CSS.escape(lookupPath)}"]`));
 }
 
+// ═══════════════════════════════════════════════════════
+// НОВОЕ: функции для работы со слотами файлов
+// ═══════════════════════════════════════════════════════
+function getUsedFileSlots(doc) {
+    const used = new Set();
+    doc.querySelectorAll('[data-cms-file]').forEach(el => {
+        const slot = el.getAttribute('data-cms-file');
+        if (slot) used.add(slot);
+    });
+    return used;
+}
+
+function getNextFreeSlot(usedSlots) {
+    for (const slot of FILE_SLOTS) {
+        if (!usedSlots.has(slot)) return slot;
+    }
+    return null;
+}
+
 function readTextLink(key) {
-    const dflt = { url: '', linkColor: 'inherit', linkTarget: '_blank' };
+    const dflt = { url: '', linkColor: 'inherit', linkTarget: '_blank', fileSlot: null };
     let d = null;
     try { d = $('siteIframe').contentDocument; } catch {}
     if (!d) return dflt;
@@ -983,10 +1025,12 @@ function readTextLink(key) {
     if (!link) return dflt;
     const storedColor = link.getAttribute('data-link-color') || 'inherit';
     const target = link.getAttribute('target') || '_blank';
+    const fileSlot = link.getAttribute('data-cms-file') || null;
     return {
         url: link.getAttribute('href') || '',
         linkColor: LINK_COLORS[storedColor] !== undefined ? storedColor : 'inherit',
-        linkTarget: target === '_self' ? '_self' : '_blank'
+        linkTarget: target === '_self' ? '_self' : '_blank',
+        fileSlot: fileSlot
     };
 }
 
@@ -1011,7 +1055,7 @@ function readImageLink(key, path) {
     return { url: '', linkTarget: '_blank' };
 }
 
-function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget) {
+function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget, fileSlot) {
     if (!el) return;
     let link = el.closest ? el.closest('a') : null;
     if (url && url.trim()) {
@@ -1028,6 +1072,11 @@ function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget) {
         else link.removeAttribute('rel');
         const colorKey = linkColor && LINK_COLORS[linkColor] !== undefined ? linkColor : 'inherit';
         link.setAttribute('data-link-color', colorKey);
+        if (fileSlot) {
+            link.setAttribute('data-cms-file', fileSlot);
+        } else {
+            link.removeAttribute('data-cms-file');
+        }
         if (colorKey === 'inherit' || keepColor) {
             link.style.color = 'inherit';
             link.style.textDecoration = 'none';
@@ -1043,7 +1092,7 @@ function applyLinkToText(doc, el, url, keepColor, linkColor, linkTarget) {
         if (link.textContent.trim() === '' && !link.querySelector('img, [data-edit], [data-img]')) {
             link.parentNode.removeChild(link);
         } else {
-            ['data-cms-link', 'data-keep-color', 'data-link-color', 'href', 'target', 'rel'].forEach(a => link.removeAttribute(a));
+            ['data-cms-link', 'data-keep-color', 'data-link-color', 'href', 'target', 'rel', 'data-cms-file'].forEach(a => link.removeAttribute(a));
             link.style.color = '';
             link.style.textDecoration = '';
         }
@@ -1063,7 +1112,7 @@ function applyLinkToImage(doc, target, url, linkTarget = '_blank') {
         const link = isA ? target : ((target.closest && target.closest('a')) || findInner());
         if (!link) return;
         if (link === target) {
-            ['href', 'target', 'rel', 'data-cms-link'].forEach(a => link.removeAttribute(a));
+            ['href', 'target', 'rel', 'data-cms-link', 'data-cms-file'].forEach(a => link.removeAttribute(a));
             return;
         }
         while (link.firstChild) link.parentNode.insertBefore(link.firstChild, link);
@@ -1208,22 +1257,68 @@ function openPanel(title, key) {
 }
 
 // ═══════════════════════════════════════════════════════
-// ИСПРАВЛЕНО: добавлена кнопка "Загрузить файл" в панель текста
+// ИСПРАВЛЕНО: панель текста теперь показывает слот файла
+// и позволяет загрузить/перезаписать/отвязать файл
 // ═══════════════════════════════════════════════════════
 function openText(key, value) {
     editKind = 'text'; editKey = key;
     openPanel('Редактирование текста', key);
     const linkData = readTextLink(key);
     editOrigText = linkData;
+
+    // Определяем статус слота
+    let d = null;
+    try { d = $('siteIframe').contentDocument; } catch {}
+    const usedSlots = d ? getUsedFileSlots(d) : new Set();
+    const currentSlot = linkData.fileSlot;
+    const nextFreeSlot = currentSlot || getNextFreeSlot(usedSlots);
+    const allSlotsUsed = !nextFreeSlot && !currentSlot;
+
+    let slotBoxHtml = '';
+    if (currentSlot) {
+        // Слот уже назначен этому тексту
+        slotBoxHtml = `
+            <div class="file-slot-box occupied">
+                <i class="fas fa-file-pdf"></i> Слот: <code>${esc(currentSlot)}</code><br>
+                <small>Новый файл <strong>перезапишет</strong> текущий. Ссылка на сайте не изменится.</small>
+            </div>
+        `;
+    } else if (allSlotsUsed) {
+        // Все слоты заняты другими текстами
+        const usedList = Array.from(usedSlots).map(s => `<code>${esc(s)}</code>`).join(', ');
+        slotBoxHtml = `
+            <div class="file-slot-box limit">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Лимит 3 файлов исчерпан</strong><br>
+                <small>Занятые слоты: ${usedList}<br>
+                Чтобы загрузить файл сюда, сначала <strong>удалите ссылку</strong> с другого текста через кнопку «Убрать ссылку» в его панели редактирования.</small>
+            </div>
+        `;
+    } else {
+        // Есть свободный слот
+        slotBoxHtml = `
+            <div class="file-slot-box">
+                <i class="fas fa-info-circle"></i> Будет сохранён как: <code>files/${esc(nextFreeSlot)}</code><br>
+                <small>Поддерживаются: PDF, DOC, DOCX, XLS, XLSX. Максимум 1 МБ.</small>
+            </div>
+        `;
+    }
+
+    const uploadDisabled = allSlotsUsed && !currentSlot ? 'disabled' : '';
+    const uploadLabel = currentSlot ? '🔄 Загрузить новый файл (перезапишет)' : (allSlotsUsed ? '⚠ Лимит исчерпан' : '📤 Загрузить файл');
+
     $('editPanelContent').innerHTML = `
         <textarea id="editTextArea" aria-label="Текст"></textarea>
         <div class="link-section">
-            <label class="field-label" for="editLink"><i class="fas fa-link" style="color:#F40009;"></i> Ссылка при клике на текст (необязательно)</label>
-            <input type="url" id="editLink" placeholder="https://..." autocomplete="off">
-            <button type="button" class="upload-file-btn" id="uploadFileBtn">
-                <i class="fas fa-upload"></i> Загрузить файл
-            </button>
-            <div class="link-hint">Загрузите PDF, DOC, XLS — ссылка подставится автоматически</div>
+            <label class="field-label" for="editLink"><i class="fas fa-link" style="color:#F40009;"></i> Ссылка при клике на текст</label>
+            <input type="url" id="editLink" placeholder="https://..." autocomplete="off" value="${esc(linkData.url)}">
+            ${slotBoxHtml}
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="upload-file-btn" id="uploadFileBtn" ${uploadDisabled}>
+                    <i class="fas fa-upload"></i> ${uploadLabel}
+                </button>
+                ${currentSlot ? `<button type="button" class="unlink-btn" id="unlinkFileBtn"><i class="fas fa-unlink"></i> Убрать ссылку</button>` : ''}
+            </div>
+            <div class="link-hint">Загрузите PDF/DOC/XLS — ссылка подставится автоматически. Старый файл в слоте будет перезаписан.</div>
         </div>
         <div class="link-option">
             <span class="field-label"><i class="fas fa-palette" style="color:#CD853F;"></i> Цвет ссылки</span>
@@ -1241,24 +1336,34 @@ function openText(key, value) {
             </div>
         </div>
     `;
+
     const ta = $('editTextArea');
     ta.value = pending['t:' + key] ? pending['t:' + key].value : value.trim();
-    $('editLink').value = linkData.url;
+
     const colorRadio = document.querySelector(`input[name="linkColor"][value="${linkData.linkColor}"]`) || document.querySelector('input[name="linkColor"][value="inherit"]');
     if (colorRadio) colorRadio.checked = true;
     const targetRadio = document.querySelector(`input[name="linkTarget"][value="${linkData.linkTarget}"]`) || document.querySelector('input[name="linkTarget"][value="_blank"]');
     if (targetRadio) targetRadio.checked = true;
 
-    // Обработчик кнопки загрузки файла
-    $('uploadFileBtn').addEventListener('click', uploadFile);
+    if (!allSlotsUsed || currentSlot) {
+        $('uploadFileBtn').addEventListener('click', () => uploadFile(currentSlot || nextFreeSlot));
+    }
+    if (currentSlot) {
+        $('unlinkFileBtn').addEventListener('click', () => unlinkFile(currentSlot));
+    }
 
     setTimeout(() => ta.focus(), 100);
 }
 
 // ═══════════════════════════════════════════════════════
-// НОВОЕ: загрузка файла в корень репозитория
+// НОВОЕ: загрузка файла в слот files/{slotName}
 // ═══════════════════════════════════════════════════════
-async function uploadFile() {
+async function uploadFile(slotName) {
+    if (!slotName) {
+        showStatus('⚠ Нет свободного слота. Удалите одну из существующих ссылок.', 'error');
+        return;
+    }
+
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.pdf,.doc,.docx,.xls,.xlsx';
@@ -1266,13 +1371,11 @@ async function uploadFile() {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Проверка размера (макс 1 МБ — лимит GitHub API)
         if (file.size > 1024 * 1024) {
             showStatus('Файл слишком большой (максимум 1 МБ)', 'error');
             return;
         }
 
-        // Проверка расширения
         const fileExt = (file.name.split('.').pop() || '').toLowerCase();
         const ALLOWED_EXTS = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
         if (!ALLOWED_EXTS.includes(fileExt)) {
@@ -1285,13 +1388,9 @@ async function uploadFile() {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
 
         try {
-            // Читаем файл как base64
             const base64 = await fileToBase64(file);
+            const filePath = `${FILES_FOLDER}/${slotName}`;
 
-            // Путь в корне репозитория
-            const filePath = file.name;
-
-            // Проверяем, существует ли файл
             let sha = null;
             try {
                 const existing = await getFile(filePath);
@@ -1300,14 +1399,28 @@ async function uploadFile() {
                 if (e.status !== 404) throw e;
             }
 
-            // Загружаем в GitHub
-            await putFile(filePath, base64, sha, `Загрузка файла ${filePath}`);
+            await putFile(filePath, base64, sha, `Обновление файла ${filePath}`);
 
-            // Подставляем URL в поле ссылки
             const fileUrl = siteBaseUrl + filePath;
             $('editLink').value = fileUrl;
 
-            showStatus(`✓ Файл загружен: ${file.name} (${(file.size/1024).toFixed(0)} КБ)`);
+            // Обновляем превью: подставляем ссылку на элемент
+            let d = null;
+            try { d = $('siteIframe').contentDocument; } catch {}
+            if (d) {
+                const el = d.querySelector(`[data-edit="${CSS.escape(editKey)}"]`);
+                if (el) {
+                    const linkData = readTextLink(editKey);
+                    const colorEl = document.querySelector('input[name="linkColor"]:checked');
+                    const targetEl = document.querySelector('input[name="linkTarget"]:checked');
+                    const linkColor = colorEl ? colorEl.value : 'inherit';
+                    const linkTarget = targetEl ? targetEl.value : '_blank';
+                    const keepColor = linkColor === 'inherit';
+                    applyLinkToText(d, el, fileUrl, keepColor, linkColor, linkTarget, slotName);
+                }
+            }
+
+            showStatus(`✓ Файл загружен в ${filePath} (${(file.size/1024).toFixed(0)} КБ). Нажмите "Применить".`, 'success');
         } catch (e) {
             const i = interpretError(e.status, e.body);
             showStatus(`✗ Ошибка загрузки: ${i.title}`, 'error');
@@ -1319,7 +1432,26 @@ async function uploadFile() {
     input.click();
 }
 
-// Вспомогательная функция: файл → base64
+// ═══════════════════════════════════════════════════════
+// НОВОЕ: отвязка файла от текста (освобождает слот)
+// ═══════════════════════════════════════════════════════
+function unlinkFile(slotName) {
+    if (!confirm(`Убрать ссылку и освободить слот "${slotName}"?\n\nФайл останется в репозитории, но текст перестанет быть ссылкой.\nСлот станет доступен для другого текста.`)) return;
+
+    $('editLink').value = '';
+
+    let d = null;
+    try { d = $('siteIframe').contentDocument; } catch {}
+    if (d) {
+        const el = d.querySelector(`[data-edit="${CSS.escape(editKey)}"]`);
+        if (el) {
+            applyLinkToText(d, el, '', false, 'inherit', '_blank', null);
+        }
+    }
+
+    showStatus(`✓ Ссылка убрана. Слот "${slotName}" свободен.`, 'success');
+}
+
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1402,18 +1534,30 @@ function applyEdit() {
         const linkColor = colorEl ? colorEl.value : 'inherit';
         const linkTarget = targetEl ? targetEl.value : '_blank';
         const keepColor = linkColor === 'inherit';
-        const o = editOrigText || { url: '', linkColor: 'inherit', linkTarget: '_blank' };
+        const o = editOrigText || { url: '', linkColor: 'inherit', linkTarget: '_blank', fileSlot: null };
         const prev = pending['t:' + editKey];
-        const changed = linkUrl !== o.url || (!!linkUrl && (linkColor !== o.linkColor || linkTarget !== o.linkTarget));
+
+        // Определяем слот: если URL указывает на files/{slot} — берём slot, иначе null
+        let fileSlot = o.fileSlot || null;
+        if (linkUrl) {
+            const match = linkUrl.match(/files\/(prices\d*\.pdf)$/i);
+            if (match) fileSlot = match[1];
+        } else {
+            fileSlot = null;
+        }
+
+        const changed = linkUrl !== o.url || (!!linkUrl && (linkColor !== o.linkColor || linkTarget !== o.linkTarget || fileSlot !== o.fileSlot));
         const linkChanged = changed || !!(prev && prev.linkChanged);
+
         pending['t:' + editKey] = {
-            type: 'text', value: v, link: linkUrl, keepColor, linkColor, linkTarget, linkChanged
+            type: 'text', value: v, link: linkUrl, keepColor, linkColor, linkTarget, linkChanged, fileSlot
         };
+
         if (d) {
             const el = d.querySelector(`[data-edit="${CSS.escape(editKey)}"]`);
             if (el) {
                 el.textContent = keepWs(el.textContent, v);
-                if (linkChanged) applyLinkToText(d, el, linkUrl, keepColor, linkColor, linkTarget);
+                if (linkChanged) applyLinkToText(d, el, linkUrl, keepColor, linkColor, linkTarget, fileSlot);
                 if (!linkUrl) syncHref(el, v);
             }
         }
@@ -1483,7 +1627,7 @@ async function saveAll() {
                 const el = doc.querySelector(`[data-edit="${CSS.escape(k.slice(2))}"]`);
                 if (!el) { failed.push(k); continue; }
                 el.textContent = keepWs(el.textContent, p.value);
-                if (p.linkChanged) applyLinkToText(doc, el, p.link || '', p.keepColor || false, p.linkColor || 'inherit', p.linkTarget || '_blank');
+                if (p.linkChanged) applyLinkToText(doc, el, p.link || '', p.keepColor || false, p.linkColor || 'inherit', p.linkTarget || '_blank', p.fileSlot || null);
                 if (!p.link) syncHref(el, p.value);
                 done.push(k);
             }
