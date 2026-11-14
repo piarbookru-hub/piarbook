@@ -1,4 +1,4 @@
-const CMS_CONFIG = {
+const CMS_CONFIG {
     owner: 'piarbookru-hub',
     repo: 'piarbookru',
     branch: 'main',
