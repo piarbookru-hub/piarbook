@@ -108,6 +108,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .link-section input[type="url"] { width: 100%; padding: 10px 12px; background: #0f0f0f; border: 1px solid #333; border-radius: 6px; color: #fff; font: inherit; font-size: 13px; }
 .link-hint { font-size: 11px; color: #666; margin-top: 6px; }
 
+.upload-file-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+.upload-file-btn:hover { background: #333; border-color: #F40009; }
+.upload-file-btn i { color: #F40009; }
+.upload-file-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .link-option { margin-top: 12px; }
 .link-option > .field-label { margin-bottom: 8px; display: block; font-size: 12px; color: #aaa; font-weight: 500; }
 .option-group { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1202,6 +1207,9 @@ function openPanel(title, key) {
     $('editPanel').classList.add('active');
 }
 
+// ═══════════════════════════════════════════════════════
+// ИСПРАВЛЕНО: добавлена кнопка "Загрузить файл" в панель текста
+// ═══════════════════════════════════════════════════════
 function openText(key, value) {
     editKind = 'text'; editKey = key;
     openPanel('Редактирование текста', key);
@@ -1212,7 +1220,10 @@ function openText(key, value) {
         <div class="link-section">
             <label class="field-label" for="editLink"><i class="fas fa-link" style="color:#F40009;"></i> Ссылка при клике на текст (необязательно)</label>
             <input type="url" id="editLink" placeholder="https://..." autocomplete="off">
-            <div class="link-hint">Оставьте поле пустым, чтобы убрать ссылку с текста.</div>
+            <button type="button" class="upload-file-btn" id="uploadFileBtn">
+                <i class="fas fa-upload"></i> Загрузить файл
+            </button>
+            <div class="link-hint">Загрузите PDF, DOC, XLS — ссылка подставится автоматически</div>
         </div>
         <div class="link-option">
             <span class="field-label"><i class="fas fa-palette" style="color:#CD853F;"></i> Цвет ссылки</span>
@@ -1237,15 +1248,90 @@ function openText(key, value) {
     if (colorRadio) colorRadio.checked = true;
     const targetRadio = document.querySelector(`input[name="linkTarget"][value="${linkData.linkTarget}"]`) || document.querySelector('input[name="linkTarget"][value="_blank"]');
     if (targetRadio) targetRadio.checked = true;
+
+    // Обработчик кнопки загрузки файла
+    $('uploadFileBtn').addEventListener('click', uploadFile);
+
     setTimeout(() => ta.focus(), 100);
 }
 
 // ═══════════════════════════════════════════════════════
-// ИСПРАВЛЕНО: принимаем ЛЮБОЙ графический формат
-// (браузеры читают картинки по magic bytes, не по расширению)
-// Убрана строгая проверка EXT_OK[file.type].includes(ext)
-// Оставлена только проверка MIME-типа (чтобы файл точно был картинкой)
+// НОВОЕ: загрузка файла в корень репозитория
 // ═══════════════════════════════════════════════════════
+async function uploadFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.doc,.docx,.xls,.xlsx';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Проверка размера (макс 1 МБ — лимит GitHub API)
+        if (file.size > 1024 * 1024) {
+            showStatus('Файл слишком большой (максимум 1 МБ)', 'error');
+            return;
+        }
+
+        // Проверка расширения
+        const fileExt = (file.name.split('.').pop() || '').toLowerCase();
+        const ALLOWED_EXTS = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+        if (!ALLOWED_EXTS.includes(fileExt)) {
+            showStatus('Неподдерживаемый формат. Допустимы: PDF, DOC, DOCX, XLS, XLSX', 'error');
+            return;
+        }
+
+        const btn = $('uploadFileBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+
+        try {
+            // Читаем файл как base64
+            const base64 = await fileToBase64(file);
+
+            // Путь в корне репозитория
+            const filePath = file.name;
+
+            // Проверяем, существует ли файл
+            let sha = null;
+            try {
+                const existing = await getFile(filePath);
+                sha = existing.sha;
+            } catch (e) {
+                if (e.status !== 404) throw e;
+            }
+
+            // Загружаем в GitHub
+            await putFile(filePath, base64, sha, `Загрузка файла ${filePath}`);
+
+            // Подставляем URL в поле ссылки
+            const fileUrl = siteBaseUrl + filePath;
+            $('editLink').value = fileUrl;
+
+            showStatus(`✓ Файл загружен: ${file.name} (${(file.size/1024).toFixed(0)} КБ)`);
+        } catch (e) {
+            const i = interpretError(e.status, e.body);
+            showStatus(`✗ Ошибка загрузки: ${i.title}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-upload"></i> Загрузить файл';
+        }
+    };
+    input.click();
+}
+
+// Вспомогательная функция: файл → base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
 function openImage(path, src, imgId) {
     editKind = 'image';
     editKey = imgId || path;
@@ -1254,19 +1340,14 @@ function openImage(path, src, imgId) {
     openPanel('Замена изображения', path);
     const imgLinkData = readImageLink(editKey, path);
     editOrigImg = imgLinkData;
-
-    // Показываем клиенту текущее расширение (для понимания)
-    const currentExt = (path.split('.').pop() || '').toLowerCase();
-    const extDisplay = currentExt ? `<code style="background:#2a2a2a;padding:2px 6px;border-radius:3px;font-size:11px;">.${currentExt}</code>` : '';
-
     $('editPanelContent').innerHTML = `
         <div style="margin-bottom: 16px;">
-            <div style="color: #888; font-size: 13px; margin-bottom: 8px;">Текущее фото ${extDisplay}:</div>
+            <div style="color: #888; font-size: 13px; margin-bottom: 8px;">Текущее фото:</div>
             <img id="curImg" alt="" style="max-width: 100%; max-height: 180px; border-radius: 8px;">
         </div>
         <label class="file-upload">
             <i class="fas fa-cloud-upload-alt"></i>
-            <div class="upload-text"><strong>Выберите новое изображение</strong><br><small>Поддерживаются: JPG, PNG, WebP, GIF, SVG. Максимум 2 МБ. Файл заменит <code style="background:#2a2a2a;padding:1px 5px;border-radius:3px;">${esc(path)}</code>.</small></div>
+            <div class="upload-text"><strong>Выберите новое изображение</strong><br><small>JPG, PNG, WebP, GIF. Максимум 2 МБ.</small></div>
             <input type="file" id="imageFileInput" accept="image/*">
         </label>
         <div id="imagePreview" style="margin-top: 12px;"></div>
@@ -1288,37 +1369,21 @@ function openImage(path, src, imgId) {
     const r = document.querySelector(`input[name="imgLinkTarget"][value="${imgLinkData.linkTarget}"]`) || document.querySelector('input[name="imgLinkTarget"][value="_blank"]');
     if (r) r.checked = true;
 
-    // Разрешённые MIME-типы (любая картинка)
-    const IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/bmp', 'image/x-icon'];
-
+    const EXT_OK = { 'image/jpeg': ['jpg', 'jpeg'], 'image/png': ['png'], 'image/webp': ['webp'], 'image/gif': ['gif'] };
     $('imageFileInput').addEventListener('change', e => {
         const file = e.target.files[0];
         if (!file) return;
-
-        // Проверка 1: MIME-тип должен быть картинкой
-        if (!IMAGE_TYPES.includes(file.type) && !file.type.startsWith('image/')) {
+        if (!EXT_OK[file.type]) return showStatus('Допустимы JPG, PNG, WebP, GIF', 'error');
+        if (file.size > 2 * 1024 * 1024) return showStatus('Файл слишком большой (максимум 2 МБ)', 'error');
+        const ext = (path.split('.').pop() || '').toLowerCase();
+        if (!EXT_OK[file.type].includes(ext)) {
             e.target.value = '';
-            return showStatus('Файл должен быть изображением (JPG, PNG, WebP, GIF, SVG)', 'error');
+            return showStatus(`Формат файла не совпадает с расширением .${ext} — выберите файл того же формата`, 'error');
         }
-
-        // Проверка 2: размер не более 2 МБ
-        if (file.size > 2 * 1024 * 1024) {
-            e.target.value = '';
-            return showStatus('Файл слишком большой (максимум 2 МБ)', 'error');
-        }
-
-        // Проверка 3: расширение файла должно быть графическим (защита от .exe под видом .jpg)
-        const fileExt = (file.name.split('.').pop() || '').toLowerCase();
-        const ALLOWED_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp', 'ico'];
-        if (!ALLOWED_EXTS.includes(fileExt)) {
-            e.target.value = '';
-            return showStatus('Неподдерживаемое расширение файла: .' + fileExt, 'error');
-        }
-
         const rd = new FileReader();
         rd.onload = ev => {
             pendingImg = ev.target.result;
-            $('imagePreview').innerHTML = `<div style="color: #00cc66; font-size: 13px;"><i class="fas fa-check-circle"></i> Файл: <strong>${esc(file.name)}</strong> (${(file.size / 1024).toFixed(0)} КБ) — готов к загрузке</div>`;
+            $('imagePreview').innerHTML = `<div style="color: #00cc66; font-size: 13px;"><i class="fas fa-check-circle"></i> Файл: <strong>${esc(file.name)}</strong> (${(file.size / 1024).toFixed(0)} КБ)</div>`;
         };
         rd.readAsDataURL(file);
     });
