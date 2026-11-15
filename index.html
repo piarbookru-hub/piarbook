@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru"><head>
-        <meta name="cms-deploy-id" content="dmwhheiwutp1zhy">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Портфолио сайтов для малого бизнеса: автосервисы, салоны красоты, клиники, юристы, фотографы и другие.">
-        <title>Портфолио | piarbook.ru
-    </title>
+<html lang="ru">
+<head>
+    <meta name="cms-deploy-id" content="dmwh10vnhn6p3pb">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Портфолио сайтов для малого бизнеса: автосервисы, салоны красоты, клиники, юристы, фотографы и другие.">
+    <title>Портфолио | piarbook.ru</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -56,7 +56,6 @@
             z-index: 1;
         }
 
-        /* ===== ЗАГОЛОВОК ПОРТФОЛИО ===== */
         .portfolio-hero {
             text-align: center;
             margin-bottom: 2.5rem;
@@ -150,7 +149,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* ===== СЕТКА 3x3 ГОРИЗОНТАЛЬНАЯ ===== */
         .portfolio-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -193,7 +191,6 @@
             pointer-events: none;
         }
 
-        /* ===== ФОТО: вписывается целиком, бока не обрезаются ===== */
         .portfolio-card img {
             position: absolute;
             inset: 0;
@@ -211,7 +208,6 @@
             transform: scale(1.03);
         }
 
-        /* ===== ЗАТЕМНЕНИЕ ===== */
         .portfolio-card::before {
             content: '';
             position: absolute;
@@ -239,7 +235,6 @@
             pointer-events: none;
         }
 
-        /* ===== ТЕКСТ КАРТОЧКИ ===== */
         .card-content {
             position: relative;
             z-index: 3;
@@ -429,7 +424,6 @@
             margin-top: 0.2rem;
         }
 
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 1024px) {
             .container {
                 padding: 1.5rem 1.5rem 2.5rem;
@@ -442,7 +436,6 @@
                 gap: 0.9rem;
                 max-width: 100%;
             }
-            /* девятая карточка не остаётся одна сбоку */
             .portfolio-card:last-child:nth-child(odd) {
                 grid-column: 1 / -1;
                 justify-self: center;
@@ -515,565 +508,273 @@
 <body>
     <div class="bg-fixed">
     </div>
-    <div class="container"><!-- ЗАГОЛОВОК -->
+    <div class="container">
         <section class="portfolio-hero">
-            <h1><span data-edit="auto_1">
-                Портфолио
-            
-        </span></h1>
-        <div class="hero-divider">
-            <div class="hero-divider-line">
+            <h1>
+                <span data-edit="auto_1">Портфолио</span>
+            </h1>
+            <div class="hero-divider">
+                <div class="hero-divider-line"></div>
+                <div class="hero-divider-diamond"></div>
+                <div class="hero-divider-line"></div>
             </div>
-            <div class="hero-divider-diamond">
+        </section>
+
+        <section class="portfolio-section">
+            <div class="portfolio-grid">
+                <!-- Карточка 1: АВТОМАСТЕР -->
+                <a href="https://avtomaster.piarbook.ru/" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-avtomaster.jpg" data-img-id="img_1">
+                    <img src="images/preview-avtomaster.jpg" alt="АВТОМАСТЕР" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(201, 169, 97, 0.3), rgba(42, 31, 24, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_2">preview-avtomaster.jpg</span></strong>
+                        <span><span data-edit="auto_3">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_4">№ 01</span></div>
+                        <div class="card-tag"><span data-edit="auto_5">Автосервис</span></div>
+                        <h3 class="card-title"><span data-edit="auto_6">АВТОМАСТЕР</span></h3>
+                        <p class="card-desc"><span data-edit="auto_7">Тёмная тема, каталог услуг</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_8">Тёмная</span></span>
+                            <span><span data-edit="auto_9">Каталог</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Карточка 2: САЛОН КРАСОТЫ -->
+                <a href="https://piarbookru-hub.github.io/salon/" target="_blank" rel="noopener" class="portfolio-card" data-cms-link="1" data-img="images/preview-salon.jpg" data-img-id="img_2">
+                    <img src="images/preview-salon.jpg" alt="BEAUTY STUDIO" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(220, 150, 180, 0.3), rgba(42, 31, 40, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_10">preview-salon.jpg</span></strong>
+                        <span><span data-edit="auto_11">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_12">№ 02</span></div>
+                        <div class="card-tag"><span data-edit="auto_13">Салон красоты</span></div>
+                        <h3 class="card-title"><span data-edit="auto_14">BEAUTY STUDIO</span></h3>
+                        <p class="card-desc"><span data-edit="auto_15">Галерея работ, прайс-лист</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_16">Галерея</span></span>
+                            <span><span data-edit="auto_17">Запись</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Карточка 3: РЕМОНТ В ГАРАЖЕ -->
+                <a href="https://garag.piarbook.ru/" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-garage.jpg" data-img-id="img_3">
+                    <img src="images/preview-garage.jpg" alt="РЕМОНТ В ГАРАЖЕ" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(120, 140, 90, 0.3), rgba(30, 35, 25, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_18">preview-garage.jpg</span></strong>
+                        <span><span data-edit="auto_19">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_20">№ 03</span></div>
+                        <div class="card-tag"><span data-edit="auto_21">Автомастерская</span></div>
+                        <h3 class="card-title"><span data-edit="auto_22">РЕМОНТ В ГАРАЖЕ</span></h3>
+                        <p class="card-desc"><span data-edit="auto_23">Оливковая тема, минимализм</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_24">Минимал</span></span>
+                            <span><span data-edit="auto_25">Брутальный</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Карточка 4: ЮРИСТ -->
+                <a href="https://law.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-law.jpg" data-img-id="img_4">
+                    <img src="images/preview-law.jpg" alt="ЮРИСТ" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(60, 80, 120, 0.3), rgba(20, 25, 40, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_26">preview-law.jpg</span></strong>
+                        <span><span data-edit="auto_27">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_28">№ 04</span></div>
+                        <div class="card-tag"><span data-edit="auto_29">Юрист</span></div>
+                        <h3 class="card-title"><span data-edit="auto_30">ЮРИСТ</span></h3>
+                        <p class="card-desc"><span data-edit="auto_31">Строгий стиль</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_32">Строгий</span></span>
+                            <span><span data-edit="auto_33">Заявки</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Карточка 5: СТОМАТОЛОГИЯ -->
+                <a href="https://den.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-dental.jpg" data-img-id="img_5">
+                    <img src="images/preview-dental.jpg" alt="ЗДОРОВАЯ УЛЫБКА" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(100, 180, 200, 0.3), rgba(20, 40, 50, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_34">preview-dental.jpg</span></strong>
+                        <span><span data-edit="auto_35">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_36">№ 05</span></div>
+                        <div class="card-tag"><span data-edit="auto_37">Стоматология</span></div>
+                        <h3 class="card-title"><span data-edit="auto_38">ЗДОРОВАЯ УЛЫБКА</span></h3>
+                        <p class="card-desc"><span data-edit="auto_39">Услуги, цены, команда врачей</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_40">Медицина</span></span>
+                            <span><span data-edit="auto_41">Врачи</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Карточка 6: МЕДКЛИНИКА -->
+                <a href="https://med.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-med.jpg" data-img-id="img_6">
+                    <img src="images/preview-med.jpg" alt="МЕДКЛИНИКА" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(130, 170, 200, 0.3), rgba(25, 35, 50, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_42">preview-med.jpg</span></strong>
+                        <span><span data-edit="auto_43">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_44">№ 06</span></div>
+                        <div class="card-tag"><span data-edit="auto_45">Медцентр</span></div>
+                        <h3 class="card-title"><span data-edit="auto_46">МЕДКЛИНИКА</span></h3>
+                        <p class="card-desc"><span data-edit="auto_47">Специалисты, спектр услуг</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_48">Клиника</span></span>
+                            <span><span data-edit="auto_49">Специалисты</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Карточка 7: ФОТОСТУДИЯ -->
+                <a href="https://foto.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-foto.jpg" data-img-id="img_7">
+                    <img src="images/preview-foto.jpg" alt="PHOTO STUDIO" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(201, 169, 97, 0.4), rgba(42, 31, 24, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_50">preview-foto.jpg</span></strong>
+                        <span><span data-edit="auto_51">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_52">№ 07</span></div>
+                        <div class="card-tag"><span data-edit="auto_53">Фото / Видео</span></div>
+                        <h3 class="card-title"><span data-edit="auto_54">PHOTO STUDIO</span></h3>
+                        <p class="card-desc"><span data-edit="auto_55">Портфолио, три зала</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_56">Премиум</span></span>
+                            <span><span data-edit="auto_57">Студия</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Карточка 8: РЕМОНТ КОМПЬЮТЕРОВ -->
+                <a href="https://demo-komp.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-komp.jpg" data-img-id="img_8">
+                    <img src="images/preview-komp.jpg" alt="РЕМОНТ КОМПЬЮТЕРОВ" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(180, 80, 50, 0.3), rgba(40, 25, 20, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_58">preview-komp.jpg</span></strong>
+                        <span><span data-edit="auto_59">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_60">№ 08</span></div>
+                        <div class="card-tag"><span data-edit="auto_61">Ремонт техники</span></div>
+                        <h3 class="card-title"><span data-edit="auto_62">РЕМОНТ КОМПЬЮТЕРОВ</span></h3>
+                        <p class="card-desc"><span data-edit="auto_63">Услуги, ремонт</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_64">Услуги</span></span>
+                            <span><span data-edit="auto_65">Отзывы</span></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Карточка 9: СПЕЦТЕХНИКА (ИСПРАВЛЕНО!) -->
+                <a href="https://piarbookru-hub.github.io/specteh/" target="_blank" rel="noopener" class="portfolio-card" data-cms-link="1" data-img="images/preview-specteh.jpg" data-img-id="img_9">
+                    <img src="images/preview-specteh.jpg" alt="СПЕЦТЕХНИКА" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
+                    <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(220, 150, 180, 0.3), rgba(42, 31, 40, 0.8));"></div>
+                    <div class="placeholder-label">
+                        <strong><span data-edit="auto_66">preview-specteh.jpg</span></strong>
+                        <span><span data-edit="auto_67">Скриншот сайта</span></span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-num"><span data-edit="auto_68">№ 09</span></div>
+                        <div class="card-tag"><span data-edit="auto_69">Спецтехника</span></div>
+                        <h3 class="card-title"><span data-edit="auto_70">Спецтехника</span></h3>
+                        <p class="card-desc"><span data-edit="auto_71">Аренда техники, каталог</span></p>
+                        <div class="card-meta">
+                            <span><span data-edit="auto_72">Аренда</span></span>
+                            <span><span data-edit="auto_73">Каталог</span></span>
+                        </div>
+                    </div>
+                </a>
             </div>
-            <div class="hero-divider-line">
+        </section>
+
+        <div class="divider">
+            <div class="divider-line"></div>
+            <div class="divider-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                </svg>
             </div>
+            <div class="divider-line"></div>
         </div>
-    </section><!-- ПОРТФОЛИО -->
-    <section class="portfolio-section">
-        <div class="portfolio-grid"><!-- Ряд 1 -->
-            <a href="https://avtomaster.piarbook.ru/" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-avtomaster.jpg" data-img-id="img_1">
-            <img src="images/preview-avtomaster.jpg" alt="АВТОМАСТЕР" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-            <div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(201, 169, 97, 0.3), rgba(42, 31, 24, 0.8));">
+
+        <section class="info-section">
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-card-title"><span data-edit="auto_74">Для кого</span></div>
+                    <div class="tags">
+                        <span class="tag"><span data-edit="auto_75">🔧 Автосервисы</span></span>
+                        <span class="tag"><span data-edit="auto_76">🚗 СТО, шиномонтаж</span></span>
+                        <span class="tag"><span data-edit="auto_77">💅 Салоны красоты</span></span>
+                        <span class="tag"><span data-edit="auto_78">💄 Маникюр, брови</span></span>
+                        <span class="tag"><span data-edit="auto_79">🦷 Стоматологии</span></span>
+                        <span class="tag"><span data-edit="auto_80">🏥 Медцентры</span></span>
+                        <span class="tag"><span data-edit="auto_81">📷 Фотографы</span></span>
+                        <span class="tag"><span data-edit="auto_82">🎥 Видеографы</span></span>
+                        <span class="tag"><span data-edit="auto_83">⚖️ Юристы</span></span>
+                        <span class="tag"><span data-edit="auto_84">📊 Бухгалтеры</span></span>
+                        <span class="tag"><span data-edit="auto_85">🔨 Мастера ремонта</span></span>
+                        <span class="tag"><span data-edit="auto_86">🏪 Любой малый бизнес</span></span>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title"><span data-edit="auto_87">Что входит</span></div>
+                    <ul class="checklist">
+                        <li>
+                            <a data-cms-link="1" href="https://piarbook.ru/ВИТАМИНЫ.docx" target="_self" data-link-color="inherit" data-keep-color="1" style="color: inherit; text-decoration: none;"><span data-edit="auto_88">Уникальный дизайн (не шаблон)</span></a>
+                        </li>
+                        <li><span data-edit="auto_89">До 10 разделов на сайте</span></li>
+                        <li><span data-edit="auto_90">Форма заявок на вашу почту</span></li>
+                        <li><span data-edit="auto_91">Адаптив: телефон, планшет, ПК</span></li>
+                        <li><span data-edit="auto_92">Подключение вашего домена</span></li>
+                        <li><span data-edit="auto_93">Хостинг — бесплатно навсегда</span></li>
+                        <li><span data-edit="auto_94">Настройка Яндекс.Карт</span></li>
+                        <li><span data-edit="auto_95">Базовая SEO-оптимизация</span></li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title"><span data-edit="auto_96">Гарантии</span></div>
+                    <div class="guarantee-item">
+                        <span><span data-edit="auto_97">Верну деньги, если не понравится — без разговоров</span></span>
+                    </div>
+                    <div class="guarantee-item">
+                        <span>
+                            <a data-cms-link="1" href="files/prices3.docx" target="_blank" rel="noopener" data-cms-file="prices3.docx" data-link-color="inherit" data-keep-color="1" style="color: inherit; text-decoration: none;"><span data-edit="auto_98">Бесплатная поддержка 1 месяц после сдачи</span></a>
+                        </span>
+                    </div>
+                    <div class="guarantee-item">
+                        <span>
+                            <a data-cms-link="1" href="files/prices2.jpg" target="_self" data-cms-file="prices2.jpg" data-link-color="inherit" data-keep-color="1" style="color: inherit; text-decoration: none;"><span data-edit="auto_99">Оплата только после вашего одобрения</span></a>
+                        </span>
+                    </div>
+                    <div class="guarantee-item">
+                        <span><span data-edit="auto_100">Продление домена — всего 500₽ в год</span></span>
+                    </div>
+                    <div class="guarantee-item">
+                        <span><span data-edit="auto_101">Срок запуска — 1–2 дня от старта работ</span></span>
+                    </div>
+                </div>
             </div>
-            <div class="placeholder-label">
-                <strong><span data-edit="auto_2">
-                preview-avtomaster.jpg
-            
-        </span></strong>
-        <span><span data-edit="auto_3">
-        Скриншот сайта
-    
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_4">
-        № 01
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_5">
-    Автосервис
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_6">
-    АВТОМАСТЕР
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_7">
-    Тёмная тема, каталог услуг
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_8">
-    Тёмная
-
-</span></span>
-<span><span data-edit="auto_9">
-Каталог
-
-</span></span>
-</div>
-</div>
-</a>
-<a href="https://salon.piarbook.ru/" target="_blank" rel="noopener" class="portfolio-card" data-cms-link="1" data-img="images/preview-salon.jpg" data-img-id="img_2">
-<img src="images/preview-salon.jpg" alt="BEAUTY STUDIO" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-<div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(220, 150, 180, 0.3), rgba(42, 31, 40, 0.8));">
-</div>
-<div class="placeholder-label">
-    <strong><span data-edit="auto_10">
-    preview-salon.jpg
-
-</span></strong>
-<span><span data-edit="auto_11">
-Скриншот сайта
-
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_12">
-        № 02
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_13">
-    Салон красоты
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_14">
-    BEAUTY STUDIO
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_15">
-    Галерея работ, прайс-лист
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_16">
-    Галерея
-
-</span></span>
-<span><span data-edit="auto_17">
-Запись
-
-</span></span>
-</div>
-</div>
-</a>
-<a href="https://garag.piarbook.ru/" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-garage.jpg" data-img-id="img_3">
-<img src="images/preview-garage.jpg" alt="РЕМОНТ В ГАРАЖЕ" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-<div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(120, 140, 90, 0.3), rgba(30, 35, 25, 0.8));">
-</div>
-<div class="placeholder-label">
-    <strong><span data-edit="auto_18">
-    preview-garage.jpg
-
-</span></strong>
-<span><span data-edit="auto_19">
-Скриншот сайта
-
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_20">
-        № 03
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_21">
-    Автомастерская
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_22">
-    РЕМОНТ В ГАРАЖЕ
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_23">
-    Оливковая тема, минимализм
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_24">
-    Минимал
-
-</span></span>
-<span><span data-edit="auto_25">
-Брутальный
-
-</span></span>
-</div>
-</div>
-</a><!-- Ряд 2 -->
-<a href="https://law.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-law.jpg" data-img-id="img_4">
-<img src="images/preview-law.jpg" alt="ЮРИСТ" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-<div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(60, 80, 120, 0.3), rgba(20, 25, 40, 0.8));">
-</div>
-<div class="placeholder-label">
-    <strong><span data-edit="auto_26">
-    preview-law.jpg
-
-</span></strong>
-<span><span data-edit="auto_27">
-Скриншот сайта
-
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_28">
-        № 04
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_29">
-    Юрист
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_30">
-    ЮРИСТ
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_31">
-    Строгий стиль
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_32">
-    Строгий
-
-</span></span>
-<span><span data-edit="auto_33">
-Заявки
-
-</span></span>
-</div>
-</div>
-</a>
-<a href="https://den.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-dental.jpg" data-img-id="img_5">
-<img src="images/preview-dental.jpg" alt="ЗДОРОВАЯ УЛЫБКА" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-<div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(100, 180, 200, 0.3), rgba(20, 40, 50, 0.8));">
-</div>
-<div class="placeholder-label">
-    <strong><span data-edit="auto_34">
-    preview-dental.jpg
-
-</span></strong>
-<span><span data-edit="auto_35">
-Скриншот сайта
-
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_36">
-        № 05
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_37">
-    Стоматология
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_38">
-    ЗДОРОВАЯ УЛЫБКА
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_39">
-    Услуги, цены, команда врачей
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_40">
-    Медицина
-
-</span></span>
-<span><span data-edit="auto_41">
-Врачи
-
-</span></span>
-</div>
-</div>
-</a>
-<a href="https://med.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-med.jpg" data-img-id="img_6">
-<img src="images/preview-med.jpg" alt="МЕДКЛИНИКА" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-<div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(130, 170, 200, 0.3), rgba(25, 35, 50, 0.8));">
-</div>
-<div class="placeholder-label">
-    <strong><span data-edit="auto_42">
-    preview-med.jpg
-
-</span></strong>
-<span><span data-edit="auto_43">
-Скриншот сайта
-
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_44">
-        № 06
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_45">
-    Медцентр
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_46">
-    МЕДКЛИНИКА
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_47">
-    Специалисты, спектр услуг
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_48">
-    Клиника
-
-</span></span>
-<span><span data-edit="auto_49">
-Специалисты
-
-</span></span>
-</div>
-</div>
-</a><!-- Ряд 3 -->
-<a href="https://foto.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-foto.jpg" data-img-id="img_7">
-<img src="images/preview-foto.jpg" alt="PHOTO STUDIO" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-<div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(201, 169, 97, 0.4), rgba(42, 31, 24, 0.8));">
-</div>
-<div class="placeholder-label">
-    <strong><span data-edit="auto_50">
-    preview-foto.jpg
-
-</span></strong>
-<span><span data-edit="auto_51">
-Скриншот сайта
-
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_52">
-        № 07
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_53">
-    Фото / Видео
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_54">
-    PHOTO STUDIO
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_55">
-    Портфолио, три зала
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_56">
-    Премиум
-
-</span></span>
-<span><span data-edit="auto_57">
-Студия
-
-</span></span>
-</div>
-</div>
-</a>
-<a href="https://demo-komp.piarbook.ru" target="_blank" rel="noopener" class="portfolio-card" data-img="images/preview-komp.jpg" data-img-id="img_8">
-<img src="images/preview-komp.jpg" alt="РЕМОНТ КОМПЬЮТЕРОВ" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-<div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(180, 80, 50, 0.3), rgba(40, 25, 20, 0.8));">
-</div>
-<div class="placeholder-label">
-    <strong><span data-edit="auto_58">
-    preview-komp.jpg
-
-</span></strong>
-<span><span data-edit="auto_59">
-Скриншот сайта
-
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_60">
-        № 08
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_61">
-    Ремонт техники
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_62">
-    РЕМОНТ КОМПЬЮТЕРОВ
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_63">
-    Услуги, ремонт
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_64">
-    Услуги
-
-</span></span>
-<span><span data-edit="auto_65">
-Отзывы
-
-</span></span>
-</div>
-</div>
-</a><!-- Карточка 9: дубликат салона красоты -->
-<a href="https://piarbookru-hub.github.io/specteh/" target="_blank" rel="noopener" class="portfolio-card" data-cms-link="1" data-img="images/preview-specteh.jpg" data-img-id="img_9">
-<img src="images/preview-specteh.jpg" alt="BEAUTY STUDIO" loading="lazy" onload="this.parentElement.querySelector('.placeholder-label').style.display='none'" onerror="this.style.display='none'">
-<div class="portfolio-card-bg" style="background: linear-gradient(135deg, rgba(220, 150, 180, 0.3), rgba(42, 31, 40, 0.8));">
-</div>
-<div class="placeholder-label">
-    <strong><span data-edit="auto_66">
-    preview-salon.jpg
-
-</span></strong>
-<span><span data-edit="auto_67">
-Скриншот сайта
-
-</span></span>
-</div>
-<div class="card-content">
-    <div class="card-num"><span data-edit="auto_68">
-        № 09
-    
-</span></div>
-<div class="card-tag"><span data-edit="auto_69">
-    Аренда техники
-
-</span></div>
-<h3 class="card-title"><span data-edit="auto_70">
-    Спецтехника
-
-</span></h3>
-<p class="card-desc"><span data-edit="auto_71">
-    Галерея работ, прайс-лист
-
-</span></p>
-<div class="card-meta">
-    <span><span data-edit="auto_72">
-    Галерея
-
-</span></span>
-<span><span data-edit="auto_73">
-Запись
-
-</span></span>
-</div>
-</div>
-</a>
-</div>
-</section><!-- РАЗДЕЛИТЕЛЬ -->
-<div class="divider">
-    <div class="divider-line">
+        </section>
     </div>
-    <div class="divider-icon">
-        <svg viewBox="0 0 24 24">
-        <path d="M12 2L2 7l10 5 10-5-10-5z">
-    </path>
-    <path d="M2 17l10 5 10-5">
-</path>
-<path d="M2 12l10 5 10-5">
-</path>
-</svg>
-</div>
-<div class="divider-line">
-</div>
-</div><!-- ИНФО-БЛОК -->
-<section class="info-section">
-    <div class="info-grid">
-        <div class="info-card">
-            <div class="info-card-title"><span data-edit="auto_74">
-                Для кого
-            
-        </span></div>
-        <div class="tags">
-            <span class="tag"><span data-edit="auto_75">
-            🔧 Автосервисы
-        
-    </span></span>
-    <span class="tag"><span data-edit="auto_76">
-    🚗 СТО, шиномонтаж
 
-</span></span>
-<span class="tag"><span data-edit="auto_77">
-💅 Салоны красоты
-
-</span></span>
-<span class="tag"><span data-edit="auto_78">
-💄 Маникюр, брови
-
-</span></span>
-<span class="tag"><span data-edit="auto_79">
-🦷 Стоматологии
-
-</span></span>
-<span class="tag"><span data-edit="auto_80">
-🏥 Медцентры
-
-</span></span>
-<span class="tag"><span data-edit="auto_81">
-📷 Фотографы
-
-</span></span>
-<span class="tag"><span data-edit="auto_82">
-🎥 Видеографы
-
-</span></span>
-<span class="tag"><span data-edit="auto_83">
-⚖️ Юристы
-
-</span></span>
-<span class="tag"><span data-edit="auto_84">
-📊 Бухгалтеры
-
-</span></span>
-<span class="tag"><span data-edit="auto_85">
-🔨 Мастера ремонта
-
-</span></span>
-<span class="tag"><span data-edit="auto_86">
-🏪 Любой малый бизнес
-
-</span></span>
-</div>
-</div>
-<div class="info-card">
-    <div class="info-card-title"><span data-edit="auto_87">
-        Что входит
-    
-</span></div>
-<ul class="checklist">
-    <li>
-        <a data-cms-link="1" href="https://piarbook.ru/ВИТАМИНЫ.docx" target="_self" data-link-color="inherit" data-keep-color="1" style="color: inherit; text-decoration: none;"><span data-edit="auto_88">Уникальный дизайн (не шаблон)
-    </span></a>
-</li>
-<li><span data-edit="auto_89">
-    До 10 разделов на сайте
-
-</span></li>
-<li><span data-edit="auto_90">
-    Форма заявок на вашу почту
-
-</span></li>
-<li><span data-edit="auto_91">
-    Адаптив: телефон, планшет, ПК
-
-</span></li>
-<li><span data-edit="auto_92">
-    Подключение вашего домена
-
-</span></li>
-<li><span data-edit="auto_93">
-    Хостинг — бесплатно навсегда
-
-</span></li>
-<li><span data-edit="auto_94">
-    Настройка Яндекс.Карт
-
-</span></li>
-<li><span data-edit="auto_95">
-    Базовая SEO-оптимизация
-
-</span></li>
-</ul>
-</div>
-<div class="info-card">
-    <div class="info-card-title"><span data-edit="auto_96">
-        Гарантии
-    
-</span></div>
-<div class="guarantee-item">
-    <span><span data-edit="auto_97">
-    Верну деньги, если не понравится — без разговоров
-
-</span></span>
-</div>
-<div class="guarantee-item">
-    <span>
-    <a data-cms-link="1" href="files/prices3.docx" target="_blank" rel="noopener" data-cms-file="prices3.docx" data-link-color="inherit" data-keep-color="1" style="color: inherit; text-decoration: none;"><span data-edit="auto_98">Бесплатная поддержка 1 месяц после сдачи
-</span></a>
-</span>
-</div>
-<div class="guarantee-item">
-    <span>
-    <a data-cms-link="1" href="files/prices2.jpg" target="_self" data-cms-file="prices2.jpg" data-link-color="inherit" data-keep-color="1" style="color: inherit; text-decoration: none;"><span data-edit="auto_99">Оплата только после вашего одобрения
-</span></a>
-</span>
-</div>
-<div class="guarantee-item">
-    <span><span data-edit="auto_100">
-    Продление домена — всего 500₽ в год
-
-</span></span>
-</div>
-<div class="guarantee-item">
-    <span><span data-edit="auto_101">
-    Срок запуска — 1–2 дня от старта работ
-
-</span></span>
-</div>
-</div>
-</div>
-</section>
-</div>
-
-
-</body></html>
+</body>
+</html>
