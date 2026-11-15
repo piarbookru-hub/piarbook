@@ -93,7 +93,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .log-item.error { color: #ff4444; }
 .log-item.working { color: #F40009; }
 
-/* ===== ИЗМЕНЕНО: панель редактирования стала flex-контейнером ===== */
+/* ===== ИЗМЕНЕНО: панель поднимается до самой подсказки ===== */
 .edit-panel {
     position: fixed;
     bottom: 0;
@@ -107,7 +107,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     transition: transform .3s, visibility .3s;
     z-index: 1000;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, .5);
-    max-height: 70vh;
+    max-height: calc(100vh - 140px);
+    max-height: calc(100dvh - 140px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -126,7 +127,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .edit-panel-close { background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; padding: 4px 8px; }
 .edit-panel-close:hover { color: #fff; }
 
-/* Контент прокручивается, если не влезает */
 #editPanelContent {
     flex: 1;
     overflow-y: auto;
@@ -137,7 +137,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 
 .edit-panel textarea { width: 100%; min-height: 90px; padding: 12px; background: #0f0f0f; border: 1px solid #333; border-radius: 8px; color: #fff; font: inherit; font-size: 14px; resize: vertical; }
 
-/* ===== ИЗМЕНЕНО: кнопки зафиксированы внизу ===== */
 .edit-panel-actions {
     display: flex;
     gap: 10px;
@@ -300,12 +299,10 @@ const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 const PREVIEW_SANDBOX = 'allow-same-origin allow-popups allow-popups-to-escape-sandbox';
 const VIEW_SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
 
-// Файлы для скачивания: папка files/, максимум 3 файла одновременно,
-// имена prices, prices1, prices2, prices3... с ЛЮБЫМ расширением файла.
 const FILES_FOLDER = 'files';
 const FILES_BASE = 'prices';
 const MAX_FILES = 3;
-const MAX_FILE_SIZE = 1024 * 1024; // 1 МБ
+const MAX_FILE_SIZE = 1024 * 1024;
 const BLOCKED_EXTS = ['exe', 'bat', 'cmd', 'sh', 'com', 'scr', 'msi', 'vbs', 'ps1', 'jar'];
 const SLOT_RE = /^prices(\d*)(\.[^/]*)?$/i;
 
@@ -539,7 +536,6 @@ async function delFile(path) {
     });
 }
 
-// Список имён файлов-слотов в папке files/ (только prices, prices1, prices2...)
 async function listSlotFiles() {
     try {
         const d = await (await gh(`${API}/contents/${encPath(FILES_FOLDER)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`)).json();
@@ -1354,7 +1350,6 @@ async function openText(key, value) {
     if (targetRadio) targetRadio.checked = true;
     setTimeout(() => ta.focus(), 100);
 
-    // Состояние папки files/
     const slotNames = await listSlotFiles();
     const info = $('fileSlotInfo');
     const input = $('docFileInput');
@@ -1566,7 +1561,6 @@ async function saveAll() {
         const imagesWithData = images.filter(k => pending[k].data);
         const imagesWithLinks = images.filter(k => pending[k].linkChanged);
 
-        // 1) Сначала загружаем новые файлы в files/
         const fileUploads = texts.filter(k => pending[k].fileNew && pending[k].fileData);
         for (const k of fileUploads) {
             const p = pending[k];
@@ -1576,7 +1570,6 @@ async function saveAll() {
             } catch (e) { failed.push(k); }
         }
 
-        // 2) Потом коммит HTML со ссылками на новые имена
         const htmlTexts = texts.filter(k => !failed.includes(k) && (pending[k].linkChanged || true));
         if (htmlTexts.length || imagesWithLinks.length) {
             const f = await getFile(currentFile);
@@ -1605,7 +1598,6 @@ async function saveAll() {
             repoDeployId = deployId;
         }
 
-        // 3) После коммита удаляем старые файлы (заменённые и отвязанные)
         for (const k of texts) {
             if (failed.includes(k)) continue;
             const p = pending[k];
