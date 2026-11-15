@@ -44,36 +44,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .toolbar-btn.primary:hover { background: #d40007; }
 .toolbar-btn.warning { background: #8B4513; border-color: #A0522D; }
 .toolbar-btn.warning:hover { background: #A0522D; border-color: #CD853F; }
-.toolbar-btn.success { background: #1a5d3a; border-color: #2d7a55; }
-.toolbar-btn.success:hover { background: #2d7a55; border-color: #3ea876; }
 .toolbar-btn:disabled { opacity: .5; cursor: not-allowed; }
-
-/* ===== ПЕРЕКЛЮЧАТЕЛЬ РЕПОЗИТОРИЕВ ===== */
-.repo-selector {
-    background: #0f0f0f;
-    color: #fff;
-    border: 1px solid #F40009;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    outline: none;
-    transition: all .2s;
-    font-family: 'Inter', sans-serif;
-    min-width: 180px;
-    margin-left: 4px;
-}
-.repo-selector:hover, .repo-selector:focus {
-    background: #1a1a1a;
-    border-color: #d40007;
-}
-.repo-selector option {
-    background: #1a1a1a;
-    color: #fff;
-    padding: 8px;
-}
-
 .unsaved-badge { background: #F40009; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 11px; margin-left: 0; display: none; white-space: nowrap; }
 .unsaved-badge.show { display: inline-block; }
 
@@ -122,59 +93,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .log-item.error { color: #ff4444; }
 .log-item.working { color: #F40009; }
 
-.edit-panel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #1a1a1a;
-    border-top: 2px solid #F40009;
-    padding: 20px 20px 0 20px;
-    transform: translateY(100%);
-    visibility: hidden;
-    transition: transform .3s, visibility .3s;
-    z-index: 1000;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, .5);
-    max-height: calc(100vh - 140px);
-    max-height: calc(100dvh - 140px);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
+.edit-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; border-top: 2px solid #F40009; padding: 20px; transform: translateY(100%); visibility: hidden; transition: transform .3s, visibility .3s; z-index: 1000; box-shadow: 0 -10px 40px rgba(0, 0, 0, .5); max-height: 70vh; overflow-y: auto; }
 .edit-panel.active { transform: translateY(0); visibility: visible; }
-
-.edit-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-    padding-bottom: 12px;
-}
+.edit-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .edit-panel-header h3 { font-size: 14px; font-weight: 600; }
 .key-badge { background: #2a2a2a; color: #888; padding: 2px 8px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 11px; margin-left: 8px; }
 .edit-panel-close { background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; padding: 4px 8px; }
 .edit-panel-close:hover { color: #fff; }
-
-#editPanelContent {
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
-    padding-right: 4px;
-    margin-bottom: 12px;
-}
-
 .edit-panel textarea { width: 100%; min-height: 90px; padding: 12px; background: #0f0f0f; border: 1px solid #333; border-radius: 8px; color: #fff; font: inherit; font-size: 14px; resize: vertical; }
-
-.edit-panel-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    flex-shrink: 0;
-    padding: 12px 0 20px 0;
-    margin: 0;
-    border-top: 1px solid #2a2a2a;
-    background: #1a1a1a;
-}
+.edit-panel-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
 
 .link-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
 .link-section label.field-label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 500; }
@@ -238,7 +165,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
         <button class="btn" id="loginBtn">Войти</button>
         <div class="error-msg" id="loginError" role="alert"></div>
         <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" class="help-link">
-            <i class="fas fa-external-link-alt"></i> Создать fine-grained токен (все репозитории, Contents: Read and write)
+            <i class="fas fa-external-link-alt"></i> Создать fine-grained токен (один репозиторий, Contents: Read and write)
         </a>
     </div>
 </div>
@@ -249,11 +176,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
             <div class="app-title">
                 <i class="fas fa-magic" style="color: #F40009;"></i>
                 <span id="projectNameHeader" style="font-weight: 600; margin-left: 8px;">Редактор</span>
+                <span id="repoNameHeader" style="color: #888; font-weight: 400; margin-left: 8px; font-size: 13px;"></span>
             </div>
-            <!-- ===== НОВЫЙ ПЕРЕКЛЮЧАТЕЛЬ САЙТОВ ===== -->
-            <select id="repoSelector" class="repo-selector" title="Переключение между сайтами">
-                <!-- заполняется из CMS_CONFIG.repositories -->
-            </select>
             <span class="page-indicator" id="pageIndicatorBox" title="Текущая страница"><i class="fas fa-file"></i> <span id="currentPageIndicator">index.html</span></span>
             <span class="deploy-badge" id="deployBadge" title="Статус деплоя GitHub Pages. Клик — перепроверить."></span>
             <button class="toolbar-btn primary" id="saveBtn"><i class="fas fa-cloud-upload-alt"></i> Сохранить в GitHub</button>
@@ -265,8 +189,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
                 <button class="toolbar-btn" id="openSiteBtn" title="Открыть текущую страницу в новой вкладке"><i class="fas fa-external-link-alt"></i> Открыть сайт</button>
                 <button class="toolbar-btn" id="checkBtn" title="Проверить токен"><i class="fas fa-shield-alt"></i> Проверить</button>
                 <button class="toolbar-btn" id="reloadBtn" title="Обновить превью"><i class="fas fa-sync"></i> Обновить</button>
-                <button class="toolbar-btn warning" id="hidePlaceholdersBtn" title="Удалить все заглушки (placeholder-label) из текущей страницы"><i class="fas fa-eye-slash"></i> Скрыть заглушки</button>
-                <button class="toolbar-btn success" id="showPlaceholdersBtn" title="Добавить стандартные заглушки ко всем картинкам"><i class="fas fa-eye"></i> Поставить заглушки</button>
                 <button class="toolbar-btn warning" id="cleanBtn" title="Удалить все метки data-edit и data-img из текущей страницы"><i class="fas fa-broom"></i> Очистить метки</button>
                 <button class="toolbar-btn" id="resetBtn" title="Подготовить текущую страницу заново"><i class="fas fa-redo"></i> Переподготовить</button>
                 <button class="toolbar-btn" id="logoutBtn" title="Выйти" aria-label="Выйти"><i class="fas fa-sign-out-alt"></i></button>
@@ -307,7 +229,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 <div class="edit-panel" id="editPanel" role="dialog" aria-modal="true" aria-label="Редактирование">
     <div class="edit-panel-header">
         <h3><span id="editTitle">Редактирование</span><span class="key-badge" id="editKey"></span></h3>
-        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">×</button>
+        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">?</button>
     </div>
     <div id="editPanelContent"></div>
     <div class="edit-panel-actions">
@@ -332,10 +254,12 @@ const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 const PREVIEW_SANDBOX = 'allow-same-origin allow-popups allow-popups-to-escape-sandbox';
 const VIEW_SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
 
+// Файлы для скачивания: папка files/, максимум 3 файла одновременно,
+// имена prices, prices1, prices2, prices3... с ЛЮБЫМ расширением файла.
 const FILES_FOLDER = 'files';
 const FILES_BASE = 'prices';
 const MAX_FILES = 3;
-const MAX_FILE_SIZE = 1024 * 1024;
+const MAX_FILE_SIZE = 1024 * 1024; // 1 МБ
 const BLOCKED_EXTS = ['exe', 'bat', 'cmd', 'sh', 'com', 'scr', 'msi', 'vbs', 'ps1', 'jar'];
 const SLOT_RE = /^prices(\d*)(\.[^/]*)?$/i;
 
@@ -355,17 +279,6 @@ let token = ss.get('gh_token');
 let pending = {};
 let editKind = null, editKey = null, editImagePath = null, pendingImg = null, statusTimer = null, lastFocus = null;
 let editOrigText = null, editOrigImg = null;
-
-// ===== ИНИЦИАЛИЗАЦИЯ ТЕКУЩЕГО РЕПОЗИТОРИЯ =====
-// Восстанавливаем выбор из localStorage или берём первый из списка
-const availableRepos = CMS_CONFIG.repositories && CMS_CONFIG.repositories.length > 0
-    ? CMS_CONFIG.repositories
-    : [{ repo: CMS_CONFIG.repo, name: CMS_CONFIG.projectName || 'Сайт', url: '' }];
-
-let currentRepoName = ls.get('cms_currentRepo');
-let currentRepo = availableRepos.find(r => r.repo === currentRepoName) || availableRepos[0];
-CMS_CONFIG.repo = currentRepo.repo;  // синхронизируем с конфигом
-
 let currentFile = ls.get('cms_currentFile') || 'index.html';
 let viewModeUrl = null;
 let siteBaseUrl = '';
@@ -374,40 +287,12 @@ let repoDeployId = null;
 let deployPollGen = 0;
 let panelFileData = null, panelFileNew = null, panelFileOld = null;
 let sessionFileNames = [];
-let API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
-
-function updateAPI() {
-    API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
-}
-
-function saveCurrentRepo() {
-    ls.set('cms_currentRepo', currentRepo.repo);
-    CMS_CONFIG.repo = currentRepo.repo;
-    updateAPI();
-}
+const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
+$('repoNameHeader').textContent = `· ${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 function saveCurrentFile() { ls.set('cms_currentFile', currentFile); }
-
-// ===== ЗАПОЛНЯЕМ ПЕРЕКЛЮЧАТЕЛЬ САЙТОВ =====
-function fillRepoSelector() {
-    const sel = $('repoSelector');
-    if (!sel) return;
-    sel.innerHTML = '';
-    availableRepos.forEach(r => {
-        const opt = document.createElement('option');
-        opt.value = r.repo;
-        opt.textContent = r.name;
-        if (r.repo === currentRepo.repo) opt.selected = true;
-        sel.appendChild(opt);
-    });
-    // Обновляем заголовок и hint
-    const urlInfo = currentRepo.url ? ' · ' + currentRepo.url : '';
-    $('repoNameHeader') && ($('repoNameHeader').textContent = '');
-    // Обновляем title страницы
-    document.title = `Админка — ${currentRepo.name.replace(/^[\s\w]+\s/, '')}`;
-}
 
 try {
     const loc = window.location;
@@ -434,14 +319,7 @@ function siteBasePathNoSlash() {
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const encPath = p => p.split('/').map(encodeURIComponent).join('/');
 
-function pageUrl(file = currentFile) {
-    // Если у репо есть URL в конфиге — используем его для построения ссылок
-    // Иначе — стандартный путь через GitHub Pages
-    if (currentRepo.url && currentRepo.url.match(/^[a-zA-Z0-9.-]+\.[a-z]{2,}$/)) {
-        return new URL(encPath(file), 'https://' + currentRepo.url + '/');
-    }
-    return new URL(encPath(file), siteBaseUrl);
-}
+function pageUrl(file = currentFile) { return new URL(encPath(file), siteBaseUrl); }
 
 function safeAbs(href) {
     try {
@@ -615,6 +493,7 @@ async function delFile(path) {
     });
 }
 
+// Список имён файлов-слотов в папке files/ (только prices, prices1, prices2...)
 async function listSlotFiles() {
     try {
         const d = await (await gh(`${API}/contents/${encPath(FILES_FOLDER)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`)).json();
@@ -646,7 +525,7 @@ function interpretError(status, body = '') {
     if (status === 401) return { title: 'Токен недействителен или истёк', fix: 'Создайте новый токен и войдите заново.' };
     if (status === 403 || status === 429) {
         if (/rate limit/i.test(b)) return { title: 'Превышен лимит запросов GitHub API', fix: 'Подождите минуту и повторите.' };
-        if (/scope|permission|not accessible/i.test(b)) return { title: 'У токена нет нужных прав', fix: `Создайте НОВЫЙ токен с правами Contents: Read and write на репозиторий ${CMS_CONFIG.repo}.` };
+        if (/scope|permission|not accessible/i.test(b)) return { title: 'У токена нет нужных прав', fix: 'Создайте НОВЫЙ токен с правами Contents: Read and write на этот репозиторий.' };
         return { title: 'Доступ запрещён', fix: 'Проверьте, что токен выдан на этот репозиторий и имеет право записи.' };
     }
     if (status === 404) return { title: 'Репозиторий или файл не найден', fix: `Проверьте имя файла и ветку "${CMS_CONFIG.branch}".` };
@@ -683,7 +562,7 @@ async function checkToken() {
         if (canPush === false) showErrorDetails('Нет прав записи', 'WARNING', '', 'Выдайте токену право Contents: Read and write на этот репозиторий.');
         else if (!hasIndex) showErrorDetails('Файл index.html не найден', '404', `Ветка "${CMS_CONFIG.branch}" или файл не существует`, 'Создайте index.html в корне репозитория или проверьте ветку в config.js.');
         const ok = hasIndex && canPush !== false;
-        showStatus(ok ? 'Токен валиден для ' + currentRepo.name : 'Есть проблемы — см. подробности', ok ? 'success' : 'error');
+        showStatus(ok ? 'Токен валиден' : 'Есть проблемы — см. подробности', ok ? 'success' : 'error');
         return ok;
     } catch (e) {
         const i = interpretError(e.status, e.body);
@@ -719,7 +598,6 @@ $('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(
 async function enterApp() {
     $('loginScreen').style.display = 'none';
     $('editorApp').classList.add('active');
-    fillRepoSelector();
     updatePageIndicator();
     try {
         let f;
@@ -748,46 +626,6 @@ async function enterApp() {
     }
 }
 
-// ===== ПЕРЕКЛЮЧЕНИЕ РЕПОЗИТОРИЕВ =====
-async function switchRepo(repoName) {
-    if (repoName === currentRepo.repo) return;
-
-    // Проверка несохранённых правок
-    if (Object.keys(pending).length > 0) {
-        if (!confirm('У вас есть несохранённые правки. При переключении сайта они будут потеряны.\n\nПродолжить?')) {
-            // Возвращаем dropdown на текущий репозиторий
-            fillRepoSelector();
-            return;
-        }
-        pending = {};
-        markUnsaved();
-    }
-
-    const newRepo = availableRepos.find(r => r.repo === repoName);
-    if (!newRepo) return;
-
-    currentRepo = newRepo;
-    saveCurrentRepo();
-    currentFile = 'index.html';
-    saveCurrentFile();
-    viewModeUrl = null;
-
-    showStatus('Переключаюсь на ' + currentRepo.name + '...', 'info');
-
-    // Перезапускаем приложение с новым репо
-    $('setupScreen').classList.remove('active');
-    $('iframeWrapper').style.display = 'none';
-    $('errorDetails').innerHTML = '';
-    $('progressLog').style.display = 'none';
-    setDeployBadge('idle', '');
-
-    await enterApp();
-}
-
-if ($('repoSelector')) {
-    $('repoSelector').addEventListener('change', (e) => switchRepo(e.target.value));
-}
-
 if (token) enterApp();
 
 function logout() {
@@ -803,7 +641,6 @@ function showSetup() {
     $('hintBanner').style.display = 'none';
     $('prepareBtn').disabled = false;
     $('prepareBtn').innerHTML = '<i class="fas fa-download"></i> Подготовить страницу';
-    $('setupTitle').textContent = 'Подготовка: ' + currentRepo.name;
 }
 
 function showEditor() {
@@ -837,7 +674,7 @@ async function loadSite(skipVerify = false) {
     const status = $('loaderStatus');
     loader.classList.remove('hidden');
     ifr.setAttribute('sandbox', PREVIEW_SANDBOX);
-    status.textContent = 'Загрузка ' + currentFile + ' из ' + currentRepo.repo + '...';
+    status.textContent = 'Загрузка ' + currentFile + ' из GitHub...';
     try {
         const f = await getFile(currentFile);
         status.textContent = 'Подготовка превью...';
@@ -949,7 +786,7 @@ async function prepareCurrentFile(logContainer = null) {
             showStatus('Админку нельзя редактировать через саму себя. Переместите её в папку admin/.', 'error');
             return false;
         }
-        li('Загрузка ' + fileBeingPrepared + ' из ' + currentRepo.repo + '...', 'working');
+        li('Загрузка ' + fileBeingPrepared + ' из репозитория...', 'working');
         const f = await getFile(fileBeingPrepared);
         if (!f.text.trim()) throw new Error(fileBeingPrepared + ' пуст или не прочитан');
         li(`${fileBeingPrepared} загружен (${(f.text.length / 1024).toFixed(1)} КБ)`, 'done');
@@ -967,7 +804,7 @@ async function prepareCurrentFile(logContainer = null) {
         const stamped = stampDeployId(r.html, deployId);
         await putFile(fileBeingPrepared, b64e(stamped), f.sha, `Подготовка ${fileBeingPrepared} к редактированию`);
         repoDeployId = deployId;
-        li(fileBeingPrepared + ' обновлён в ' + currentRepo.repo, 'done');
+        li(fileBeingPrepared + ' обновлён в репозитории', 'done');
         li('Подготовка завершена!', 'done');
         return true;
     } catch (e) {
@@ -1057,13 +894,7 @@ function goHome() {
     navigateTo('index.html');
 }
 
-function openLiveSite() {
-    if (currentRepo.url) {
-        window.open('https://' + currentRepo.url + '/', '_blank', 'noopener');
-    } else {
-        window.open(viewModeUrl ? viewModeUrl : pageUrl().href, '_blank', 'noopener');
-    }
-}
+function openLiveSite() { window.open(viewModeUrl ? viewModeUrl : pageUrl().href, '_blank', 'noopener'); }
 
 function hookIframe() {
     let d;
@@ -1398,7 +1229,7 @@ async function cleanMarks() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Очищаю...';
     try {
-        showStatus('Загружаю ' + currentFile + ' из ' + currentRepo.repo + '...', 'info');
+        showStatus('Загружаю ' + currentFile + '...', 'info');
         const f = await getFile(currentFile);
         if (!f.text.includes('data-edit="') && !f.text.includes('data-img=')) {
             showStatus('Меток в файле нет — очищать нечего', 'info');
@@ -1419,123 +1250,6 @@ async function cleanMarks() {
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-broom"></i> Очистить метки';
-    }
-}
-
-async function hidePlaceholders() {
-    if (Object.keys(pending).length > 0) {
-        if (!confirm('У вас есть несохранённые правки. Они будут потеряны. Продолжить?')) return;
-        pending = {}; markUnsaved();
-    }
-    if (!confirm('Удалить ВСЕ заглушки (placeholder-label) из ' + currentFile + '?\n\nЗаглушки исчезнут физически. Чтобы вернуть — нажмите «Поставить заглушки».\n\nПродолжить?')) return;
-    const btn = $('hidePlaceholdersBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Скрываю...';
-    try {
-        showStatus('Загружаю ' + currentFile + ' из ' + currentRepo.repo + '...', 'info');
-        const f = await getFile(currentFile);
-        const doc = new DOMParser().parseFromString(f.text, 'text/html');
-        const placeholders = doc.querySelectorAll('.placeholder-label');
-        if (placeholders.length === 0) {
-            showStatus('Заглушек в файле нет — скрывать нечего', 'info');
-            return;
-        }
-        placeholders.forEach(ph => ph.parentNode.removeChild(ph));
-        doc.body.normalize();
-        const newHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-        const deployId = newDeployId();
-        const stamped = stampDeployId(newHtml, deployId);
-        showStatus(`Сохраняю (удалено ${placeholders.length} заглушек)...`, 'info');
-        await putFile(currentFile, b64e(stamped), f.sha, `Скрытие заглушек в ${currentFile}`);
-        repoDeployId = deployId;
-        showStatus(`✓ Удалено ${placeholders.length} заглушек из ${currentFile}`, 'success');
-        setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
-        setTimeout(() => { loadSite(true); verifyDeploy(repoDeployId, false); }, 500);
-    } catch (e) {
-        const i = interpretError(e.status, e.body);
-        showStatus(`✗ Ошибка: ${i.title}`, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Скрыть заглушки';
-    }
-}
-
-async function showPlaceholders() {
-    if (Object.keys(pending).length > 0) {
-        if (!confirm('У вас есть несохранённые правки. Они будут потеряны. Продолжить?')) return;
-        pending = {}; markUnsaved();
-    }
-    if (!confirm('Добавить стандартные заглушки ко всем картинкам (data-img) в ' + currentFile + '?\n\nВНИМАНИЕ: если вы ранее редактировали текст заглушек — он будет заменён на стандартный.\n\nПродолжить?')) return;
-    const btn = $('showPlaceholdersBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Создаю...';
-    try {
-        showStatus('Загружаю ' + currentFile + ' из ' + currentRepo.repo + '...', 'info');
-        const f = await getFile(currentFile);
-        const doc = new DOMParser().parseFromString(f.text, 'text/html');
-        const imgHolders = doc.querySelectorAll('[data-img]');
-        let added = 0;
-        let phCounter = 0;
-
-        doc.querySelectorAll('[data-edit^="ph_img_"], [data-edit^="ph_txt_"]').forEach(el => {
-            const m = el.getAttribute('data-edit').match(/^ph_(?:img|txt)_(\d+)$/);
-            if (m) phCounter = Math.max(phCounter, parseInt(m[1], 10));
-        });
-
-        imgHolders.forEach(holder => {
-            if (holder.querySelector('.placeholder-label')) return;
-
-            const imgPath = holder.getAttribute('data-img') || '';
-            const fileName = imgPath.split('/').pop() || 'image.jpg';
-
-            const ph = doc.createElement('div');
-            ph.className = 'placeholder-label';
-
-            const strong = doc.createElement('strong');
-            const spanImg = doc.createElement('span');
-            spanImg.setAttribute('data-edit', `ph_img_${++phCounter}`);
-            spanImg.textContent = fileName;
-            strong.appendChild(spanImg);
-
-            const spanTxt = doc.createElement('span');
-            const innerSpan = doc.createElement('span');
-            innerSpan.setAttribute('data-edit', `ph_txt_${++phCounter}`);
-            innerSpan.textContent = 'Скриншот сайта';
-            spanTxt.appendChild(innerSpan);
-
-            ph.appendChild(strong);
-            ph.appendChild(spanTxt);
-
-            const img = holder.querySelector('img');
-            if (img && img.nextSibling) {
-                holder.insertBefore(ph, img.nextSibling);
-            } else {
-                holder.appendChild(ph);
-            }
-            added++;
-        });
-
-        if (added === 0) {
-            showStatus('Все заглушки уже на месте — создавать нечего', 'info');
-            return;
-        }
-
-        doc.body.normalize();
-        const newHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-        const deployId = newDeployId();
-        const stamped = stampDeployId(newHtml, deployId);
-        showStatus(`Сохраняю (добавлено ${added} заглушек)...`, 'info');
-        await putFile(currentFile, b64e(stamped), f.sha, `Добавление заглушек в ${currentFile}`);
-        repoDeployId = deployId;
-        showStatus(`✓ Добавлено ${added} заглушек в ${currentFile}`, 'success');
-        setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
-        setTimeout(() => { loadSite(true); verifyDeploy(repoDeployId, false); }, 500);
-    } catch (e) {
-        const i = interpretError(e.status, e.body);
-        showStatus(`✗ Ошибка: ${i.title}`, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-eye"></i> Поставить заглушки';
     }
 }
 
@@ -1594,6 +1308,7 @@ async function openText(key, value) {
     if (targetRadio) targetRadio.checked = true;
     setTimeout(() => ta.focus(), 100);
 
+    // Состояние папки files/
     const slotNames = await listSlotFiles();
     const info = $('fileSlotInfo');
     const input = $('docFileInput');
@@ -1805,6 +1520,7 @@ async function saveAll() {
         const imagesWithData = images.filter(k => pending[k].data);
         const imagesWithLinks = images.filter(k => pending[k].linkChanged);
 
+        // 1) Сначала загружаем новые файлы в files/
         const fileUploads = texts.filter(k => pending[k].fileNew && pending[k].fileData);
         for (const k of fileUploads) {
             const p = pending[k];
@@ -1814,6 +1530,7 @@ async function saveAll() {
             } catch (e) { failed.push(k); }
         }
 
+        // 2) Потом коммит HTML со ссылками на новые имена
         const htmlTexts = texts.filter(k => !failed.includes(k) && (pending[k].linkChanged || true));
         if (htmlTexts.length || imagesWithLinks.length) {
             const f = await getFile(currentFile);
@@ -1842,6 +1559,7 @@ async function saveAll() {
             repoDeployId = deployId;
         }
 
+        // 3) После коммита удаляем старые файлы (заменённые и отвязанные)
         for (const k of texts) {
             if (failed.includes(k)) continue;
             const p = pending[k];
@@ -1868,7 +1586,7 @@ async function saveAll() {
         markUnsaved();
         if (failed.length) showStatus(`Сохранено: ${done.length}. Не сохранено: ${failed.length}.`, 'error');
         else {
-            showStatus('Сохранено в ' + currentRepo.name + '! Ждём деплой...', 'success');
+            showStatus('Сохранено! Ждём деплой GitHub Pages...', 'success');
             setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
             setTimeout(() => { loadSite(true); verifyDeploy(repoDeployId, false); }, 500);
         }
@@ -1883,7 +1601,7 @@ async function saveAll() {
 
 async function resetSite() {
     if (Object.keys(pending).length && !confirm('Есть несохранённые правки, они будут потеряны. Продолжить?')) return;
-    if (!confirm('Переподготовить страницу ' + currentFile + ' в ' + currentRepo.name + '? Метки будут обновлены.')) return;
+    if (!confirm('Переподготовить страницу ' + currentFile + '? Метки будут обновлены.')) return;
     pending = {}; markUnsaved();
     showSetup();
     $('setupTitle').textContent = 'Переподготовка ' + currentFile;
@@ -1895,8 +1613,6 @@ $('checkBtn').addEventListener('click', checkToken);
 $('checkBtn2').addEventListener('click', checkToken);
 $('reloadBtn').addEventListener('click', reloadPreview);
 $('cleanBtn').addEventListener('click', cleanMarks);
-$('hidePlaceholdersBtn').addEventListener('click', hidePlaceholders);
-$('showPlaceholdersBtn').addEventListener('click', showPlaceholders);
 $('resetBtn').addEventListener('click', resetSite);
 $('saveBtn').addEventListener('click', saveAll);
 $('logoutBtn').addEventListener('click', logout);
