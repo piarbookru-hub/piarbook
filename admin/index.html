@@ -47,6 +47,33 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .toolbar-btn.success { background: #1a5d3a; border-color: #2d7a55; }
 .toolbar-btn.success:hover { background: #2d7a55; border-color: #3ea876; }
 .toolbar-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ===== ПЕРЕКЛЮЧАТЕЛЬ РЕПОЗИТОРИЕВ ===== */
+.repo-selector {
+    background: #0f0f0f;
+    color: #fff;
+    border: 1px solid #F40009;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all .2s;
+    font-family: 'Inter', sans-serif;
+    min-width: 180px;
+    margin-left: 4px;
+}
+.repo-selector:hover, .repo-selector:focus {
+    background: #1a1a1a;
+    border-color: #d40007;
+}
+.repo-selector option {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 8px;
+}
+
 .unsaved-badge { background: #F40009; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 11px; margin-left: 0; display: none; white-space: nowrap; }
 .unsaved-badge.show { display: inline-block; }
 
@@ -211,7 +238,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
         <button class="btn" id="loginBtn">Войти</button>
         <div class="error-msg" id="loginError" role="alert"></div>
         <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" class="help-link">
-            <i class="fas fa-external-link-alt"></i> Создать fine-grained токен (один репозиторий, Contents: Read and write)
+            <i class="fas fa-external-link-alt"></i> Создать fine-grained токен (все репозитории, Contents: Read and write)
         </a>
     </div>
 </div>
@@ -222,8 +249,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
             <div class="app-title">
                 <i class="fas fa-magic" style="color: #F40009;"></i>
                 <span id="projectNameHeader" style="font-weight: 600; margin-left: 8px;">Редактор</span>
-                <span id="repoNameHeader" style="color: #888; font-weight: 400; margin-left: 8px; font-size: 13px;"></span>
             </div>
+            <!-- ===== НОВЫЙ ПЕРЕКЛЮЧАТЕЛЬ САЙТОВ ===== -->
+            <select id="repoSelector" class="repo-selector" title="Переключение между сайтами">
+                <!-- заполняется из CMS_CONFIG.repositories -->
+            </select>
             <span class="page-indicator" id="pageIndicatorBox" title="Текущая страница"><i class="fas fa-file"></i> <span id="currentPageIndicator">index.html</span></span>
             <span class="deploy-badge" id="deployBadge" title="Статус деплоя GitHub Pages. Клик — перепроверить."></span>
             <button class="toolbar-btn primary" id="saveBtn"><i class="fas fa-cloud-upload-alt"></i> Сохранить в GitHub</button>
@@ -325,6 +355,17 @@ let token = ss.get('gh_token');
 let pending = {};
 let editKind = null, editKey = null, editImagePath = null, pendingImg = null, statusTimer = null, lastFocus = null;
 let editOrigText = null, editOrigImg = null;
+
+// ===== ИНИЦИАЛИЗАЦИЯ ТЕКУЩЕГО РЕПОЗИТОРИЯ =====
+// Восстанавливаем выбор из localStorage или берём первый из списка
+const availableRepos = CMS_CONFIG.repositories && CMS_CONFIG.repositories.length > 0
+    ? CMS_CONFIG.repositories
+    : [{ repo: CMS_CONFIG.repo, name: CMS_CONFIG.projectName || 'Сайт', url: '' }];
+
+let currentRepoName = ls.get('cms_currentRepo');
+let currentRepo = availableRepos.find(r => r.repo === currentRepoName) || availableRepos[0];
+CMS_CONFIG.repo = currentRepo.repo;  // синхронизируем с конфигом
+
 let currentFile = ls.get('cms_currentFile') || 'index.html';
 let viewModeUrl = null;
 let siteBaseUrl = '';
@@ -333,12 +374,40 @@ let repoDeployId = null;
 let deployPollGen = 0;
 let panelFileData = null, panelFileNew = null, panelFileOld = null;
 let sessionFileNames = [];
-const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
+let API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
+
+function updateAPI() {
+    API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
+}
+
+function saveCurrentRepo() {
+    ls.set('cms_currentRepo', currentRepo.repo);
+    CMS_CONFIG.repo = currentRepo.repo;
+    updateAPI();
+}
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
-$('repoNameHeader').textContent = `· ${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 function saveCurrentFile() { ls.set('cms_currentFile', currentFile); }
+
+// ===== ЗАПОЛНЯЕМ ПЕРЕКЛЮЧАТЕЛЬ САЙТОВ =====
+function fillRepoSelector() {
+    const sel = $('repoSelector');
+    if (!sel) return;
+    sel.innerHTML = '';
+    availableRepos.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.repo;
+        opt.textContent = r.name;
+        if (r.repo === currentRepo.repo) opt.selected = true;
+        sel.appendChild(opt);
+    });
+    // Обновляем заголовок и hint
+    const urlInfo = currentRepo.url ? ' · ' + currentRepo.url : '';
+    $('repoNameHeader') && ($('repoNameHeader').textContent = '');
+    // Обновляем title страницы
+    document.title = `Админка — ${currentRepo.name.replace(/^[\s\w]+\s/, '')}`;
+}
 
 try {
     const loc = window.location;
@@ -365,7 +434,14 @@ function siteBasePathNoSlash() {
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const encPath = p => p.split('/').map(encodeURIComponent).join('/');
 
-function pageUrl(file = currentFile) { return new URL(encPath(file), siteBaseUrl); }
+function pageUrl(file = currentFile) {
+    // Если у репо есть URL в конфиге — используем его для построения ссылок
+    // Иначе — стандартный путь через GitHub Pages
+    if (currentRepo.url && currentRepo.url.match(/^[a-zA-Z0-9.-]+\.[a-z]{2,}$/)) {
+        return new URL(encPath(file), 'https://' + currentRepo.url + '/');
+    }
+    return new URL(encPath(file), siteBaseUrl);
+}
 
 function safeAbs(href) {
     try {
@@ -388,8 +464,8 @@ function isAdminSelf(file) {
 
 function resolveRepoPath(src) {
     try {
-        const dirURL = new URL(encPath(currentFile), 'https://repo.local/');
-        const u = new URL(src, dirURL);
+        const dirUrl = new URL(encPath(currentFile), 'https://repo.local/');
+        const u = new URL(src, dirUrl);
         let p = decodeURIComponent(u.pathname);
         if (src.startsWith('/') && siteBasePath !== '/' && p.startsWith(siteBasePath)) p = p.slice(siteBasePath.length);
         p = p.replace(/^\/+/, '');
@@ -570,7 +646,7 @@ function interpretError(status, body = '') {
     if (status === 401) return { title: 'Токен недействителен или истёк', fix: 'Создайте новый токен и войдите заново.' };
     if (status === 403 || status === 429) {
         if (/rate limit/i.test(b)) return { title: 'Превышен лимит запросов GitHub API', fix: 'Подождите минуту и повторите.' };
-        if (/scope|permission|not accessible/i.test(b)) return { title: 'У токена нет нужных прав', fix: 'Создайте НОВЫЙ токен с правами Contents: Read and write на этот репозиторий.' };
+        if (/scope|permission|not accessible/i.test(b)) return { title: 'У токена нет нужных прав', fix: `Создайте НОВЫЙ токен с правами Contents: Read and write на репозиторий ${CMS_CONFIG.repo}.` };
         return { title: 'Доступ запрещён', fix: 'Проверьте, что токен выдан на этот репозиторий и имеет право записи.' };
     }
     if (status === 404) return { title: 'Репозиторий или файл не найден', fix: `Проверьте имя файла и ветку "${CMS_CONFIG.branch}".` };
@@ -607,7 +683,7 @@ async function checkToken() {
         if (canPush === false) showErrorDetails('Нет прав записи', 'WARNING', '', 'Выдайте токену право Contents: Read and write на этот репозиторий.');
         else if (!hasIndex) showErrorDetails('Файл index.html не найден', '404', `Ветка "${CMS_CONFIG.branch}" или файл не существует`, 'Создайте index.html в корне репозитория или проверьте ветку в config.js.');
         const ok = hasIndex && canPush !== false;
-        showStatus(ok ? 'Токен валиден' : 'Есть проблемы — см. подробности', ok ? 'success' : 'error');
+        showStatus(ok ? 'Токен валиден для ' + currentRepo.name : 'Есть проблемы — см. подробности', ok ? 'success' : 'error');
         return ok;
     } catch (e) {
         const i = interpretError(e.status, e.body);
@@ -643,6 +719,7 @@ $('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(
 async function enterApp() {
     $('loginScreen').style.display = 'none';
     $('editorApp').classList.add('active');
+    fillRepoSelector();
     updatePageIndicator();
     try {
         let f;
@@ -671,6 +748,46 @@ async function enterApp() {
     }
 }
 
+// ===== ПЕРЕКЛЮЧЕНИЕ РЕПОЗИТОРИЕВ =====
+async function switchRepo(repoName) {
+    if (repoName === currentRepo.repo) return;
+
+    // Проверка несохранённых правок
+    if (Object.keys(pending).length > 0) {
+        if (!confirm('У вас есть несохранённые правки. При переключении сайта они будут потеряны.\n\nПродолжить?')) {
+            // Возвращаем dropdown на текущий репозиторий
+            fillRepoSelector();
+            return;
+        }
+        pending = {};
+        markUnsaved();
+    }
+
+    const newRepo = availableRepos.find(r => r.repo === repoName);
+    if (!newRepo) return;
+
+    currentRepo = newRepo;
+    saveCurrentRepo();
+    currentFile = 'index.html';
+    saveCurrentFile();
+    viewModeUrl = null;
+
+    showStatus('Переключаюсь на ' + currentRepo.name + '...', 'info');
+
+    // Перезапускаем приложение с новым репо
+    $('setupScreen').classList.remove('active');
+    $('iframeWrapper').style.display = 'none';
+    $('errorDetails').innerHTML = '';
+    $('progressLog').style.display = 'none';
+    setDeployBadge('idle', '');
+
+    await enterApp();
+}
+
+if ($('repoSelector')) {
+    $('repoSelector').addEventListener('change', (e) => switchRepo(e.target.value));
+}
+
 if (token) enterApp();
 
 function logout() {
@@ -686,6 +803,7 @@ function showSetup() {
     $('hintBanner').style.display = 'none';
     $('prepareBtn').disabled = false;
     $('prepareBtn').innerHTML = '<i class="fas fa-download"></i> Подготовить страницу';
+    $('setupTitle').textContent = 'Подготовка: ' + currentRepo.name;
 }
 
 function showEditor() {
@@ -719,7 +837,7 @@ async function loadSite(skipVerify = false) {
     const status = $('loaderStatus');
     loader.classList.remove('hidden');
     ifr.setAttribute('sandbox', PREVIEW_SANDBOX);
-    status.textContent = 'Загрузка ' + currentFile + ' из GitHub...';
+    status.textContent = 'Загрузка ' + currentFile + ' из ' + currentRepo.repo + '...';
     try {
         const f = await getFile(currentFile);
         status.textContent = 'Подготовка превью...';
@@ -831,7 +949,7 @@ async function prepareCurrentFile(logContainer = null) {
             showStatus('Админку нельзя редактировать через саму себя. Переместите её в папку admin/.', 'error');
             return false;
         }
-        li('Загрузка ' + fileBeingPrepared + ' из репозитория...', 'working');
+        li('Загрузка ' + fileBeingPrepared + ' из ' + currentRepo.repo + '...', 'working');
         const f = await getFile(fileBeingPrepared);
         if (!f.text.trim()) throw new Error(fileBeingPrepared + ' пуст или не прочитан');
         li(`${fileBeingPrepared} загружен (${(f.text.length / 1024).toFixed(1)} КБ)`, 'done');
@@ -849,7 +967,7 @@ async function prepareCurrentFile(logContainer = null) {
         const stamped = stampDeployId(r.html, deployId);
         await putFile(fileBeingPrepared, b64e(stamped), f.sha, `Подготовка ${fileBeingPrepared} к редактированию`);
         repoDeployId = deployId;
-        li(fileBeingPrepared + ' обновлён в репозитории', 'done');
+        li(fileBeingPrepared + ' обновлён в ' + currentRepo.repo, 'done');
         li('Подготовка завершена!', 'done');
         return true;
     } catch (e) {
@@ -939,7 +1057,13 @@ function goHome() {
     navigateTo('index.html');
 }
 
-function openLiveSite() { window.open(viewModeUrl ? viewModeUrl : pageUrl().href, '_blank', 'noopener'); }
+function openLiveSite() {
+    if (currentRepo.url) {
+        window.open('https://' + currentRepo.url + '/', '_blank', 'noopener');
+    } else {
+        window.open(viewModeUrl ? viewModeUrl : pageUrl().href, '_blank', 'noopener');
+    }
+}
 
 function hookIframe() {
     let d;
@@ -1274,7 +1398,7 @@ async function cleanMarks() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Очищаю...';
     try {
-        showStatus('Загружаю ' + currentFile + '...', 'info');
+        showStatus('Загружаю ' + currentFile + ' из ' + currentRepo.repo + '...', 'info');
         const f = await getFile(currentFile);
         if (!f.text.includes('data-edit="') && !f.text.includes('data-img=')) {
             showStatus('Меток в файле нет — очищать нечего', 'info');
@@ -1298,7 +1422,6 @@ async function cleanMarks() {
     }
 }
 
-// ===== НОВАЯ ФУНКЦИЯ: СКРЫТЬ ЗАГЛУШКИ =====
 async function hidePlaceholders() {
     if (Object.keys(pending).length > 0) {
         if (!confirm('У вас есть несохранённые правки. Они будут потеряны. Продолжить?')) return;
@@ -1309,7 +1432,7 @@ async function hidePlaceholders() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Скрываю...';
     try {
-        showStatus('Загружаю ' + currentFile + '...', 'info');
+        showStatus('Загружаю ' + currentFile + ' из ' + currentRepo.repo + '...', 'info');
         const f = await getFile(currentFile);
         const doc = new DOMParser().parseFromString(f.text, 'text/html');
         const placeholders = doc.querySelectorAll('.placeholder-label');
@@ -1337,7 +1460,6 @@ async function hidePlaceholders() {
     }
 }
 
-// ===== НОВАЯ ФУНКЦИЯ: ПОСТАВИТЬ ЗАГЛУШКИ =====
 async function showPlaceholders() {
     if (Object.keys(pending).length > 0) {
         if (!confirm('У вас есть несохранённые правки. Они будут потеряны. Продолжить?')) return;
@@ -1348,27 +1470,24 @@ async function showPlaceholders() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Создаю...';
     try {
-        showStatus('Загружаю ' + currentFile + '...', 'info');
+        showStatus('Загружаю ' + currentFile + ' из ' + currentRepo.repo + '...', 'info');
         const f = await getFile(currentFile);
         const doc = new DOMParser().parseFromString(f.text, 'text/html');
         const imgHolders = doc.querySelectorAll('[data-img]');
         let added = 0;
         let phCounter = 0;
 
-        // Находим максимальный существующий номер ph_img_N, чтобы не пересекаться
         doc.querySelectorAll('[data-edit^="ph_img_"], [data-edit^="ph_txt_"]').forEach(el => {
             const m = el.getAttribute('data-edit').match(/^ph_(?:img|txt)_(\d+)$/);
             if (m) phCounter = Math.max(phCounter, parseInt(m[1], 10));
         });
 
         imgHolders.forEach(holder => {
-            // Если заглушка уже есть — пропускаем
             if (holder.querySelector('.placeholder-label')) return;
 
             const imgPath = holder.getAttribute('data-img') || '';
             const fileName = imgPath.split('/').pop() || 'image.jpg';
 
-            // Создаём заглушку
             const ph = doc.createElement('div');
             ph.className = 'placeholder-label';
 
@@ -1387,7 +1506,6 @@ async function showPlaceholders() {
             ph.appendChild(strong);
             ph.appendChild(spanTxt);
 
-            // Вставляем после <img>, если он есть
             const img = holder.querySelector('img');
             if (img && img.nextSibling) {
                 holder.insertBefore(ph, img.nextSibling);
@@ -1750,7 +1868,7 @@ async function saveAll() {
         markUnsaved();
         if (failed.length) showStatus(`Сохранено: ${done.length}. Не сохранено: ${failed.length}.`, 'error');
         else {
-            showStatus('Сохранено! Ждём деплой GitHub Pages...', 'success');
+            showStatus('Сохранено в ' + currentRepo.name + '! Ждём деплой...', 'success');
             setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
             setTimeout(() => { loadSite(true); verifyDeploy(repoDeployId, false); }, 500);
         }
@@ -1765,7 +1883,7 @@ async function saveAll() {
 
 async function resetSite() {
     if (Object.keys(pending).length && !confirm('Есть несохранённые правки, они будут потеряны. Продолжить?')) return;
-    if (!confirm('Переподготовить страницу ' + currentFile + '? Метки будут обновлены.')) return;
+    if (!confirm('Переподготовить страницу ' + currentFile + ' в ' + currentRepo.name + '? Метки будут обновлены.')) return;
     pending = {}; markUnsaved();
     showSetup();
     $('setupTitle').textContent = 'Переподготовка ' + currentFile;
