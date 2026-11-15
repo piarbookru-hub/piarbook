@@ -45,14 +45,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .toolbar-btn.warning { background: #8B4513; border-color: #A0522D; }
 .toolbar-btn.warning:hover { background: #A0522D; border-color: #CD853F; }
 .toolbar-btn:disabled { opacity: .5; cursor: not-allowed; }
-
-/* Address bar */
-.address-bar { display: flex; gap: 6px; flex: 1; min-width: 200px; max-width: 400px; }
-.address-input { flex: 1; padding: 8px 12px; background: #0f0f0f; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 13px; font-family: 'Courier New', monospace; }
-.address-input:focus { border-color: #F40009; outline: none; }
-.address-btn { padding: 8px 12px; background: #F40009; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-size: 13px; transition: background .2s; }
-.address-btn:hover { background: #d40007; }
-
 .unsaved-badge { background: #F40009; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 11px; margin-left: 0; display: none; white-space: nowrap; }
 .unsaved-badge.show { display: inline-block; }
 
@@ -63,10 +55,19 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .deploy-badge.error { color: #ff4444; border-color: rgba(255, 68, 68, .45); background: rgba(255, 68, 68, .08); }
 .deploy-badge.unknown { color: #888; }
 
-.page-indicator { display: inline-flex; align-items: center; gap: 6px; background: #0f0f0f; border: 1px solid #333; padding: 7px 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; color: #c9a961; margin-left: 0; max-width: 320px; overflow: hidden; }
-.page-indicator i { color: #F40009; font-size: 11px; flex-shrink: 0; }
-#currentPageIndicator { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.page-indicator.viewmode { color: #888; border-color: #555; }
+/* Адресная строка */
+.address-row { flex-wrap: nowrap; }
+.address-bar { display: flex; align-items: center; flex: 1; min-width: 0; background: #0f0f0f; border: 1px solid #333; border-radius: 8px; transition: border-color .2s; }
+.address-bar:focus-within { border-color: #F40009; }
+.address-bar.viewmode { border-color: #555; }
+.address-icon { padding: 0 6px 0 12px; color: #F40009; font-size: 12px; flex-shrink: 0; }
+.address-bar.viewmode .address-icon { color: #888; }
+.address-prefix { color: #666; font-family: 'Courier New', monospace; font-size: 12px; white-space: nowrap; max-width: 38%; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; }
+.address-input { flex: 1; min-width: 0; background: transparent; border: none; color: #c9a961; font-family: 'Courier New', monospace; font-size: 13px; padding: 9px 8px; }
+.address-input:focus { outline: none; }
+.address-bar.viewmode .address-input { color: #aaa; }
+.address-go { background: transparent; border: none; border-left: 1px solid #333; color: #fff; padding: 0 14px; align-self: stretch; cursor: pointer; border-radius: 0 8px 8px 0; font-size: 13px; }
+.address-go:hover { background: #F40009; }
 
 .iframe-wrapper { flex: 1; position: relative; background: #fff; overflow: hidden; }
 .site-iframe { width: 100%; height: 100%; border: none; display: block; }
@@ -186,18 +187,25 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
                 <span id="projectNameHeader" style="font-weight: 600; margin-left: 8px;">Редактор</span>
                 <span id="repoNameHeader" style="color: #888; font-weight: 400; margin-left: 8px; font-size: 13px;"></span>
             </div>
-            <div class="address-bar">
-                <input type="text" id="addressInput" class="address-input" placeholder="avtomaster.piarbook.ru" autocomplete="off" spellcheck="false">
-                <button class="address-btn" id="addressBtn"><i class="fas fa-arrow-right"></i></button>
-            </div>
-            <span class="page-indicator" id="pageIndicatorBox" title="Текущая страница"><i class="fas fa-file"></i> <span id="currentPageIndicator">index.html</span></span>
             <span class="deploy-badge" id="deployBadge" title="Статус деплоя GitHub Pages. Клик — перепроверить."></span>
             <button class="toolbar-btn primary" id="saveBtn"><i class="fas fa-cloud-upload-alt"></i> Сохранить в GitHub</button>
             <span class="unsaved-badge" id="unsavedBadge"><i class="fas fa-circle" style="font-size: 8px;"></i> есть несохранённые</span>
         </div>
+
+        <!-- Адресная строка -->
+        <div class="toolbar-row address-row">
+            <button class="toolbar-btn" id="homeBtn" title="Вернуться к редактированию index.html" aria-label="На главную"><i class="fas fa-home"></i></button>
+            <form class="address-bar" id="addressBar" autocomplete="off">
+                <i class="fas fa-file address-icon" id="addressIcon"></i>
+                <span class="address-prefix" id="addressPrefix"></span>
+                <input type="text" class="address-input" id="addressInput" list="pagesList" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="страница: about.html или полный URL" aria-label="Адрес страницы" title="Введите путь страницы сайта (about.html, blog/post.html) или полный URL. Enter — перейти.">
+                <button type="submit" class="address-go" id="addressGo" title="Перейти" aria-label="Перейти"><i class="fas fa-arrow-right"></i></button>
+            </form>
+            <datalist id="pagesList"></datalist>
+        </div>
+
         <div class="toolbar-row toolbar-row-bottom">
             <div class="toolbar-actions">
-                <button class="toolbar-btn" id="homeBtn" title="Вернуться к редактированию index.html" aria-label="На главную"><i class="fas fa-home"></i></button>
                 <button class="toolbar-btn" id="openSiteBtn" title="Открыть текущую страницу в новой вкладке"><i class="fas fa-external-link-alt"></i> Открыть сайт</button>
                 <button class="toolbar-btn" id="checkBtn" title="Проверить токен"><i class="fas fa-shield-alt"></i> Проверить</button>
                 <button class="toolbar-btn" id="reloadBtn" title="Обновить превью"><i class="fas fa-sync"></i> Обновить</button>
@@ -209,7 +217,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     </div>
 
     <div class="hint-banner" id="hintBanner">
-        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по ссылке — открыть страницу в админке. <strong>Ctrl+клик</strong> — новая вкладка. <strong>Esc</strong> — закрыть панель.
+        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по ссылке — открыть страницу в админке. <strong>Ctrl+клик</strong> — новая вкладка. <strong>Адресная строка</strong> — переход на любую страницу сайта. <strong>Esc</strong> — закрыть панель.
     </div>
 
     <div class="setup-screen" id="setupScreen">
@@ -241,7 +249,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 <div class="edit-panel" id="editPanel" role="dialog" aria-modal="true" aria-label="Редактирование">
     <div class="edit-panel-header">
         <h3><span id="editTitle">Редактирование</span><span class="key-badge" id="editKey"></span></h3>
-        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">×</button>
+        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">✕</button>
     </div>
     <div id="editPanelContent"></div>
     <div class="edit-panel-actions">
@@ -266,10 +274,12 @@ const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 const PREVIEW_SANDBOX = 'allow-same-origin allow-popups allow-popups-to-escape-sandbox';
 const VIEW_SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
 
+// Файлы для скачивания: папка files/, максимум 3 файла одновременно,
+// имена prices, prices1, prices2, prices3... с ЛЮБЫМ расширением файла.
 const FILES_FOLDER = 'files';
 const FILES_BASE = 'prices';
 const MAX_FILES = 3;
-const MAX_FILE_SIZE = 1024 * 1024;
+const MAX_FILE_SIZE = 1024 * 1024; // 1 МБ
 const BLOCKED_EXTS = ['exe', 'bat', 'cmd', 'sh', 'com', 'scr', 'msi', 'vbs', 'ps1', 'jar'];
 const SLOT_RE = /^prices(\d*)(\.[^/]*)?$/i;
 
@@ -297,78 +307,9 @@ let repoDeployId = null;
 let deployPollGen = 0;
 let panelFileData = null, panelFileNew = null, panelFileOld = null;
 let sessionFileNames = [];
-let API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
-
-function updateAPI() {
-    API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
-}
-
-function parseRepoFromUrl(urlString) {
-    try {
-        let url = urlString.trim();
-        if (!url.startsWith('http')) url = 'https://' + url;
-        const parsed = new URL(url);
-        const parts = parsed.hostname.split('.');
-        if (parts.length >= 3 && parts[parts.length - 2] === 'piarbook' && parts[parts.length - 1] === 'ru') {
-            return parts.slice(0, -2).join('.');
-        }
-        if (parts.length === 2 && parts[0] === 'piarbook' && parts[1] === 'ru') {
-            return 'piarbook';
-        }
-        return parts[0];
-    } catch (e) {
-        return null;
-    }
-}
-
-async function switchToRepo(repoName) {
-    if (Object.keys(pending).length > 0) {
-        if (!confirm('У вас есть несохранённые изменения. Переключение репозитория сбросит их. Продолжить?')) {
-            return false;
-        }
-        pending = {};
-        markUnsaved();
-    }
-    
-    CMS_CONFIG.repo = repoName;
-    ls.set('cms_currentRepo', repoName);
-    updateAPI();
-    currentFile = 'index.html';
-    ls.set('cms_currentFile', currentFile);
-    
-    $('repoNameHeader').textContent = `· ${CMS_CONFIG.owner}/${repoName}`;
-    $('addressInput').value = repoName === 'piarbook' ? 'piarbook.ru' : `${repoName}.piarbook.ru`;
-    
-    showSetup();
-    await checkToken();
-    return true;
-}
-
-async function handleAddressBar() {
-    const url = $('addressInput').value.trim();
-    if (!url) return;
-    
-    const repo = parseRepoFromUrl(url);
-    if (!repo) {
-        showStatus('Не удалось определить репозиторий из URL', 'error');
-        return;
-    }
-    
-    if (repo !== CMS_CONFIG.repo) {
-        const switched = await switchToRepo(repo);
-        if (!switched) return;
-    }
-    
-    await loadSite();
-}
+const API = `https://api.github.com/repos/${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
-
-const savedRepo = ls.get('cms_currentRepo');
-if (savedRepo && savedRepo !== CMS_CONFIG.repo) {
-    CMS_CONFIG.repo = savedRepo;
-    updateAPI();
-}
 $('repoNameHeader').textContent = `· ${CMS_CONFIG.owner}/${CMS_CONFIG.repo}`;
 
 function saveCurrentFile() { ls.set('cms_currentFile', currentFile); }
@@ -430,17 +371,90 @@ function resolveRepoPath(src) {
     } catch { return null; }
 }
 
+// ===== Адресная строка =====
 function updatePageIndicator() {
-    const el = $('currentPageIndicator');
-    const box = $('pageIndicatorBox');
-    if (!el) return;
+    const input = $('addressInput');
+    const bar = $('addressBar');
+    const prefix = $('addressPrefix');
+    const icon = $('addressIcon');
+    if (!input) return;
     if (viewModeUrl) {
-        el.textContent = 'просмотр: ' + viewModeUrl.replace(/^https?:\/\//, '');
-        if (box) { box.classList.add('viewmode'); box.title = 'Режим просмотра (без редактирования).'; }
+        input.value = viewModeUrl;
+        prefix.textContent = '';
+        prefix.style.display = 'none';
+        bar.classList.add('viewmode');
+        icon.className = 'fas fa-eye address-icon';
+        bar.title = 'Режим просмотра (без редактирования). Нажмите «Домой» для возврата.';
     } else {
-        el.textContent = currentFile;
-        if (box) { box.classList.remove('viewmode'); box.title = 'Текущая страница (сохраняется при F5)'; }
+        input.value = currentFile;
+        prefix.textContent = siteBaseUrl.replace(/^https?:\/\//, '');
+        prefix.style.display = '';
+        bar.classList.remove('viewmode');
+        icon.className = 'fas fa-file address-icon';
+        bar.title = 'Текущая страница (сохраняется при F5)';
     }
+}
+
+// Превращает введённое в адресную строку значение в href для navigateTo / просмотра
+function parseAddressInput(raw) {
+    let v = String(raw || '').trim();
+    if (!v) return { kind: 'internal', href: 'index.html' };
+    if (/^(javascript:|data:|vbscript:|file:)/i.test(v)) return { kind: 'invalid' };
+    if (/^(tel:|mailto:)/i.test(v)) return { kind: 'invalid' };
+    // Полный URL или //host
+    if (/^(https?:)?\/\//i.test(v)) {
+        if (isInternalPage(v)) return { kind: 'internal', href: v };
+        const abs = safeAbs(v.startsWith('//') ? 'https:' + v : v);
+        return abs && /^https?:/i.test(abs) ? { kind: 'external', url: abs } : { kind: 'invalid' };
+    }
+    // Домен без схемы, например example.com/page
+    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(\/|$)/i.test(v) && !/\.html?($|[?#])/i.test(v.split('/')[0])) {
+        const first = v.split('/')[0];
+        if (/\.[a-z]{2,}$/i.test(first) && !/\.(html?|php|css|js|png|jpe?g|webp|gif|svg|pdf)$/i.test(first)) {
+            const abs = safeAbs('https://' + v);
+            if (abs) return isInternalPage(abs) ? { kind: 'internal', href: abs } : { kind: 'external', url: abs };
+        }
+    }
+    // Путь относительно корня сайта
+    v = v.split(/[?#]/)[0].replace(/^\/+/, '');
+    const base = siteBasePathNoSlash().replace(/^\/+/, '');
+    if (base && (v === base || v.startsWith(base + '/'))) v = v.slice(base.length).replace(/^\/+/, '');
+    if (!v) return { kind: 'internal', href: 'index.html' };
+    if (v.endsWith('/')) v += 'index.html';
+    else if (!/\.[a-z0-9]+$/i.test(v.split('/').pop())) v += '.html';
+    if (!/\.html?$/i.test(v)) return { kind: 'invalid' };
+    return { kind: 'internal', href: '/' + v };
+}
+
+function goToAddress() {
+    const input = $('addressInput');
+    const parsed = parseAddressInput(input.value);
+    if (parsed.kind === 'invalid') {
+        showStatus('Введите путь страницы сайта (about.html) или полный http(s) URL', 'error');
+        updatePageIndicator();
+        return;
+    }
+    input.blur();
+    if (parsed.kind === 'internal') { navigateTo(parsed.href); return; }
+    if (Object.keys(pending).length && !confirm('Есть несохранённые правки. При переходе они будут потеряны. Продолжить?')) {
+        updatePageIndicator();
+        return;
+    }
+    pending = {}; markUnsaved();
+    openExternalInIframe(parsed.url);
+}
+
+async function loadPagesList() {
+    const dl = $('pagesList');
+    if (!dl) return;
+    try {
+        const r = await (await gh(`${API}/git/trees/${encodeURIComponent(CMS_CONFIG.branch)}?recursive=1`)).json();
+        const files = (r.tree || [])
+            .filter(x => x.type === 'blob' && /\.html?$/i.test(x.path) && !isAdminSelf(x.path))
+            .map(x => x.path)
+            .sort();
+        dl.innerHTML = files.map(p => `<option value="${esc(p)}"></option>`).join('');
+    } catch { /* список страниц — необязательная подсказка */ }
 }
 
 function newDeployId() { return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
@@ -572,6 +586,7 @@ async function delFile(path) {
     });
 }
 
+// Список имён файлов-слотов в папке files/ (только prices, prices1, prices2...)
 async function listSlotFiles() {
     try {
         const d = await (await gh(`${API}/contents/${encPath(FILES_FOLDER)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`)).json();
@@ -677,10 +692,7 @@ async function enterApp() {
     $('loginScreen').style.display = 'none';
     $('editorApp').classList.add('active');
     updatePageIndicator();
-    
-    const defaultUrl = CMS_CONFIG.repo === 'piarbook' ? 'piarbook.ru' : `${CMS_CONFIG.repo}.piarbook.ru`;
-    $('addressInput').value = defaultUrl;
-    
+    loadPagesList();
     try {
         let f;
         try { f = await getFile(currentFile); }
@@ -714,7 +726,6 @@ function logout() {
     if (Object.keys(pending).length && !confirm('Есть несохранённые изменения. Выйти?')) return;
     ss.del('gh_token');
     ls.del('cms_currentFile');
-    ls.del('cms_currentRepo');
     location.reload();
 }
 
@@ -911,17 +922,19 @@ async function prepareSite() {
 
 async function navigateTo(href) {
     const cleanPath = normalizePagePath(href);
-    if (!cleanPath) { showStatus('Не удалось определить страницу по ссылке: ' + href, 'error'); return; }
+    if (!cleanPath) { showStatus('Не удалось определить страницу по ссылке: ' + href, 'error'); updatePageIndicator(); return; }
     if (isAdminSelf(cleanPath)) {
         showStatus('⚠ Это файл самой админ-панели — редактировать его нельзя.', 'error');
+        updatePageIndicator();
         return;
     }
     if (cleanPath === currentFile && !viewModeUrl) { reloadPreview(); return; }
     if (Object.keys(pending).length) {
-        if (!confirm('Есть несохранённые правки. При переходе они будут потеряны. Продолжить?')) return;
+        if (!confirm('Есть несохранённые правки. При переходе они будут потеряны. Продолжить?')) { updatePageIndicator(); return; }
         pending = {}; markUnsaved();
     }
     const prevFile = currentFile;
+    const prevView = viewModeUrl;
     currentFile = cleanPath;
     saveCurrentFile();
     viewModeUrl = null;
@@ -946,22 +959,30 @@ async function navigateTo(href) {
                 showStatus('✓ Страница ' + cleanPath + ' готова к редактированию!', 'success');
             } else {
                 currentFile = prevFile;
+                viewModeUrl = prevView;
                 saveCurrentFile();
                 updatePageIndicator();
             }
         }
     } catch (e) {
         const i = interpretError(e.status, e.body);
-        showStatus('✗ Не удалось открыть ' + cleanPath + ': ' + i.title, 'error');
+        const notFound = e.status === 404;
+        showStatus('✗ Не удалось открыть ' + cleanPath + ': ' + (notFound ? 'страница не найдена в репозитории' : i.title), 'error');
         currentFile = prevFile;
+        viewModeUrl = prevView;
         saveCurrentFile();
         updatePageIndicator();
+        // Возвращаем рабочее состояние редактора, если до этого была открыта подготовленная страница
+        if (!prevView) { try { showEditor(); } catch {} }
     }
 }
 
 function openExternalInIframe(url) {
     viewModeUrl = url;
     updatePageIndicator();
+    $('setupScreen').classList.remove('active');
+    $('iframeWrapper').style.display = 'block';
+    $('hintBanner').style.display = 'block';
     const ifr = $('siteIframe');
     $('iframeLoader').classList.remove('hidden');
     $('loaderStatus').textContent = 'Открываю ссылку в режиме просмотра...';
@@ -1059,7 +1080,15 @@ function hookIframe() {
     d.addEventListener('keydown', ev => { if (ev.key === 'Escape') closePanel(); });
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('editPanel').classList.contains('active')) closePanel(); });
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && $('editPanel').classList.contains('active')) closePanel();
+    // Ctrl/Cmd+L — фокус на адресную строку
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l' && $('editorApp').classList.contains('active')) {
+        e.preventDefault();
+        const inp = $('addressInput');
+        inp.focus(); inp.select();
+    }
+});
 
 function syncHref(el, newValue) {
     const link = el.closest('a[href]');
@@ -1307,7 +1336,7 @@ async function cleanMarks() {
         if (!confirm('У вас есть несохранённые правки. Они будут потеряны при очистке. Продолжить?')) return;
         pending = {}; markUnsaved();
     }
-    if (!confirm('Удалить ВСЕ метки редактирования (data-edit, data-img, data-img-id) из ' + currentFile + '?\n\nПравки текстов и ручные ссылки СОХРАНЯЮТСЯ.\nПосле очистки нужно снова нажать «Подготовить страницу».\n\nПродолжить?')) return;
+    if (!confirm('Удалить ВСЕ метки редактирования (data-edit, data-img, data-img-id) из ' + currentFile + '?\n\nПравки текстов и ручные ссылки СОХРАНЯТСЯ.\nПосле очистки нужно снова нажать «Подготовить страницу».\n\nПродолжить?')) return;
     const btn = $('cleanBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Очищаю...';
@@ -1391,6 +1420,7 @@ async function openText(key, value) {
     if (targetRadio) targetRadio.checked = true;
     setTimeout(() => ta.focus(), 100);
 
+    // Состояние папки files/
     const slotNames = await listSlotFiles();
     const info = $('fileSlotInfo');
     const input = $('docFileInput');
@@ -1602,6 +1632,7 @@ async function saveAll() {
         const imagesWithData = images.filter(k => pending[k].data);
         const imagesWithLinks = images.filter(k => pending[k].linkChanged);
 
+        // 1) Сначала загружаем новые файлы в files/
         const fileUploads = texts.filter(k => pending[k].fileNew && pending[k].fileData);
         for (const k of fileUploads) {
             const p = pending[k];
@@ -1611,7 +1642,8 @@ async function saveAll() {
             } catch (e) { failed.push(k); }
         }
 
-        const htmlTexts = texts.filter(k => !failed.includes(k) && (pending[k].linkChanged || true));
+        // 2) Потом коммит HTML со ссылками на новые имена
+        const htmlTexts = texts.filter(k => !failed.includes(k));
         if (htmlTexts.length || imagesWithLinks.length) {
             const f = await getFile(currentFile);
             const doc = new DOMParser().parseFromString(f.text, 'text/html');
@@ -1639,6 +1671,7 @@ async function saveAll() {
             repoDeployId = deployId;
         }
 
+        // 3) После коммита удаляем старые файлы (заменённые и отвязанные)
         for (const k of texts) {
             if (failed.includes(k)) continue;
             const p = pending[k];
@@ -1688,8 +1721,6 @@ async function resetSite() {
     $('errorDetails').innerHTML = '';
 }
 
-$('addressBtn').addEventListener('click', handleAddressBar);
-$('addressInput').addEventListener('keydown', e => { if (e.key === 'Enter') handleAddressBar(); });
 $('checkBtn').addEventListener('click', checkToken);
 $('checkBtn2').addEventListener('click', checkToken);
 $('reloadBtn').addEventListener('click', reloadPreview);
@@ -1704,6 +1735,13 @@ $('closePanelBtn').addEventListener('click', closePanel);
 $('homeBtn').addEventListener('click', goHome);
 $('openSiteBtn').addEventListener('click', openLiveSite);
 $('deployBadge').addEventListener('click', () => verifyDeploy(repoDeployId, true));
+
+// Адресная строка
+$('addressBar').addEventListener('submit', e => { e.preventDefault(); goToAddress(); });
+$('addressInput').addEventListener('focus', e => e.target.select());
+$('addressInput').addEventListener('keydown', e => {
+    if (e.key === 'Escape') { updatePageIndicator(); e.target.blur(); }
+});
 
 window.addEventListener('beforeunload', e => { if (Object.keys(pending).length) { e.preventDefault(); e.returnValue = ''; } });
 </script>
