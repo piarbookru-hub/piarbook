@@ -30,7 +30,7 @@ const CMS_CONFIG = {
         { repo: 'med', name: '🏥 Медклиника', url: 'med.piarbook.ru' },
         { repo: 'foto', name: '📷 Фотостудия', url: 'foto.piarbook.ru' },
         { repo: 'demo-komp', name: '💻 Ремонт ПК', url: 'demo-komp.piarbook.ru' },
-        { repo: 'specteh', name: '🚜 Спецтехника', url: 'specteh.piarbook.ru' }
+        { repo: 'specteh', name: '🚜 Спецтехника', url: 'piarbookru-hub.github.io/specteh/' }
     ],
 
     // ─── Безопасность превью (ОБЯЗАТЕЛЬНО) ───
