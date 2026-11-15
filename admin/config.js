@@ -31,6 +31,7 @@ const CMS_CONFIG = {
         { repo: 'foto', name: '📷 Фотостудия', url: 'foto.piarbook.ru' },
         { repo: 'demo-komp', name: '💻 Ремонт ПК', url: 'demo-komp.piarbook.ru' },
         { repo: 'specteh', name: '🚜 Спецтехника', url: 'specteh.piarbook.ru' }
+    ],
 
     // ─── Безопасность превью (ОБЯЗАТЕЛЬНО) ───
     // false — скрипты сайта НЕ выполняются в превью (БЕЗОПАСНО, рекомендуется)
