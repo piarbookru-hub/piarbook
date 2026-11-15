@@ -44,6 +44,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .toolbar-btn.primary:hover { background: #d40007; }
 .toolbar-btn.warning { background: #8B4513; border-color: #A0522D; }
 .toolbar-btn.warning:hover { background: #A0522D; border-color: #CD853F; }
+.toolbar-btn.success { background: #1a5d3a; border-color: #2d7a55; }
+.toolbar-btn.success:hover { background: #2d7a55; border-color: #3ea876; }
 .toolbar-btn:disabled { opacity: .5; cursor: not-allowed; }
 .unsaved-badge { background: #F40009; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 11px; margin-left: 0; display: none; white-space: nowrap; }
 .unsaved-badge.show { display: inline-block; }
@@ -93,7 +95,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .log-item.error { color: #ff4444; }
 .log-item.working { color: #F40009; }
 
-/* ===== ИЗМЕНЕНО: панель поднимается до самой подсказки ===== */
 .edit-panel {
     position: fixed;
     bottom: 0;
@@ -234,6 +235,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
                 <button class="toolbar-btn" id="openSiteBtn" title="Открыть текущую страницу в новой вкладке"><i class="fas fa-external-link-alt"></i> Открыть сайт</button>
                 <button class="toolbar-btn" id="checkBtn" title="Проверить токен"><i class="fas fa-shield-alt"></i> Проверить</button>
                 <button class="toolbar-btn" id="reloadBtn" title="Обновить превью"><i class="fas fa-sync"></i> Обновить</button>
+                <button class="toolbar-btn warning" id="hidePlaceholdersBtn" title="Удалить все заглушки (placeholder-label) из текущей страницы"><i class="fas fa-eye-slash"></i> Скрыть заглушки</button>
+                <button class="toolbar-btn success" id="showPlaceholdersBtn" title="Добавить стандартные заглушки ко всем картинкам"><i class="fas fa-eye"></i> Поставить заглушки</button>
                 <button class="toolbar-btn warning" id="cleanBtn" title="Удалить все метки data-edit и data-img из текущей страницы"><i class="fas fa-broom"></i> Очистить метки</button>
                 <button class="toolbar-btn" id="resetBtn" title="Подготовить текущую страницу заново"><i class="fas fa-redo"></i> Переподготовить</button>
                 <button class="toolbar-btn" id="logoutBtn" title="Выйти" aria-label="Выйти"><i class="fas fa-sign-out-alt"></i></button>
@@ -385,8 +388,8 @@ function isAdminSelf(file) {
 
 function resolveRepoPath(src) {
     try {
-        const dirUrl = new URL(encPath(currentFile), 'https://repo.local/');
-        const u = new URL(src, dirUrl);
+        const dirURL = new URL(encPath(currentFile), 'https://repo.local/');
+        const u = new URL(src, dirURL);
         let p = decodeURIComponent(u.pathname);
         if (src.startsWith('/') && siteBasePath !== '/' && p.startsWith(siteBasePath)) p = p.slice(siteBasePath.length);
         p = p.replace(/^\/+/, '');
@@ -1295,6 +1298,129 @@ async function cleanMarks() {
     }
 }
 
+// ===== НОВАЯ ФУНКЦИЯ: СКРЫТЬ ЗАГЛУШКИ =====
+async function hidePlaceholders() {
+    if (Object.keys(pending).length > 0) {
+        if (!confirm('У вас есть несохранённые правки. Они будут потеряны. Продолжить?')) return;
+        pending = {}; markUnsaved();
+    }
+    if (!confirm('Удалить ВСЕ заглушки (placeholder-label) из ' + currentFile + '?\n\nЗаглушки исчезнут физически. Чтобы вернуть — нажмите «Поставить заглушки».\n\nПродолжить?')) return;
+    const btn = $('hidePlaceholdersBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Скрываю...';
+    try {
+        showStatus('Загружаю ' + currentFile + '...', 'info');
+        const f = await getFile(currentFile);
+        const doc = new DOMParser().parseFromString(f.text, 'text/html');
+        const placeholders = doc.querySelectorAll('.placeholder-label');
+        if (placeholders.length === 0) {
+            showStatus('Заглушек в файле нет — скрывать нечего', 'info');
+            return;
+        }
+        placeholders.forEach(ph => ph.parentNode.removeChild(ph));
+        doc.body.normalize();
+        const newHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+        const deployId = newDeployId();
+        const stamped = stampDeployId(newHtml, deployId);
+        showStatus(`Сохраняю (удалено ${placeholders.length} заглушек)...`, 'info');
+        await putFile(currentFile, b64e(stamped), f.sha, `Скрытие заглушек в ${currentFile}`);
+        repoDeployId = deployId;
+        showStatus(`✓ Удалено ${placeholders.length} заглушек из ${currentFile}`, 'success');
+        setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
+        setTimeout(() => { loadSite(true); verifyDeploy(repoDeployId, false); }, 500);
+    } catch (e) {
+        const i = interpretError(e.status, e.body);
+        showStatus(`✗ Ошибка: ${i.title}`, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Скрыть заглушки';
+    }
+}
+
+// ===== НОВАЯ ФУНКЦИЯ: ПОСТАВИТЬ ЗАГЛУШКИ =====
+async function showPlaceholders() {
+    if (Object.keys(pending).length > 0) {
+        if (!confirm('У вас есть несохранённые правки. Они будут потеряны. Продолжить?')) return;
+        pending = {}; markUnsaved();
+    }
+    if (!confirm('Добавить стандартные заглушки ко всем картинкам (data-img) в ' + currentFile + '?\n\nВНИМАНИЕ: если вы ранее редактировали текст заглушек — он будет заменён на стандартный.\n\nПродолжить?')) return;
+    const btn = $('showPlaceholdersBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Создаю...';
+    try {
+        showStatus('Загружаю ' + currentFile + '...', 'info');
+        const f = await getFile(currentFile);
+        const doc = new DOMParser().parseFromString(f.text, 'text/html');
+        const imgHolders = doc.querySelectorAll('[data-img]');
+        let added = 0;
+        let phCounter = 0;
+
+        // Находим максимальный существующий номер ph_img_N, чтобы не пересекаться
+        doc.querySelectorAll('[data-edit^="ph_img_"], [data-edit^="ph_txt_"]').forEach(el => {
+            const m = el.getAttribute('data-edit').match(/^ph_(?:img|txt)_(\d+)$/);
+            if (m) phCounter = Math.max(phCounter, parseInt(m[1], 10));
+        });
+
+        imgHolders.forEach(holder => {
+            // Если заглушка уже есть — пропускаем
+            if (holder.querySelector('.placeholder-label')) return;
+
+            const imgPath = holder.getAttribute('data-img') || '';
+            const fileName = imgPath.split('/').pop() || 'image.jpg';
+
+            // Создаём заглушку
+            const ph = doc.createElement('div');
+            ph.className = 'placeholder-label';
+
+            const strong = doc.createElement('strong');
+            const spanImg = doc.createElement('span');
+            spanImg.setAttribute('data-edit', `ph_img_${++phCounter}`);
+            spanImg.textContent = fileName;
+            strong.appendChild(spanImg);
+
+            const spanTxt = doc.createElement('span');
+            const innerSpan = doc.createElement('span');
+            innerSpan.setAttribute('data-edit', `ph_txt_${++phCounter}`);
+            innerSpan.textContent = 'Скриншот сайта';
+            spanTxt.appendChild(innerSpan);
+
+            ph.appendChild(strong);
+            ph.appendChild(spanTxt);
+
+            // Вставляем после <img>, если он есть
+            const img = holder.querySelector('img');
+            if (img && img.nextSibling) {
+                holder.insertBefore(ph, img.nextSibling);
+            } else {
+                holder.appendChild(ph);
+            }
+            added++;
+        });
+
+        if (added === 0) {
+            showStatus('Все заглушки уже на месте — создавать нечего', 'info');
+            return;
+        }
+
+        doc.body.normalize();
+        const newHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+        const deployId = newDeployId();
+        const stamped = stampDeployId(newHtml, deployId);
+        showStatus(`Сохраняю (добавлено ${added} заглушек)...`, 'info');
+        await putFile(currentFile, b64e(stamped), f.sha, `Добавление заглушек в ${currentFile}`);
+        repoDeployId = deployId;
+        showStatus(`✓ Добавлено ${added} заглушек в ${currentFile}`, 'success');
+        setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
+        setTimeout(() => { loadSite(true); verifyDeploy(repoDeployId, false); }, 500);
+    } catch (e) {
+        const i = interpretError(e.status, e.body);
+        showStatus(`✗ Ошибка: ${i.title}`, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-eye"></i> Поставить заглушки';
+    }
+}
+
 function openPanel(title, key) {
     lastFocus = document.activeElement;
     $('editTitle').textContent = title;
@@ -1651,6 +1777,8 @@ $('checkBtn').addEventListener('click', checkToken);
 $('checkBtn2').addEventListener('click', checkToken);
 $('reloadBtn').addEventListener('click', reloadPreview);
 $('cleanBtn').addEventListener('click', cleanMarks);
+$('hidePlaceholdersBtn').addEventListener('click', hidePlaceholders);
+$('showPlaceholdersBtn').addEventListener('click', showPlaceholders);
 $('resetBtn').addEventListener('click', resetSite);
 $('saveBtn').addEventListener('click', saveAll);
 $('logoutBtn').addEventListener('click', logout);
