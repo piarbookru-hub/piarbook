@@ -274,7 +274,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 <div class="edit-panel" id="editPanel" role="dialog" aria-modal="true" aria-label="Редактирование">
     <div class="edit-panel-header">
         <h3><span id="editTitle">Редактирование</span><span class="key-badge" id="editKey"></span></h3>
-        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">?</button>
+        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">✕</button>
     </div>
     <div id="editPanelContent"></div>
     <div class="edit-panel-actions">
@@ -633,7 +633,7 @@ async function fillReposDropdown() {
         const left = document.createElement('div');
         const nameDiv = document.createElement('div');
         nameDiv.className = 'repo-name';
-        nameDiv.textContent = (r.private ? '?? ' : '?? ') + r.owner + '/' + r.name;
+        nameDiv.textContent = (r.private ? '🔒 ' : '🌐 ') + r.owner + '/' + r.name;
         const metaDiv = document.createElement('div');
         metaDiv.className = 'repo-meta';
         metaDiv.textContent = r.description ? r.description.slice(0, 60) : '—';
@@ -653,8 +653,8 @@ async function fillReposDropdown() {
             queueReadiness({
                 owner: r.owner, repo: r.name, branch: isHome ? CMS_CONFIG.branch : r.branch,
                 cb: st => {
-                    if (st === 'ready') { status.className = 'repo-ready'; status.textContent = '? готов'; }
-                    else if (st === 'needs-prepare') { status.className = 'repo-notready'; status.textContent = '? подготовить'; }
+                    if (st === 'ready') { status.className = 'repo-ready'; status.textContent = '✓ готов'; }
+                    else if (st === 'needs-prepare') { status.className = 'repo-notready'; status.textContent = '⚠ подготовить'; }
                     else if (st === 'empty') { status.className = 'repo-notready'; status.textContent = '— нет index.html'; }
                     else { status.textContent = '?'; }
                 }
@@ -762,7 +762,7 @@ async function verifyDeploy(expectedId, singleCheck) {
             if (gen !== deployPollGen) return;
             if (live2 === expectedId) {
                 setDeployBadge('live', '<i class="fas fa-check-circle"></i> Сайт обновлён');
-                showStatus('? GitHub Pages задеплоил изменения — сайт обновлён!', 'success');
+                showStatus('✓ GitHub Pages задеплоил изменения — сайт обновлён!', 'success');
                 return;
             }
         }
@@ -916,7 +916,7 @@ async function checkToken() {
         const i = interpretError(e.status, e.body);
         box.innerHTML = `<div class="token-info"><span class="label"><i class="fas fa-times-circle" style="color: #ff4444;"></i> Ошибка:</span> ${esc(e.message)}</div>`;
         showErrorDetails(i.title, e.status || 'сеть', e.body || e.message, i.fix);
-        showStatus('? ' + i.title, 'error');
+        showStatus('✗ ' + i.title, 'error');
         return false;
     }
 }
@@ -956,7 +956,7 @@ async function enterApp() {
         try { f = await getFile(currentFile); }
         catch (e) {
             if (e.status === 404 && currentFile !== 'index.html') {
-                showStatus(`? Файл "${currentFile}" не найден — переключаемся на index.html`, 'info');
+                showStatus(`⚠ Файл "${currentFile}" не найден — переключаемся на index.html`, 'info');
                 currentFile = 'index.html'; saveCurrentRepoState(); updatePageIndicator();
                 f = await getFile(currentFile);
             } else throw e;
@@ -1124,7 +1124,7 @@ async function prepareCurrentFile(logContainer = null) {
         if (logContainer) {
             const div = document.createElement('div');
             div.className = 'log-item ' + type;
-            div.textContent = (type === 'done' ? '? ' : type === 'error' ? '? ' : '> ') + msg;
+            div.textContent = (type === 'done' ? '✓ ' : type === 'error' ? '✗ ' : '> ') + msg;
             logContainer.appendChild(div);
             logContainer.scrollTop = logContainer.scrollHeight;
         }
@@ -1160,7 +1160,7 @@ async function prepareCurrentFile(logContainer = null) {
         li('Ошибка: ' + e.message, 'error');
         const i = interpretError(e.status, e.body);
         showErrorDetails(i.title, e.status || 'ошибка', e.body || e.message, i.fix);
-        showStatus(`? ${i.title}`, 'error');
+        showStatus(`✗ ${i.title}`, 'error');
         return false;
     } finally {
         if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download"></i> Подготовить страницу'; }
@@ -1194,7 +1194,7 @@ async function navigateTo(href) {
     const cleanPath = normalizePagePath(href);
     if (!cleanPath) { showStatus('Не удалось определить страницу по ссылке: ' + href, 'error'); updatePageIndicator(); return; }
     if (isAdminSelf(cleanPath)) {
-        showStatus('? Это файл самой админ-панели — редактировать его нельзя.', 'error');
+        showStatus('⚠ Это файл самой админ-панели — редактировать его нельзя.', 'error');
         updatePageIndicator();
         return;
     }
@@ -1215,7 +1215,7 @@ async function navigateTo(href) {
         if (f.text.includes('data-edit="')) {
             repoDeployId = readDeployId(f.text);
             showEditor();
-            showStatus('? ' + cleanPath + ' открыта для редактирования', 'success');
+            showStatus('✓ ' + cleanPath + ' открыта для редактирования', 'success');
         } else {
             showSetup();
             $('errorDetails').innerHTML = '';
@@ -1225,14 +1225,14 @@ async function navigateTo(href) {
             const ok = await prepareCurrentFile(log);
             if (ok) {
                 showEditor();
-                showStatus('? Страница ' + cleanPath + ' готова к редактированию!', 'success');
+                showStatus('✓ Страница ' + cleanPath + ' готова к редактированию!', 'success');
             } else {
                 restoreAfterFailedNav(prevFile, prevView);
             }
         }
     } catch (e) {
         const i = interpretError(e.status, e.body);
-        showStatus('? Не удалось открыть ' + cleanPath + ': ' + (e.status === 404 ? 'страница не найдена в репозитории' : i.title), 'error');
+        showStatus('✗ Не удалось открыть ' + cleanPath + ': ' + (e.status === 404 ? 'страница не найдена в репозитории' : i.title), 'error');
         restoreAfterFailedNav(prevFile, prevView);
     }
 }
@@ -1618,11 +1618,11 @@ async function cleanMarks() {
         showStatus('Сохраняю очищенный файл...', 'info');
         await putFile(currentFile, b64e(stamped), f.sha, `Очистка меток редактирования в ${currentFile}`);
         repoDeployId = deployId;
-        showStatus(`? Очищено: ${result.removedEdit} text-меток и ${result.removedImg} img-меток.`, 'success');
+        showStatus(`✓ Очищено: ${result.removedEdit} text-меток и ${result.removedImg} img-меток.`, 'success');
         setTimeout(() => { showSetup(); $('setupTitle').textContent = 'Страница очищена — готова к подготовке'; }, 1500);
     } catch (e) {
         const i = interpretError(e.status, e.body);
-        showStatus(`? Ошибка: ${i.title}`, 'error');
+        showStatus(`✗ Ошибка: ${i.title}`, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-broom"></i> Очистить метки';
@@ -1656,12 +1656,12 @@ async function hidePlaceholders() {
         showStatus(`Сохраняю (удалено ${placeholders.length} заглушек)...`, 'info');
         await putFile(currentFile, b64e(stamped), f.sha, `Скрытие заглушек в ${currentFile}`);
         repoDeployId = deployId;
-        showStatus(`? Удалено ${placeholders.length} заглушек из ${currentFile}`, 'success');
+        showStatus(`✓ Удалено ${placeholders.length} заглушек из ${currentFile}`, 'success');
         setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
         setTimeout(() => { loadSite(true); verifyDeploy(repoDeployId, false); }, 500);
     } catch (e) {
         const i = interpretError(e.status, e.body);
-        showStatus(`? Ошибка: ${i.title}`, 'error');
+        showStatus(`✗ Ошибка: ${i.title}`, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-eye-slash"></i> Скрыть заглушки';
@@ -1732,12 +1732,12 @@ async function showPlaceholders() {
         showStatus(`Сохраняю (добавлено ${added} заглушек)...`, 'info');
         await putFile(currentFile, b64e(stamped), f.sha, `Добавление заглушек в ${currentFile}`);
         repoDeployId = deployId;
-        showStatus(`? Добавлено ${added} заглушек в ${currentFile}`, 'success');
+        showStatus(`✓ Добавлено ${added} заглушек в ${currentFile}`, 'success');
         setDeployBadge('pending', '<i class="fas fa-spinner fa-spin"></i> Деплой...');
         setTimeout(() => { loadSite(true); verifyDeploy(repoDeployId, false); }, 500);
     } catch (e) {
         const i = interpretError(e.status, e.body);
-        showStatus(`? Ошибка: ${i.title}`, 'error');
+        showStatus(`✗ Ошибка: ${i.title}`, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-eye"></i> Поставить заглушки';
@@ -1842,7 +1842,7 @@ async function openText(key, value) {
             panelFileOld = linkData.fileName || null;
             sessionFileNames.push(newName);
             $('editLink').value = FILES_FOLDER + '/' + newName;
-            $('filePreview').innerHTML = `<div style="color: #00cc66; font-size: 13px;"><i class="fas fa-check-circle"></i> Файл: <strong>${esc(file.name)}</strong> (${(file.size / 1024).toFixed(0)} КБ) > будет записан как <strong>${FILES_FOLDER}/${esc(newName)}</strong>${panelFileOld ? ', старый ' + esc(panelFileOld) + ' удалится' : ''}</div>`;
+            $('filePreview').innerHTML = `<div style="color: #00cc66; font-size: 13px;"><i class="fas fa-check-circle"></i> Файл: <strong>${esc(file.name)}</strong> (${(file.size / 1024).toFixed(0)} КБ) → будет записан как <strong>${FILES_FOLDER}/${esc(newName)}</strong>${panelFileOld ? ', старый ' + esc(panelFileOld) + ' удалится' : ''}</div>`;
         };
         rd.readAsDataURL(file);
     });
@@ -2082,7 +2082,7 @@ async function saveAll() {
         }
     } catch (e) {
         const i = interpretError(e.status, e.body);
-        showStatus(`? ${i.title}. ${i.fix}`, 'error');
+        showStatus(`✗ ${i.title}. ${i.fix}`, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Сохранить в GitHub';
