@@ -57,7 +57,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .deploy-badge.error { color: #ff4444; border-color: rgba(255, 68, 68, .45); background: rgba(255, 68, 68, .08); }
 .deploy-badge.unknown { color: #888; }
 
-/* ===== Адресная строка ===== */
 .address-row { flex-wrap: nowrap; }
 .address-bar { display: flex; align-items: center; flex: 1; min-width: 0; background: #0f0f0f; border: 1px solid #333; border-radius: 8px; transition: border-color .2s; }
 .address-bar:focus-within { border-color: #F40009; }
@@ -71,7 +70,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .address-go { background: transparent; border: none; border-left: 1px solid #333; color: #fff; padding: 0 14px; align-self: stretch; cursor: pointer; border-radius: 0 8px 8px 0; font-size: 13px; }
 .address-go:hover { background: #F40009; }
 
-/* ===== Кнопка и выпадающий список репозиториев ===== */
 .repos-wrap { position: relative; flex-shrink: 0; }
 .repos-btn { background: #2a2a2a; border: 1px solid #333; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: all .2s; }
 .repos-btn:hover { border-color: #F40009; }
@@ -86,11 +84,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .repos-dropdown-item .repo-ready { color: #00cc66; font-size: 11px; white-space: nowrap; }
 .repos-dropdown-item .repo-notready { color: #ff9900; font-size: 11px; white-space: nowrap; }
 .repos-dropdown-item.active { background: rgba(244,0,9,.1); }
-
-.page-indicator { display: inline-flex; align-items: center; gap: 6px; background: #0f0f0f; border: 1px solid #333; padding: 7px 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; color: #c9a961; margin-left: 0; max-width: 320px; overflow: hidden; }
-.page-indicator i { color: #F40009; font-size: 11px; flex-shrink: 0; }
-#currentPageIndicator { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.page-indicator.viewmode { color: #888; border-color: #555; }
 
 .iframe-wrapper { flex: 1; position: relative; background: #fff; overflow: hidden; }
 .site-iframe { width: 100%; height: 100%; border: none; display: block; }
@@ -125,7 +118,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .log-item.error { color: #ff4444; }
 .log-item.working { color: #F40009; }
 
-/* ===== Панель редактирования: кнопки зафиксированы внизу ===== */
 .edit-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; border-top: 2px solid #F40009; padding: 20px 20px 0 20px; transform: translateY(100%); visibility: hidden; transition: transform .3s, visibility .3s; z-index: 1000; box-shadow: 0 -10px 40px rgba(0, 0, 0, .5); max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); overflow: hidden; display: flex; flex-direction: column; }
 .edit-panel.active { transform: translateY(0); visibility: visible; }
 .edit-panel-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; padding-bottom: 12px; }
@@ -272,7 +264,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
             <div class="loader-text">Загрузка страницы...</div>
             <div class="loader-status" id="loaderStatus">Инициализация</div>
         </div>
-        <iframe id="siteIframe" class="site-iframe" title="Превью сайта" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+        <iframe id="siteIframe" class="site-iframe" title="Превью сайта" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
     </div>
 </div>
 
@@ -301,7 +293,8 @@ if (typeof CMS_CONFIG === 'undefined') {
 const LINK_COLORS = { inherit: null, brown: '#8B4513', lightbrown: '#CD853F' };
 const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 
-const PREVIEW_SANDBOX = 'allow-same-origin allow-popups allow-popups-to-escape-sandbox';
+// ===== ЗАЩИТА ОТКЛЮЧЕНА: скрипты сайта выполняются в превью =====
+const PREVIEW_SANDBOX = 'allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
 const VIEW_SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
 
 const FILES_FOLDER = 'files';
@@ -336,15 +329,13 @@ let deployPollGen = 0;
 let panelFileData = null, panelFileNew = null, panelFileOld = null;
 let sessionFileNames = [];
 
-// ===== ПЕРЕМЕННЫЙ РЕПОЗИТОРИЙ (для переключения между сайтами) =====
 let currentOwner = ls.get('cms_currentOwner') || CMS_CONFIG.owner;
 let currentRepo = ls.get('cms_currentRepo') || CMS_CONFIG.repo;
 let API = `https://api.github.com/repos/${currentOwner}/${currentRepo}`;
 
-// Кэш списка репозиториев
 let reposCache = null;
 let reposCacheTime = 0;
-const REPOS_CACHE_TTL = 15 * 60 * 1000; // 15 минут
+const REPOS_CACHE_TTL = 15 * 60 * 1000;
 
 function updateAPI() {
     API = `https://api.github.com/repos/${currentOwner}/${currentRepo}`;
@@ -419,7 +410,6 @@ function resolveRepoPath(src) {
     } catch { return null; }
 }
 
-// ===== Адресная строка =====
 function updatePageIndicator() {
     const input = $('addressInput');
     const bar = $('addressBar');
@@ -443,32 +433,27 @@ function updatePageIndicator() {
     }
 }
 
-// Парсинг ввода: about.html | owner/repo | owner/repo/page.html | github.com/owner/repo
 function parseAddressInput(raw) {
     let v = String(raw || '').trim();
     if (!v) return { kind: 'internal', href: 'index.html' };
     if (/^(javascript:|data:|vbscript:|file:|tel:|mailto:)/i.test(v)) return { kind: 'invalid' };
 
-    // github.com/owner/repo[/blob|tree/ветка/файл]
     const ghMatch = v.match(/^https?:\/\/(?:www\.)?github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)(?:\/(?:blob|tree)\/[^/]+\/(.+))?/i);
     if (ghMatch) {
         return { kind: 'switch-repo', owner: ghMatch[1], repo: ghMatch[2], file: ghMatch[3] || 'index.html' };
     }
 
-    // owner/repo[/страница]
     const ownerRepoMatch = v.match(/^([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)(?:\/(.+))?$/);
     if (ownerRepoMatch && !/\.html?$/i.test(ownerRepoMatch[2])) {
         return { kind: 'switch-repo', owner: ownerRepoMatch[1], repo: ownerRepoMatch[2], file: ownerRepoMatch[3] || 'index.html' };
     }
 
-    // Полный http(s) URL
     if (/^(https?:)?\/\//i.test(v)) {
         if (isInternalPage(v)) return { kind: 'internal', href: v };
         const abs = safeAbs(v.startsWith('//') ? 'https:' + v : v);
         return abs && /^https?:/i.test(abs) ? { kind: 'external', url: abs } : { kind: 'invalid' };
     }
 
-    // Домен без схемы
     if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(\/|$)/i.test(v) && !/\.html?($|[?#])/i.test(v.split('/')[0])) {
         const first = v.split('/')[0];
         if (/\.[a-z]{2,}$/i.test(first) && !/\.(html?|php|css|js|png|jpe?g|webp|gif|svg|pdf)$/i.test(first)) {
@@ -477,7 +462,6 @@ function parseAddressInput(raw) {
         }
     }
 
-    // Путь относительно корня
     v = v.split(/[?#]/)[0].replace(/^\/+/, '');
     const base = siteBasePathNoSlash().replace(/^\/+/, '');
     if (base && (v === base || v.startsWith(base + '/'))) v = v.slice(base.length).replace(/^\/+/, '');
@@ -510,7 +494,6 @@ async function goToAddress() {
     openExternalInIframe(parsed.url);
 }
 
-// ===== Список репозиториев аккаунта =====
 async function fetchUserRepos(force = false) {
     if (!force && reposCache && (Date.now() - reposCacheTime < REPOS_CACHE_TTL)) return reposCache;
     try {
@@ -544,7 +527,6 @@ async function fetchUserRepos(force = false) {
     }
 }
 
-// Ленивая проверка готовности репозитория (вызывается при раскрытии списка)
 async function checkRepoReadiness(owner, repo) {
     try {
         const url = `https://api.github.com/repos/${owner}/${repo}/contents/index.html?ref=${encodeURIComponent(CMS_CONFIG.branch)}`;
@@ -602,7 +584,6 @@ async function fillReposDropdown() {
         item.appendChild(status);
         dropdown.appendChild(item);
 
-        // Ленивая проверка статуса
         checkRepoReadiness(r.owner, r.name).then(st => {
             if (st === 'ready') { status.className = 'repo-ready'; status.textContent = '✓ готов'; }
             else if (st === 'needs-prepare') { status.className = 'repo-notready'; status.textContent = '⚠ подготовить'; }
@@ -619,7 +600,6 @@ async function fillReposDropdown() {
     }
 }
 
-// ===== Переключение репозитория =====
 async function switchRepo(owner, repo, file = 'index.html') {
     if (owner === currentOwner && repo === currentRepo && file === currentFile) {
         showStatus('Этот репозиторий уже открыт', 'info');
@@ -640,7 +620,6 @@ async function switchRepo(owner, repo, file = 'index.html') {
     updateRepoHeader();
     showStatus(`Переключаюсь на ${owner}/${repo}...`, 'info');
 
-    // Полный перезапуск редактора
     $('setupScreen').classList.remove('active');
     $('iframeWrapper').style.display = 'none';
     $('hintBanner').style.display = 'none';
@@ -953,15 +932,10 @@ function showEditor() {
     loadSite();
 }
 
+// ===== ЗАЩИТА УБРАНА: скрипты и обработчики НЕ вырезаются =====
 function buildPreviewHtml(text) {
     const d = new DOMParser().parseFromString(text, 'text/html');
-    d.querySelectorAll('script, noscript, meta[http-equiv="refresh" i]').forEach(n => n.remove());
-    d.querySelectorAll('*').forEach(el => {
-        Array.from(el.attributes).forEach(a => { if (/^on/i.test(a.name)) el.removeAttribute(a.name); });
-    });
-    d.querySelectorAll('a[href]').forEach(a => {
-        if (/^\s*javascript:/i.test(a.getAttribute('href'))) a.removeAttribute('href');
-    });
+    // Удаляем только <base>, чтобы подставить свой
     d.querySelectorAll('base').forEach(b => b.remove());
     const base = d.createElement('base');
     base.setAttribute('href', pageUrl().href);
@@ -1572,7 +1546,6 @@ async function cleanMarks() {
     }
 }
 
-// ===== Скрыть / Поставить заглушки =====
 async function hidePlaceholders() {
     if (Object.keys(pending).length > 0) {
         if (!confirm('У вас есть несохранённые правки. Они будут потеряны. Продолжить?')) return;
@@ -1921,6 +1894,8 @@ function applyEdit() {
                         const pic = img.closest('picture');
                         if (pic) pic.querySelectorAll('source').forEach(s => s.removeAttribute('srcset'));
                         img.src = pendingImg;
+                        img.style.opacity = '1';
+                        img.style.display = '';
                     }
                 }
                 if (linkChanged) applyLinkToImage(d, target, imgLinkUrl, imgLinkTarget);
@@ -2042,7 +2017,6 @@ async function resetSite() {
     $('errorDetails').innerHTML = '';
 }
 
-// ===== ОБРАБОТЧИКИ =====
 $('checkBtn').addEventListener('click', checkToken);
 $('checkBtn2').addEventListener('click', checkToken);
 $('reloadBtn').addEventListener('click', reloadPreview);
@@ -2060,7 +2034,6 @@ $('homeBtn').addEventListener('click', goHome);
 $('openSiteBtn').addEventListener('click', openLiveSite);
 $('deployBadge').addEventListener('click', () => verifyDeploy(repoDeployId, true));
 
-// Кнопка «Мои репозитории»
 $('reposBtn').addEventListener('click', (e) => {
     e.stopPropagation();
     const dropdown = $('reposDropdown');
@@ -2071,7 +2044,6 @@ $('reposBtn').addEventListener('click', (e) => {
     }
 });
 
-// Закрытие выпадающего списка при клике вне его
 document.addEventListener('click', (e) => {
     const dropdown = $('reposDropdown');
     const wrap = document.querySelector('.repos-wrap');
@@ -2080,7 +2052,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Адресная строка
 $('addressBar').addEventListener('submit', e => { e.preventDefault(); goToAddress(); });
 $('addressInput').addEventListener('focus', e => e.target.select());
 $('addressInput').addEventListener('keydown', e => {
