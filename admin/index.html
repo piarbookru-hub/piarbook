@@ -93,15 +93,61 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .log-item.error { color: #ff4444; }
 .log-item.working { color: #F40009; }
 
-.edit-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; border-top: 2px solid #F40009; padding: 20px; transform: translateY(100%); visibility: hidden; transition: transform .3s, visibility .3s; z-index: 1000; box-shadow: 0 -10px 40px rgba(0, 0, 0, .5); max-height: 70vh; overflow-y: auto; }
+/* ===== ИЗМЕНЕНО: панель редактирования стала flex-контейнером ===== */
+.edit-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border-top: 2px solid #F40009;
+    padding: 20px 20px 0 20px;
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform .3s, visibility .3s;
+    z-index: 1000;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, .5);
+    max-height: 70vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
 .edit-panel.active { transform: translateY(0); visibility: visible; }
-.edit-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+
+.edit-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    padding-bottom: 12px;
+}
 .edit-panel-header h3 { font-size: 14px; font-weight: 600; }
 .key-badge { background: #2a2a2a; color: #888; padding: 2px 8px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 11px; margin-left: 8px; }
 .edit-panel-close { background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; padding: 4px 8px; }
 .edit-panel-close:hover { color: #fff; }
+
+/* Контент прокручивается, если не влезает */
+#editPanelContent {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-right: 4px;
+    margin-bottom: 12px;
+}
+
 .edit-panel textarea { width: 100%; min-height: 90px; padding: 12px; background: #0f0f0f; border: 1px solid #333; border-radius: 8px; color: #fff; font: inherit; font-size: 14px; resize: vertical; }
-.edit-panel-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
+
+/* ===== ИЗМЕНЕНО: кнопки зафиксированы внизу ===== */
+.edit-panel-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    padding: 12px 0 20px 0;
+    margin: 0;
+    border-top: 1px solid #2a2a2a;
+    background: #1a1a1a;
+}
 
 .link-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
 .link-section label.field-label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 500; }
@@ -229,7 +275,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 <div class="edit-panel" id="editPanel" role="dialog" aria-modal="true" aria-label="Редактирование">
     <div class="edit-panel-header">
         <h3><span id="editTitle">Редактирование</span><span class="key-badge" id="editKey"></span></h3>
-        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">?</button>
+        <button class="edit-panel-close" id="closePanelBtn" aria-label="Закрыть">×</button>
     </div>
     <div id="editPanelContent"></div>
     <div class="edit-panel-actions">
