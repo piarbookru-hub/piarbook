@@ -19,6 +19,19 @@ const CMS_CONFIG = {
     // Название проекта — отображается в шапке админки.
     projectName: 'piarbook',
 
+    // Список всех сайтов для переключения
+    repositories: [
+        { repo: 'piarbook', name: '📚 Портфолио', url: 'piarbook.ru' },
+        { repo: 'avtomaster', name: '🔧 Автомaster', url: 'avtomaster.piarbook.ru' },
+        { repo: 'salon', name: '💅 Салон красоты', url: 'salon.piarbook.ru' },
+        { repo: 'garag', name: '🚗 Ремонт в гараже', url: 'garag.piarbook.ru' },
+        { repo: 'law', name: '⚖️ Юрист', url: 'law.piarbook.ru' },
+        { repo: 'den', name: '🦷 Стоматология', url: 'den.piarbook.ru' },
+        { repo: 'med', name: '🏥 Медклиника', url: 'med.piarbook.ru' },
+        { repo: 'foto', name: '📷 Фотостудия', url: 'foto.piarbook.ru' },
+        { repo: 'demo-komp', name: '💻 Ремонт ПК', url: 'demo-komp.piarbook.ru' },
+        { repo: 'specteh', name: '🚜 Спецтехника', url: 'specteh.piarbook.ru' }
+
     // ─── Безопасность превью (ОБЯЗАТЕЛЬНО) ───
     // false — скрипты сайта НЕ выполняются в превью (БЕЗОПАСНО, рекомендуется)
     // true  — скрипты выполняются (метрика, виджеты работают, но токен может быть украден)
