@@ -57,6 +57,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .deploy-badge.error { color: #ff4444; border-color: rgba(255, 68, 68, .45); background: rgba(255, 68, 68, .08); }
 .deploy-badge.unknown { color: #888; }
 
+/* Адресная строка */
 .address-row { flex-wrap: nowrap; }
 .address-bar { display: flex; align-items: center; flex: 1; min-width: 0; background: #0f0f0f; border: 1px solid #333; border-radius: 8px; transition: border-color .2s; }
 .address-bar:focus-within { border-color: #F40009; }
@@ -70,6 +71,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .address-go { background: transparent; border: none; border-left: 1px solid #333; color: #fff; padding: 0 14px; align-self: stretch; cursor: pointer; border-radius: 0 8px 8px 0; font-size: 13px; }
 .address-go:hover { background: #F40009; }
 
+/* Список репозиториев */
 .repos-wrap { position: relative; flex-shrink: 0; }
 .repos-btn { background: #2a2a2a; border: 1px solid #333; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: all .2s; }
 .repos-btn:hover { border-color: #F40009; }
@@ -98,7 +100,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .setup-screen.active { display: flex; }
 .setup-card { background: #1a1a1a; border-radius: 16px; padding: 40px; max-width: 600px; width: 100%; border: 1px solid #2a2a2a; text-align: center; margin: auto; }
 .setup-card > .setup-icon { font-size: 48px; color: #F40009; margin-bottom: 16px; }
-.setup-card h2 { font-size: 20px; margin-bottom: 12px; }
+.setup-card h2 { font-size: 20px; margin-bottom: 12px; word-break: break-word; }
 .setup-card p { color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
 .setup-card strong { color: #fff; }
 
@@ -118,6 +120,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
 .log-item.error { color: #ff4444; }
 .log-item.working { color: #F40009; }
 
+/* Панель редактирования: кнопки зафиксированы внизу */
 .edit-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; border-top: 2px solid #F40009; padding: 20px 20px 0 20px; transform: translateY(100%); visibility: hidden; transition: transform .3s, visibility .3s; z-index: 1000; box-shadow: 0 -10px 40px rgba(0, 0, 0, .5); max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); overflow: hidden; display: flex; flex-direction: column; }
 .edit-panel.active { transform: translateY(0); visibility: visible; }
 .edit-panel-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; padding-bottom: 12px; }
@@ -239,7 +242,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #F40009; outline-offs
     </div>
 
     <div class="hint-banner" id="hintBanner">
-        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по ссылке — открыть страницу в админке. <strong>Ctrl+клик</strong> — новая вкладка. <strong>Ctrl+L</strong> — фокус на адресную строку. <strong>Esc</strong> — закрыть панель.
+        <i class="fas fa-lightbulb"></i> Клик по <strong>тексту/фото</strong> — редактирование. <strong>Alt+клик</strong> по ссылке — открыть страницу в админке. <strong>Ctrl+клик</strong> — новая вкладка. <strong>Ctrl+L</strong> — адресная строка. <strong>Esc</strong> — закрыть панель.
     </div>
 
     <div class="setup-screen" id="setupScreen">
@@ -293,8 +296,10 @@ if (typeof CMS_CONFIG === 'undefined') {
 const LINK_COLORS = { inherit: null, brown: '#8B4513', lightbrown: '#CD853F' };
 const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 
-// ===== ЗАЩИТА ОТКЛЮЧЕНА: скрипты сайта выполняются в превью =====
+// Превью выполняет скрипты сайта (слайдеры, галереи, ленивая загрузка).
+// allow-same-origin нужен, чтобы редактор мог кликать по элементам внутри превью.
 const PREVIEW_SANDBOX = 'allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
+// Чужие сайты (адресная строка) — без allow-same-origin, они изолированы от админки.
 const VIEW_SANDBOX = 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox';
 
 const FILES_FOLDER = 'files';
@@ -329,17 +334,17 @@ let deployPollGen = 0;
 let panelFileData = null, panelFileNew = null, panelFileOld = null;
 let sessionFileNames = [];
 
+// ===== Текущий репозиторий (переключается между сайтами) =====
 let currentOwner = ls.get('cms_currentOwner') || CMS_CONFIG.owner;
 let currentRepo = ls.get('cms_currentRepo') || CMS_CONFIG.repo;
+let currentBranch = CMS_CONFIG.branch;
 let API = `https://api.github.com/repos/${currentOwner}/${currentRepo}`;
 
 let reposCache = null;
 let reposCacheTime = 0;
 const REPOS_CACHE_TTL = 15 * 60 * 1000;
 
-function updateAPI() {
-    API = `https://api.github.com/repos/${currentOwner}/${currentRepo}`;
-}
+function updateAPI() { API = `https://api.github.com/repos/${currentOwner}/${currentRepo}`; }
 
 function saveCurrentRepoState() {
     ls.set('cms_currentOwner', currentOwner);
@@ -347,15 +352,23 @@ function saveCurrentRepoState() {
     ls.set('cms_currentFile', currentFile);
 }
 
-function updateRepoHeader() {
-    $('repoNameHeader').textContent = `· ${currentOwner}/${currentRepo}`;
-}
+function updateRepoHeader() { $('repoNameHeader').textContent = `· ${currentOwner}/${currentRepo}`; }
 
 $('projectNameHeader').textContent = CMS_CONFIG.projectName || 'Редактор';
 updateRepoHeader();
 
 function saveCurrentFile() { ls.set('cms_currentFile', currentFile); }
 
+function setSiteBase(url) {
+    try {
+        const u = new URL(url);
+        const path = u.pathname.replace(/\/*$/, '/');
+        siteBaseUrl = u.origin + path;
+        siteBasePath = path;
+    } catch {}
+}
+
+// Адрес сайта «домашнего» репозитория (где лежит сама админка) определяется по URL админки
 try {
     const loc = window.location;
     const pathParts = loc.pathname.split('/').filter(Boolean);
@@ -364,14 +377,40 @@ try {
         if (lastPart.endsWith('.html')) pathParts.pop();
         const secondLast = pathParts[pathParts.length - 1];
         if (secondLast === 'admin' || secondLast === 'panel') pathParts.pop();
-        if (pathParts.length > 0) {
-            siteBaseUrl = loc.origin + '/' + pathParts.join('/') + '/';
-            siteBasePath = '/' + pathParts.join('/') + '/';
-        } else { siteBaseUrl = loc.origin + '/'; siteBasePath = '/'; }
-    } else { siteBaseUrl = loc.origin + '/'; siteBasePath = '/'; }
+    }
+    setSiteBase(loc.origin + '/' + (pathParts.length ? pathParts.join('/') + '/' : ''));
 } catch {
-    siteBaseUrl = window.location.origin + '/';
-    siteBasePath = '/';
+    setSiteBase(window.location.origin + '/');
+}
+const HOME_BASE_URL = siteBaseUrl;
+
+function isHomeRepo() {
+    return currentOwner.toLowerCase() === String(CMS_CONFIG.owner).toLowerCase() &&
+           currentRepo.toLowerCase() === String(CMS_CONFIG.repo).toLowerCase();
+}
+
+// Определяем ветку и адрес опубликованного сайта для текущего репозитория
+async function resolveRepoContext() {
+    if (isHomeRepo()) {
+        currentBranch = CMS_CONFIG.branch;
+        setSiteBase(HOME_BASE_URL);
+        return;
+    }
+    try {
+        const r = await (await gh(API)).json();
+        currentBranch = r.default_branch || CMS_CONFIG.branch;
+    } catch { currentBranch = CMS_CONFIG.branch; }
+    let url = null;
+    try {
+        const p = await (await gh(`${API}/pages`)).json();
+        if (p && p.html_url) url = p.html_url;
+    } catch {}
+    if (!url) {
+        url = currentRepo.toLowerCase() === (currentOwner + '.github.io').toLowerCase()
+            ? `https://${currentOwner}.github.io/`
+            : `https://${currentOwner}.github.io/${currentRepo}/`;
+    }
+    setSiteBase(url);
 }
 
 function siteBasePathNoSlash() { return siteBasePath.replace(/\/+$/, ''); }
@@ -395,7 +434,7 @@ function validLinkUrl(u) {
 }
 
 function isAdminSelf(file) {
-    try { return new URL(encPath(file), siteBaseUrl).pathname === window.location.pathname; }
+    try { return new URL(encPath(file), siteBaseUrl).pathname === window.location.pathname && new URL(siteBaseUrl).origin === window.location.origin; }
     catch { return false; }
 }
 
@@ -410,6 +449,7 @@ function resolveRepoPath(src) {
     } catch { return null; }
 }
 
+// ===== Адресная строка =====
 function updatePageIndicator() {
     const input = $('addressInput');
     const bar = $('addressBar');
@@ -433,19 +473,33 @@ function updatePageIndicator() {
     }
 }
 
+function normRepoFile(f) {
+    f = String(f || '').split(/[?#]/)[0].replace(/^\/+/, '');
+    try { f = decodeURIComponent(f); } catch {}
+    if (!f) return 'index.html';
+    if (f.endsWith('/')) return f + 'index.html';
+    if (!/\.[a-z0-9]+$/i.test(f.split('/').pop())) return f + '.html';
+    return f;
+}
+
+// Разбор ввода: about.html | owner/repo | owner/repo/page.html | github.com/owner/repo | полный URL
 function parseAddressInput(raw) {
     let v = String(raw || '').trim();
     if (!v) return { kind: 'internal', href: 'index.html' };
     if (/^(javascript:|data:|vbscript:|file:|tel:|mailto:)/i.test(v)) return { kind: 'invalid' };
+    if (/^(www\.)?github\.com\//i.test(v)) v = 'https://' + v;
 
-    const ghMatch = v.match(/^https?:\/\/(?:www\.)?github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)(?:\/(?:blob|tree)\/[^/]+\/(.+))?/i);
+    const ghMatch = v.match(/^https?:\/\/(?:www\.)?github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+?)(?:\.git)?(?:\/(?:blob|tree)\/[^/]+\/(.+))?\/?$/i);
     if (ghMatch) {
-        return { kind: 'switch-repo', owner: ghMatch[1], repo: ghMatch[2], file: ghMatch[3] || 'index.html' };
+        return { kind: 'switch-repo', owner: ghMatch[1], repo: ghMatch[2], file: normRepoFile(ghMatch[3]) };
     }
 
-    const ownerRepoMatch = v.match(/^([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)(?:\/(.+))?$/);
-    if (ownerRepoMatch && !/\.html?$/i.test(ownerRepoMatch[2])) {
-        return { kind: 'switch-repo', owner: ownerRepoMatch[1], repo: ownerRepoMatch[2], file: ownerRepoMatch[3] || 'index.html' };
+    // owner/repo — только если такой репозиторий есть в вашем списке (иначе это путь к странице)
+    const orMatch = v.match(/^@?([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)(?:\/(.+))?$/);
+    if (orMatch && !/^https?:/i.test(v)) {
+        const full = (orMatch[1] + '/' + orMatch[2]).toLowerCase();
+        const known = (reposCache || []).find(r => r.full_name.toLowerCase() === full);
+        if (known) return { kind: 'switch-repo', owner: known.owner, repo: known.name, file: normRepoFile(orMatch[3]) };
     }
 
     if (/^(https?:)?\/\//i.test(v)) {
@@ -454,14 +508,15 @@ function parseAddressInput(raw) {
         return abs && /^https?:/i.test(abs) ? { kind: 'external', url: abs } : { kind: 'invalid' };
     }
 
-    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(\/|$)/i.test(v) && !/\.html?($|[?#])/i.test(v.split('/')[0])) {
-        const first = v.split('/')[0];
-        if (/\.[a-z]{2,}$/i.test(first) && !/\.(html?|php|css|js|png|jpe?g|webp|gif|svg|pdf)$/i.test(first)) {
-            const abs = safeAbs('https://' + v);
-            if (abs) return isInternalPage(abs) ? { kind: 'internal', href: abs } : { kind: 'external', url: abs };
-        }
+    // Домен без схемы
+    const first = v.split('/')[0];
+    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(first) && /\.[a-z]{2,}$/i.test(first) &&
+        !/\.(html?|php|css|js|png|jpe?g|webp|gif|svg|pdf)$/i.test(first)) {
+        const abs = safeAbs('https://' + v);
+        if (abs) return isInternalPage(abs) ? { kind: 'internal', href: abs } : { kind: 'external', url: abs };
     }
 
+    // Путь относительно корня сайта
     v = v.split(/[?#]/)[0].replace(/^\/+/, '');
     const base = siteBasePathNoSlash().replace(/^\/+/, '');
     if (base && (v === base || v.startsWith(base + '/'))) v = v.slice(base.length).replace(/^\/+/, '');
@@ -474,6 +529,11 @@ function parseAddressInput(raw) {
 
 async function goToAddress() {
     const input = $('addressInput');
+    // Чтобы отличить owner/repo от пути к странице, нужен список репозиториев
+    if (!reposCache && /^@?[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+(\/|$)/.test(input.value.trim()) && !/^https?:/i.test(input.value.trim())) {
+        showStatus('Проверяю адрес...', 'info');
+        await fetchUserRepos();
+    }
     const parsed = parseAddressInput(input.value);
     if (parsed.kind === 'invalid') {
         showStatus('Введите about.html, owner/repo или github.com/owner/repo', 'error');
@@ -482,10 +542,7 @@ async function goToAddress() {
     }
     input.blur();
     if (parsed.kind === 'internal') { navigateTo(parsed.href); return; }
-    if (parsed.kind === 'switch-repo') {
-        await switchRepo(parsed.owner, parsed.repo, parsed.file);
-        return;
-    }
+    if (parsed.kind === 'switch-repo') { await switchRepo(parsed.owner, parsed.repo, parsed.file); return; }
     if (Object.keys(pending).length && !confirm('Есть несохранённые правки. При переходе они будут потеряны. Продолжить?')) {
         updatePageIndicator();
         return;
@@ -494,27 +551,26 @@ async function goToAddress() {
     openExternalInIframe(parsed.url);
 }
 
+// ===== Список репозиториев аккаунта =====
 async function fetchUserRepos(force = false) {
     if (!force && reposCache && (Date.now() - reposCacheTime < REPOS_CACHE_TTL)) return reposCache;
     try {
         const repos = [];
-        let page = 1;
-        while (true) {
+        for (let page = 1; page <= 10; page++) {
             const r = await (await gh(`https://api.github.com/user/repos?per_page=100&page=${page}&sort=updated`)).json();
             if (!Array.isArray(r) || r.length === 0) break;
             repos.push(...r);
             if (r.length < 100) break;
-            page++;
-            if (page > 10) break;
         }
         const filtered = repos
-            .filter(r => r.permissions && r.permissions.push && !r.archived && !r.fork)
+            .filter(r => r.permissions && r.permissions.push && !r.archived)
             .map(r => ({
                 owner: r.owner.login,
                 name: r.name,
                 full_name: r.full_name,
                 private: r.private,
                 updated: r.updated_at,
+                branch: r.default_branch || 'main',
                 description: r.description || ''
             }))
             .sort((a, b) => new Date(b.updated) - new Date(a.updated));
@@ -527,44 +583,52 @@ async function fetchUserRepos(force = false) {
     }
 }
 
-async function checkRepoReadiness(owner, repo) {
+// Проверка готовности репозитория (есть ли метки в index.html)
+async function checkRepoReadiness(owner, repo, branch) {
     try {
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/index.html?ref=${encodeURIComponent(CMS_CONFIG.branch)}`;
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/index.html?ref=${encodeURIComponent(branch)}`;
         const res = await fetch(url, {
-            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github.raw+json' }
         });
         if (res.status === 404) return 'empty';
         if (!res.ok) return 'error';
-        const data = await res.json();
-        let content = '';
-        if (data.encoding === 'base64' && data.content) {
-            try { content = b64d(data.content); } catch { content = atob(data.content); }
-        }
+        const content = await res.text();
         return content.includes('data-edit="') ? 'ready' : 'needs-prepare';
     } catch { return 'error'; }
+}
+
+// Очередь проверок: не больше 4 одновременно, чтобы не упереться в лимиты GitHub API
+const readinessQueue = [];
+let readinessActive = 0;
+function queueReadiness(job) { readinessQueue.push(job); pumpReadiness(); }
+function pumpReadiness() {
+    while (readinessActive < 4 && readinessQueue.length) {
+        const j = readinessQueue.shift();
+        readinessActive++;
+        checkRepoReadiness(j.owner, j.repo, j.branch).then(j.cb).catch(() => j.cb('error')).finally(() => { readinessActive--; pumpReadiness(); });
+    }
 }
 
 async function fillReposDropdown() {
     const dropdown = $('reposDropdown');
     if (!dropdown) return;
+    readinessQueue.length = 0;
     dropdown.innerHTML = '<div class="repos-dropdown-header"><i class="fas fa-spinner fa-spin"></i> Загрузка списка репозиториев...</div>';
     dropdown.classList.add('show');
 
     const repos = await fetchUserRepos();
+    if (!dropdown.classList.contains('show')) return;
     if (!repos.length) {
         dropdown.innerHTML = '<div class="repos-dropdown-header">Не найдено репозиториев с правом записи. Проверьте токен.</div>';
         return;
     }
 
-    let html = `<div class="repos-dropdown-header">Найдено: ${repos.length} репозиториев с правом записи. Клик — открыть для редактирования.</div>`;
-    dropdown.innerHTML = html;
+    dropdown.innerHTML = `<div class="repos-dropdown-header">Репозиториев с правом записи: ${repos.length}. Клик — открыть для редактирования.</div>`;
 
-    for (const r of repos) {
+    repos.forEach((r, idx) => {
         const isActive = r.owner === currentOwner && r.name === currentRepo;
         const item = document.createElement('div');
         item.className = 'repos-dropdown-item' + (isActive ? ' active' : '');
-        item.dataset.owner = r.owner;
-        item.dataset.repo = r.name;
 
         const left = document.createElement('div');
         const nameDiv = document.createElement('div');
@@ -578,36 +642,40 @@ async function fillReposDropdown() {
 
         const status = document.createElement('span');
         status.className = 'repo-meta';
-        status.textContent = '...';
+        status.textContent = idx < 40 ? '...' : '';
 
         item.appendChild(left);
         item.appendChild(status);
         dropdown.appendChild(item);
 
-        checkRepoReadiness(r.owner, r.name).then(st => {
-            if (st === 'ready') { status.className = 'repo-ready'; status.textContent = '? готов'; }
-            else if (st === 'needs-prepare') { status.className = 'repo-notready'; status.textContent = '? подготовить'; }
-            else if (st === 'empty') { status.className = 'repo-notready'; status.textContent = '— нет index.html'; }
-            else { status.textContent = '?'; }
-        });
+        if (idx < 40) {
+            const isHome = r.owner.toLowerCase() === String(CMS_CONFIG.owner).toLowerCase() && r.name.toLowerCase() === String(CMS_CONFIG.repo).toLowerCase();
+            queueReadiness({
+                owner: r.owner, repo: r.name, branch: isHome ? CMS_CONFIG.branch : r.branch,
+                cb: st => {
+                    if (st === 'ready') { status.className = 'repo-ready'; status.textContent = '? готов'; }
+                    else if (st === 'needs-prepare') { status.className = 'repo-notready'; status.textContent = '? подготовить'; }
+                    else if (st === 'empty') { status.className = 'repo-notready'; status.textContent = '— нет index.html'; }
+                    else { status.textContent = '?'; }
+                }
+            });
+        }
 
         item.addEventListener('click', async () => {
-            const owner = item.dataset.owner;
-            const repo = item.dataset.repo;
             dropdown.classList.remove('show');
-            await switchRepo(owner, repo, 'index.html');
+            await switchRepo(r.owner, r.name, 'index.html');
         });
-    }
+    });
 }
 
+// ===== Переключение репозитория =====
 async function switchRepo(owner, repo, file = 'index.html') {
-    if (owner === currentOwner && repo === currentRepo && file === currentFile) {
+    if (owner.toLowerCase() === currentOwner.toLowerCase() && repo.toLowerCase() === currentRepo.toLowerCase() && file === currentFile && !viewModeUrl) {
         showStatus('Этот репозиторий уже открыт', 'info');
         return;
     }
-
     if (Object.keys(pending).length > 0) {
-        if (!confirm('Есть несохранённые правки. При смене репозитория они будут потеряны. Продолжить?')) return;
+        if (!confirm('Есть несохранённые правки. При смене репозитория они будут потеряны. Продолжить?')) { updatePageIndicator(); return; }
         pending = {};
         markUnsaved();
     }
@@ -615,6 +683,7 @@ async function switchRepo(owner, repo, file = 'index.html') {
     currentOwner = owner;
     currentRepo = repo;
     currentFile = file;
+    viewModeUrl = null;
     updateAPI();
     saveCurrentRepoState();
     updateRepoHeader();
@@ -624,6 +693,7 @@ async function switchRepo(owner, repo, file = 'index.html') {
     $('iframeWrapper').style.display = 'none';
     $('hintBanner').style.display = 'none';
     $('errorDetails').innerHTML = '';
+    $('progressLog').style.display = 'none';
     setDeployBadge('idle', '');
 
     await enterApp();
@@ -632,8 +702,9 @@ async function switchRepo(owner, repo, file = 'index.html') {
 async function loadPagesList() {
     const dl = $('pagesList');
     if (!dl) return;
+    dl.innerHTML = '';
     try {
-        const r = await (await gh(`${API}/git/trees/${encodeURIComponent(CMS_CONFIG.branch)}?recursive=1`)).json();
+        const r = await (await gh(`${API}/git/trees/${encodeURIComponent(currentBranch)}?recursive=1`)).json();
         const files = (r.tree || [])
             .filter(x => x.type === 'blob' && /\.html?$/i.test(x.path) && !isAdminSelf(x.path))
             .map(x => x.path)
@@ -741,7 +812,7 @@ async function gh(url, opts = {}) {
 }
 
 async function getFile(path) {
-    const url = `${API}/contents/${encPath(path)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`;
+    const url = `${API}/contents/${encPath(path)}?ref=${encodeURIComponent(currentBranch)}`;
     const d = await (await gh(url)).json();
     let text;
     if (d.encoding === 'base64' && d.content) text = b64d(d.content);
@@ -750,12 +821,12 @@ async function getFile(path) {
 }
 
 async function getSha(path) {
-    try { return (await (await gh(`${API}/contents/${encPath(path)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`)).json()).sha; }
+    try { return (await (await gh(`${API}/contents/${encPath(path)}?ref=${encodeURIComponent(currentBranch)}`)).json()).sha; }
     catch (e) { if (e.status === 404) return null; throw e; }
 }
 
 async function putFile(path, b64, sha, message) {
-    const body = { message: message || `Обновление ${path}`, content: b64, branch: CMS_CONFIG.branch };
+    const body = { message: message || `Обновление ${path}`, content: b64, branch: currentBranch };
     if (sha) body.sha = sha;
     return (await gh(`${API}/contents/${encPath(path)}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
@@ -767,13 +838,13 @@ async function delFile(path) {
     if (!sha) return;
     await gh(`${API}/contents/${encPath(path)}`, {
         method: 'DELETE', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: `Удаление ${path}`, sha, branch: CMS_CONFIG.branch })
+        body: JSON.stringify({ message: `Удаление ${path}`, sha, branch: currentBranch })
     });
 }
 
 async function listSlotFiles() {
     try {
-        const d = await (await gh(`${API}/contents/${encPath(FILES_FOLDER)}?ref=${encodeURIComponent(CMS_CONFIG.branch)}`)).json();
+        const d = await (await gh(`${API}/contents/${encPath(FILES_FOLDER)}?ref=${encodeURIComponent(currentBranch)}`)).json();
         if (!Array.isArray(d)) return [];
         return d.filter(x => x.type === 'file' && SLOT_RE.test(x.name)).map(x => x.name);
     } catch (e) { return []; }
@@ -805,7 +876,7 @@ function interpretError(status, body = '') {
         if (/scope|permission|not accessible/i.test(b)) return { title: 'У токена нет нужных прав', fix: 'Создайте НОВЫЙ токен с правами Contents: Read and write на этот репозиторий.' };
         return { title: 'Доступ запрещён', fix: 'Проверьте, что токен выдан на этот репозиторий и имеет право записи.' };
     }
-    if (status === 404) return { title: 'Репозиторий или файл не найден', fix: `Проверьте имя файла и ветку "${CMS_CONFIG.branch}".` };
+    if (status === 404) return { title: 'Репозиторий или файл не найден', fix: `Проверьте имя файла и ветку "${currentBranch}".` };
     if (status === 409) return { title: 'Конфликт версий (файл был изменён)', fix: 'Кто-то изменил файл в репозитории. Нажмите "Обновить" и примените правки заново.' };
     if (status === 422) return { title: 'Ошибка валидации', fix: 'Файл уже существует или данные некорректны. Попробуйте "Переподготовить".' };
     return { title: 'Ошибка запроса', fix: 'Проверьте интернет-соединение и повторите. Если не помогает — создайте новый токен.' };
@@ -828,16 +899,16 @@ async function checkToken() {
         const user = await (await gh('https://api.github.com/user')).json();
         const repo = await (await gh(API)).json();
         let hasIndex = true;
-        try { await gh(`${API}/contents/index.html?ref=${encodeURIComponent(CMS_CONFIG.branch)}`); } catch { hasIndex = false; }
+        try { await gh(`${API}/contents/index.html?ref=${encodeURIComponent(currentBranch)}`); } catch { hasIndex = false; }
         const canPush = repo.permissions ? !!repo.permissions.push : null;
         box.innerHTML = `
             <div class="token-info"><span class="label"><i class="fas fa-check-circle" style="color: #00cc66;"></i> Пользователь:</span> ${esc(user.login)}</div>
             <div class="token-info" style="margin-top: 8px;"><span class="label"><i class="fas fa-check-circle" style="color: #00cc66;"></i> Репозиторий:</span> ${esc(repo.full_name)} (${repo.private ? 'приватный' : 'публичный'})</div>
             <div class="token-info" style="margin-top: 8px;"><span class="label"><i class="fas fa-${canPush === false ? 'times-circle' : 'check-circle'}" style="color: ${canPush === false ? '#ff4444' : '#00cc66'};"></i> Запись в репозиторий:</span> ${canPush === null ? 'нет данных' : canPush ? 'есть' : 'НЕТ — сохранение не удастся'}</div>
-            <div class="token-info" style="margin-top: 8px;"><span class="label"><i class="fas fa-${hasIndex ? 'check-circle' : 'exclamation-circle'}" style="color: ${hasIndex ? '#00cc66' : '#ff9900'};"></i> index.html в ветке ${esc(CMS_CONFIG.branch)}:</span> ${hasIndex ? 'найден' : 'НЕ НАЙДЕН'}</div>
+            <div class="token-info" style="margin-top: 8px;"><span class="label"><i class="fas fa-${hasIndex ? 'check-circle' : 'exclamation-circle'}" style="color: ${hasIndex ? '#00cc66' : '#ff9900'};"></i> index.html в ветке ${esc(currentBranch)}:</span> ${hasIndex ? 'найден' : 'НЕ НАЙДЕН'}</div>
         `;
         if (canPush === false) showErrorDetails('Нет прав записи', 'WARNING', '', 'Выдайте токену право Contents: Read and write на этот репозиторий.');
-        else if (!hasIndex) showErrorDetails('Файл index.html не найден', '404', `Ветка "${CMS_CONFIG.branch}" или файл не существует`, 'Создайте index.html в корне репозитория или проверьте ветку в config.js.');
+        else if (!hasIndex) showErrorDetails('Файл index.html не найден', '404', `Ветка "${currentBranch}" или файл не существует`, 'Создайте index.html в корне репозитория или проверьте ветку в config.js.');
         const ok = hasIndex && canPush !== false;
         showStatus(ok ? 'Токен валиден' : 'Есть проблемы — см. подробности', ok ? 'success' : 'error');
         return ok;
@@ -877,6 +948,8 @@ async function enterApp() {
     $('editorApp').classList.add('active');
     updateRepoHeader();
     updatePageIndicator();
+    await resolveRepoContext();
+    updatePageIndicator();
     loadPagesList();
     try {
         let f;
@@ -899,13 +972,11 @@ async function enterApp() {
         } else { showSetup(); await checkToken(); }
     } catch (e) {
         showSetup();
-        if (e.status === 404) showErrorDetails('Файл не найден', 404, `В репозитории ${currentOwner}/${currentRepo} ветка ${CMS_CONFIG.branch}`, 'Проверьте имя файла.');
+        if (e.status === 404) showErrorDetails('Файл не найден', 404, `В репозитории ${currentOwner}/${currentRepo} ветка ${currentBranch}`, 'Проверьте имя файла и ветку.');
         else if (e.status === 401 || e.status === 403) await checkToken();
         else { const i = interpretError(e.status, e.body); showErrorDetails(i.title, e.status || 'unknown', e.body || e.message, i.fix); }
     }
 }
-
-if (token) enterApp();
 
 function logout() {
     if (Object.keys(pending).length && !confirm('Есть несохранённые изменения. Выйти?')) return;
@@ -932,10 +1003,11 @@ function showEditor() {
     loadSite();
 }
 
-// ===== ЗАЩИТА УБРАНА: скрипты и обработчики НЕ вырезаются =====
+// Превью показывает сайт «как вживую»: скрипты, onclick и javascript: ссылки НЕ вырезаются.
+// Убираются только <meta refresh> (иначе превью само уйдёт на другую страницу) и чужие <base>.
 function buildPreviewHtml(text) {
     const d = new DOMParser().parseFromString(text, 'text/html');
-    // Удаляем только <base>, чтобы подставить свой
+    d.querySelectorAll('meta[http-equiv="refresh" i]').forEach(n => n.remove());
     d.querySelectorAll('base').forEach(b => b.remove());
     const base = d.createElement('base');
     base.setAttribute('href', pageUrl().href);
@@ -1059,7 +1131,7 @@ async function prepareCurrentFile(logContainer = null) {
     };
     try {
         if (isAdminSelf(fileBeingPrepared)) {
-            li('? Операция отменена: это файл самой админ-панели', 'error');
+            li('Операция отменена: это файл самой админ-панели', 'error');
             showStatus('Админку нельзя редактировать через саму себя. Переместите её в папку admin/.', 'error');
             return false;
         }
@@ -1103,6 +1175,21 @@ async function prepareSite() {
     if (ok) setTimeout(() => { showStatus('Страница подготовлена! Открываем редактор...'); setTimeout(showEditor, 500); }, 300);
 }
 
+// Возврат к предыдущему состоянию после неудачного перехода
+function restoreAfterFailedNav(prevFile, prevView) {
+    currentFile = prevFile;
+    viewModeUrl = prevView;
+    saveCurrentFile();
+    updatePageIndicator();
+    $('setupScreen').classList.remove('active');
+    if (prevView) {
+        $('iframeWrapper').style.display = 'block';
+        $('hintBanner').style.display = 'block';
+    } else {
+        showEditor();
+    }
+}
+
 async function navigateTo(href) {
     const cleanPath = normalizePagePath(href);
     if (!cleanPath) { showStatus('Не удалось определить страницу по ссылке: ' + href, 'error'); updatePageIndicator(); return; }
@@ -1131,7 +1218,6 @@ async function navigateTo(href) {
             showStatus('? ' + cleanPath + ' открыта для редактирования', 'success');
         } else {
             showSetup();
-            $('setupTitle').textContent = 'Подготовка ' + cleanPath;
             $('errorDetails').innerHTML = '';
             const log = $('progressLog');
             log.style.display = 'block'; log.innerHTML = '';
@@ -1141,21 +1227,13 @@ async function navigateTo(href) {
                 showEditor();
                 showStatus('? Страница ' + cleanPath + ' готова к редактированию!', 'success');
             } else {
-                currentFile = prevFile;
-                viewModeUrl = prevView;
-                saveCurrentFile();
-                updatePageIndicator();
+                restoreAfterFailedNav(prevFile, prevView);
             }
         }
     } catch (e) {
         const i = interpretError(e.status, e.body);
-        const notFound = e.status === 404;
-        showStatus('? Не удалось открыть ' + cleanPath + ': ' + (notFound ? 'страница не найдена в репозитории' : i.title), 'error');
-        currentFile = prevFile;
-        viewModeUrl = prevView;
-        saveCurrentFile();
-        updatePageIndicator();
-        if (!prevView) { try { showEditor(); } catch {} }
+        showStatus('? Не удалось открыть ' + cleanPath + ': ' + (e.status === 404 ? 'страница не найдена в репозитории' : i.title), 'error');
+        restoreAfterFailedNav(prevFile, prevView);
     }
 }
 
@@ -1219,6 +1297,9 @@ function hookIframe() {
 
     d.addEventListener('auxclick', ev => { if (ev.button === 1) handleModifierOpen(ev); }, true);
 
+    // Формы сайта не должны отправляться из превью
+    d.addEventListener('submit', ev => { ev.preventDefault(); }, true);
+
     d.addEventListener('click', ev => {
         if (ev.altKey) {
             const linkEl = ev.target.closest && ev.target.closest('a[href]');
@@ -1228,6 +1309,7 @@ function hookIframe() {
                 const href = (linkEl.getAttribute('href') || '').trim();
                 if (href === '') return;
                 if (/^(tel:|mailto:)/i.test(href)) { openSafe(href); return; }
+                if (/^javascript:/i.test(href)) return;
                 if (href.startsWith('#')) {
                     const id = href.slice(1);
                     const target = id ? (d.getElementById(id) || d.querySelector(`[name="${CSS.escape(id)}"]`)) : null;
@@ -1256,6 +1338,7 @@ function hookIframe() {
             openImage(path, actualImg ? (actualImg.currentSrc || actualImg.src) : '', imgId);
             return;
         }
+        // Обычные ссылки не переходят, но обработчики сайта (меню, аккордеоны, слайдеры) продолжают работать
         const linkEl = ev.target.closest && ev.target.closest('a[href]');
         if (linkEl) ev.preventDefault();
     }, true);
@@ -1546,6 +1629,7 @@ async function cleanMarks() {
     }
 }
 
+// ===== Скрыть / Поставить заглушки (под картинки) =====
 async function hidePlaceholders() {
     if (Object.keys(pending).length > 0) {
         if (!confirm('У вас есть несохранённые правки. Они будут потеряны. Продолжить?')) return;
@@ -1631,11 +1715,8 @@ async function showPlaceholders() {
             ph.appendChild(spanTxt);
 
             const img = holder.querySelector('img');
-            if (img && img.nextSibling) {
-                holder.insertBefore(ph, img.nextSibling);
-            } else {
-                holder.appendChild(ph);
-            }
+            if (img && img.nextSibling) holder.insertBefore(ph, img.nextSibling);
+            else holder.appendChild(ph);
             added++;
         });
 
@@ -1777,7 +1858,7 @@ function openImage(path, src, imgId) {
     editOrigImg = imgLinkData;
 
     const currentExt = (path.split('.').pop() || '').toLowerCase();
-    const extDisplay = currentExt ? `<code style="background:#2a2a2a;padding:2px 6px;border-radius:3px;font-size:11px;">.${currentExt}</code>` : '';
+    const extDisplay = currentExt ? `<code style="background:#2a2a2a;padding:2px 6px;border-radius:3px;font-size:11px;">.${esc(currentExt)}</code>` : '';
 
     $('editPanelContent').innerHTML = `
         <div style="margin-bottom: 16px;">
@@ -1894,8 +1975,6 @@ function applyEdit() {
                         const pic = img.closest('picture');
                         if (pic) pic.querySelectorAll('source').forEach(s => s.removeAttribute('srcset'));
                         img.src = pendingImg;
-                        img.style.opacity = '1';
-                        img.style.display = '';
                     }
                 }
                 if (linkChanged) applyLinkToImage(d, target, imgLinkUrl, imgLinkTarget);
@@ -1931,6 +2010,7 @@ async function saveAll() {
         const imagesWithData = images.filter(k => pending[k].data);
         const imagesWithLinks = images.filter(k => pending[k].linkChanged);
 
+        // 1) Новые файлы в files/
         const fileUploads = texts.filter(k => pending[k].fileNew && pending[k].fileData);
         for (const k of fileUploads) {
             const p = pending[k];
@@ -1940,6 +2020,7 @@ async function saveAll() {
             } catch (e) { failed.push(k); }
         }
 
+        // 2) Коммит HTML со ссылками на новые имена
         const htmlTexts = texts.filter(k => !failed.includes(k));
         if (htmlTexts.length || imagesWithLinks.length) {
             const f = await getFile(currentFile);
@@ -1968,6 +2049,7 @@ async function saveAll() {
             repoDeployId = deployId;
         }
 
+        // 3) Удаляем старые файлы (заменённые и отвязанные)
         for (const k of texts) {
             if (failed.includes(k)) continue;
             const p = pending[k];
@@ -2017,6 +2099,7 @@ async function resetSite() {
     $('errorDetails').innerHTML = '';
 }
 
+// ===== Обработчики =====
 $('checkBtn').addEventListener('click', checkToken);
 $('checkBtn2').addEventListener('click', checkToken);
 $('reloadBtn').addEventListener('click', reloadPreview);
@@ -2034,17 +2117,14 @@ $('homeBtn').addEventListener('click', goHome);
 $('openSiteBtn').addEventListener('click', openLiveSite);
 $('deployBadge').addEventListener('click', () => verifyDeploy(repoDeployId, true));
 
-$('reposBtn').addEventListener('click', (e) => {
+$('reposBtn').addEventListener('click', e => {
     e.stopPropagation();
     const dropdown = $('reposDropdown');
-    if (dropdown.classList.contains('show')) {
-        dropdown.classList.remove('show');
-    } else {
-        fillReposDropdown();
-    }
+    if (dropdown.classList.contains('show')) dropdown.classList.remove('show');
+    else fillReposDropdown();
 });
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', e => {
     const dropdown = $('reposDropdown');
     const wrap = document.querySelector('.repos-wrap');
     if (dropdown && dropdown.classList.contains('show') && wrap && !wrap.contains(e.target)) {
@@ -2059,6 +2139,9 @@ $('addressInput').addEventListener('keydown', e => {
 });
 
 window.addEventListener('beforeunload', e => { if (Object.keys(pending).length) { e.preventDefault(); e.returnValue = ''; } });
+
+// Автовход, если токен уже в сессии (в самом конце, когда всё объявлено)
+if (token) enterApp();
 </script>
 </body>
 </html>
